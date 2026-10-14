@@ -7,6 +7,6 @@ This inventory describes the minimal construction release for the four RIGen Xon
 - `interaction_short/`: short Interaction capture, validation, and postprocessing.
 - `interaction_long/`: Interaction-Long capture and release tooling.
 - `arena/`: Arena duel capture, rollout, prompt, and release tooling.
-- `requirements-reproduction.txt`: unpinned non-GPU Python dependencies for route utilities.
+- `requirements.txt`: base non-GPU Python dependencies for route utilities; GPU packages are installed separately for the target machine.
 
 The route directories include the modified Xonotic and QuakeC source snapshots required by the capture logic. Captured media, raw demos, logs, checkpoints, production outputs, and private machine state are excluded.
