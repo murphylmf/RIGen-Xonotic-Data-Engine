@@ -1,0 +1,2107 @@
+. ./lib/_all.inc
+.. ./lib/compiler.qh
+.. ./dpdefs/pre.qh
+.. ./server/sys-pre.qh
+.. ./dpdefs/progsdefs.qh
+... ./dpdefs/upstream/progsdefs.qc
+.. ./dpdefs/dpextensions.qh
+... ./dpdefs/upstream/dpextensions.qc
+.. ./server/sys-post.qh
+.. ./dpdefs/post.qh
+.. ./lib/self.qh
+... ./lib/macro.qh
+.. ./lib/bool.qh
+.. ./lib/int.qh
+.. ./lib/warpzone/mathlib.qc
+... ./lib/warpzone/mathlib.qh
+.. ./lib/deglobalization.qh
+... ./lib/accumulate.qh
+... ./lib/float.qh
+... ./lib/log.qh
+.... ./lib/progname.qh
+... ./lib/misc.qh
+.... ./lib/p99.qh
+... ./lib/static.qh
+... ./lib/vector.qh
+.. ./lib/angle.qc
+.. ./lib/arraylist.qh
+.. ./lib/bits.qh
+.. ./lib/color.qh
+... ./lib/string.qh
+.... ./lib/nil.qh
+.... ./lib/sort.qh
+.... ./lib/oo.qh
+.. ./lib/counting.qh
+... ./lib/i18n.qh
+.... ./lib/map.qh
+.... ./lib/unsafe.qh
+.. ./lib/cvar.qh
+.. ./lib/defer.qh
+.. ./lib/draw.qh
+.. ./lib/enumclass.qh
+.. ./lib/file.qh
+.. ./lib/functional.qh
+.. ./lib/intrusivelist.qh
+... ./lib/iter.qh
+... ./lib/test.qh
+.. ./lib/json.qc
+.. ./lib/lazy.qh
+.. ./lib/linkedlist.qh
+.. ./lib/markdown.qh
+.. ./lib/math.qh
+.. ./lib/net.qh
+... ./lib/registry.qh
+... ./lib/yenc.qh
+.. ./lib/noise.qh
+.. ./lib/p2mathlib.qc
+.. ./lib/promise.qc
+... ./lib/promise.qh
+.. ./lib/random.qc
+... ./lib/random.qh
+.. ./lib/registry_net.qh
+.. ./lib/replicate.qh
+.. ./lib/sortlist.qc
+... ./lib/sortlist.qh
+.. ./lib/spawnfunc.qh
+.. ./lib/stats.qh
+.. ./lib/struct.qh
+.. ./lib/test.qc
+.. ./lib/urllib.qc
+... ./lib/urllib.qh
+.. ./lib/matrix/_mod.inc
+... ./lib/matrix/command.qc
+.... ./lib/matrix/command.qh
+..... ./lib/matrix/matrix.qh
+.... ./common/command/_mod.qh
+..... ./common/command/generic.qh
+...... ./common/constants.qh
+..... ./common/command/markup.qh
+..... ./common/command/reg.qh
+...... ./common/command/command.qh
+..... ./common/command/rpn.qh
+... ./lib/matrix/matrix.qc
+.. ./ecs/_mod.qh
+... ./ecs/main.qh
+.... ./ecs/lib.qh
+... ./ecs/components/_mod.qh
+.... ./ecs/components/input.qh
+.... ./ecs/components/physics.qh
+... ./ecs/events/_mod.qh
+.... ./ecs/events/physics.qh
+... ./ecs/systems/_mod.qh
+.... ./ecs/systems/input.qh
+.... ./ecs/systems/physics.qh
+. ./server/_mod.inc
+.. ./server/anticheat.qc
+... ./server/anticheat.qh
+... ./common/playerstats.qh
+... ./common/state.qh
+... ./common/stats.qh
+.... ./server/client.qh
+..... ./server/utils.qh
+..... ./server/intermission.qh
+..... ./common/replicate.qh
+..... ./common/sounds/all.qh
+...... ./common/sounds/sound.qh
+...... ./common/sounds/all.inc
+....... ./common/sounds/../teams.qh
+...... ./common/sounds/all.qc
+.... ./server/compat/quake3.qh
+.... ./server/main.qh
+.... ./common/gamemodes/sv_rules.qh
+.... ./common/mapobjects/teleporters.qh
+..... ./common/mapobjects/defs.qh
+.... ./common/mapobjects/trigger/secret.qh
+.... ./common/mutators/mutator/doublejump/doublejump.qh
+.... ./common/mutators/mutator/itemstime/itemstime.qh
+.... ./common/physics/player.qh
+.... ./common/physics/movetypes/movetypes.qh
+... ./common/weapons/_all.qh
+.... ./common/weapons/all.qh
+..... ./common/command/_mod.qh
+..... ./common/weapons/config.qh
+..... ./common/weapons/weapon.qh
+...... ./common/items/item/pickup.qh
+....... ./common/items/item.qh
+........ ./common/models/all.qh
+......... ./common/models/model.qh
+......... ./common/models/all.inc
+........ ./server/items/spawning.qh
+...... ./common/resources/resources.qh
+....... ./common/resources/all.inc
+...... ./common/effects/qc/_mod.qh
+....... ./common/effects/qc/casings.qh
+....... ./common/effects/qc/damageeffects.qh
+....... ./common/effects/qc/gibs.qh
+....... ./common/effects/qc/globalsound.qh
+........ ./server/chat.qh
+....... ./common/effects/qc/lightningarc.qh
+....... ./common/effects/qc/modeleffects.qh
+....... ./common/effects/qc/rubble.qh
+...... ./common/items/_mod.qh
+....... ./common/items/all.qh
+........ ./common/command/_mod.qh
+....... ./common/items/item/_mod.qh
+........ ./common/items/item/ammo.qh
+......... ./common/resources/sv_resources.qh
+......... ./server/items/items.qh
+........ ./common/items/item/armor.qh
+........ ./common/items/item/health.qh
+........ ./common/items/item/jetpack.qh
+......... ./common/mutators/mutator/powerups/_mod.qh
+.......... ./common/mutators/mutator/powerups/powerups.qh
+........... ./common/mutators/mutator/status_effects/all.qh
+.......... ./common/mutators/mutator/powerups/sv_powerups.qh
+........... ./common/mutators/base.qh
+............ ./common/mutators/events.qh
+.......... ./common/mutators/mutator/powerups/powerup/_mod.qh
+........... ./common/mutators/mutator/powerups/powerup/invisibility.qh
+........... ./common/mutators/mutator/powerups/powerup/shield.qh
+........... ./common/mutators/mutator/powerups/powerup/speed.qh
+........... ./common/mutators/mutator/powerups/powerup/strength.qh
+..... ./common/weapons/calculations.qh
+..... ./common/weapons/projectiles.qh
+..... ./common/effects/all.qh
+...... ./common/effects/effect.qh
+...... ./common/effects/all.inc
+..... ./common/util.qh
+..... ./server/bot/api.qh
+..... ./common/weapons/all.inc
+...... ./common/weapons/weapon/blaster.qh
+...... ./common/weapons/weapon/shotgun.qh
+...... ./common/weapons/weapon/machinegun.qh
+...... ./common/weapons/weapon/mortar.qh
+...... ./common/weapons/weapon/minelayer.qh
+...... ./common/weapons/weapon/electro.qh
+...... ./common/weapons/weapon/crylink.qh
+...... ./common/weapons/weapon/vortex.qh
+...... ./common/weapons/weapon/hagar.qh
+...... ./common/weapons/weapon/devastator.qh
+...... ./common/weapons/weapon/porto.qh
+...... ./common/weapons/weapon/vaporizer.qh
+...... ./common/weapons/weapon/hook.qh
+...... ./common/weapons/weapon/hlac.qh
+...... ./common/weapons/weapon/tuba.qh
+...... ./common/weapons/weapon/rifle.qh
+...... ./common/weapons/weapon/fireball.qh
+...... ./common/weapons/weapon/seeker.qh
+...... ./common/weapons/weapon/shockwave.qh
+...... ./common/weapons/weapon/arc.qh
+... ./server/antilag.qh
+... ./server/command/common.qh
+.... ./common/command/_mod.qh
+.... ./server/command/vote.qh
+.... ./common/monsters/sv_spawn.qh
+..... ./common/monsters/monster.qh
+...... ./common/monsters/sv_monsters.qh
+....... ./common/monsters/all.qh
+...... ./server/damage.qh
+...... ./server/weapons/common.qh
+...... ./server/weapons/tracing.qh
+...... ./server/weapons/weaponsystem.qh
+...... ./common/mutators/mutator/waypoints/waypointsprites.qh
+....... ./common/mutators/mutator/waypoints/all.qh
+........ ./common/mutators/mutator/waypoints/all.inc
+...... ./lib/warpzone/server.qh
+...... ./common/monsters/../animdecide.qh
+...... ./common/monsters/../anim.qh
+.... ./common/command/_mod.qh
+... ./server/gamelog.qh
+.. ./server/antilag.qc
+... ./common/vehicles/all.qh
+.... ./common/vehicles/vehicle.qh
+.... ./common/vehicles/sv_vehicles.qh
+..... ./common/turrets/sv_turrets.qh
+...... ./common/turrets/all.qh
+....... ./common/command/_mod.qh
+....... ./common/turrets/config.qh
+....... ./common/turrets/turret.qh
+....... ./common/turrets/turret/_mod.qh
+........ ./common/turrets/turret/ewheel.qh
+......... ./common/turrets/turret/ewheel_weapon.qh
+........ ./common/turrets/turret/flac.qh
+......... ./common/turrets/turret/flac_weapon.qh
+........ ./common/turrets/turret/fusionreactor.qh
+........ ./common/turrets/turret/hellion.qh
+......... ./common/turrets/turret/hellion_weapon.qh
+........ ./common/turrets/turret/hk.qh
+......... ./common/turrets/turret/hk_weapon.qh
+........ ./common/turrets/turret/machinegun.qh
+......... ./common/turrets/turret/machinegun_weapon.qh
+........ ./common/turrets/turret/mlrs.qh
+......... ./common/turrets/turret/mlrs_weapon.qh
+........ ./common/turrets/turret/phaser.qh
+......... ./common/turrets/turret/phaser_weapon.qh
+........ ./common/turrets/turret/plasma.qh
+......... ./common/turrets/turret/plasma_weapon.qh
+........ ./common/turrets/turret/plasma_dual.qh
+........ ./common/turrets/turret/tesla.qh
+......... ./common/turrets/turret/tesla_weapon.qh
+........ ./common/turrets/turret/walker.qh
+......... ./common/turrets/turret/walker_weapon.qh
+.... ./common/vehicles/vehicle/_mod.qh
+..... ./common/vehicles/vehicle/bumblebee.qh
+...... ./common/vehicles/vehicle/bumblebee_weapons.qh
+..... ./common/vehicles/vehicle/racer.qh
+...... ./common/vehicles/vehicle/racer_weapon.qh
+..... ./common/vehicles/vehicle/raptor.qh
+...... ./common/vehicles/vehicle/raptor_weapons.qh
+..... ./common/vehicles/vehicle/spiderbot.qh
+...... ./common/vehicles/vehicle/spiderbot_weapons.qh
+... ./lib/warpzone/common.qh
+.. ./server/campaign.qc
+... ./server/campaign.qh
+... ./common/campaign_common.qh
+... ./common/mapinfo.qh
+... ./server/cheats.qh
+.... ./common/impulses/all.qh
+... ./server/world.qh
+.. ./server/chat.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/rules.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+...... ./common/gamemodes/gamemode/assault/assault.qh
+...... ./common/gamemodes/gamemode/assault/sv_assault.qh
+....... ./common/scores.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+...... ./common/gamemodes/gamemode/clanarena/clanarena.qh
+...... ./common/gamemodes/gamemode/clanarena/sv_clanarena.qh
+....... ./server/elimination.qh
+....... ./server/round_handler.qh
+....... ./server/command/sv_cmd.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+...... ./common/gamemodes/gamemode/ctf/ctf.qh
+...... ./common/gamemodes/gamemode/ctf/sv_ctf.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+...... ./common/gamemodes/gamemode/cts/cts.qh
+...... ./common/gamemodes/gamemode/cts/sv_cts.qh
+....... ./server/race.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+...... ./common/gamemodes/gamemode/deathmatch/deathmatch.qh
+...... ./common/gamemodes/gamemode/deathmatch/sv_deathmatch.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+...... ./common/gamemodes/gamemode/domination/domination.qh
+...... ./common/gamemodes/gamemode/domination/sv_domination.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+...... ./common/gamemodes/gamemode/duel/duel.qh
+...... ./common/gamemodes/gamemode/duel/sv_duel.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+...... ./common/gamemodes/gamemode/freezetag/freezetag.qh
+...... ./common/gamemodes/gamemode/freezetag/sv_freezetag.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+...... ./common/gamemodes/gamemode/invasion/invasion.qh
+...... ./common/gamemodes/gamemode/invasion/sv_invasion.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+...... ./common/gamemodes/gamemode/keepaway/keepaway.qh
+...... ./common/gamemodes/gamemode/keepaway/sv_keepaway.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+...... ./common/gamemodes/gamemode/keyhunt/keyhunt.qh
+...... ./common/gamemodes/gamemode/keyhunt/sv_keyhunt.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+...... ./common/gamemodes/gamemode/lms/lms.qh
+...... ./common/gamemodes/gamemode/lms/sv_lms.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+...... ./common/gamemodes/gamemode/mayhem/mayhem.qh
+....... ./common/gamemodes/gamemode/tdm/tdm.qh
+...... ./common/gamemodes/gamemode/mayhem/sv_mayhem.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+...... ./common/gamemodes/gamemode/nexball/nexball.qh
+...... ./common/gamemodes/gamemode/nexball/sv_nexball.qh
+....... ./common/gamemodes/gamemode/nexball/weapon.qh
+...... ./common/gamemodes/gamemode/nexball/sv_weapon.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+...... ./common/gamemodes/gamemode/onslaught/controlpoint.qh
+...... ./common/gamemodes/gamemode/onslaught/sv_controlpoint.qh
+...... ./common/gamemodes/gamemode/onslaught/sv_generator.qh
+...... ./common/gamemodes/gamemode/onslaught/onslaught.qh
+...... ./common/gamemodes/gamemode/onslaught/sv_onslaught.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+...... ./common/gamemodes/gamemode/race/race.qh
+...... ./common/gamemodes/gamemode/race/sv_race.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+...... ./common/gamemodes/gamemode/survival/survival.qh
+...... ./common/gamemodes/gamemode/survival/sv_survival.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+...... ./common/gamemodes/gamemode/tdm/sv_tdm.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+...... ./common/gamemodes/gamemode/tka/tka.qh
+...... ./common/gamemodes/gamemode/tka/sv_tka.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+...... ./common/gamemodes/gamemode/tmayhem/tmayhem.qh
+...... ./common/gamemodes/gamemode/tmayhem/sv_tmayhem.qh
+... ./common/mapobjects/target/location.qh
+... ./common/mapobjects/triggers.qh
+... ./common/notifications/all.qh
+.... ./common/command/_mod.qh
+.... ./common/notifications/all.inc
+... ./common/wepent.qh
+... ./server/command/cmd.qh
+... ./server/mapvoting.qh
+... ./server/mutators/_mod.qh
+.... ./server/mutators/events.qh
+.... ./server/mutators/loader.qh
+.. ./server/cheats.qc
+... ./common/deathtypes/all.qh
+.... ./common/deathtypes/all.inc
+... ./common/items/_mod.qh
+.... ./common/items/item/_mod.qh
+... ./common/mapobjects/func/breakable.qh
+... ./common/mapobjects/subs.qh
+... ./common/monsters/_mod.qh
+.... ./common/monsters/sv_spawner.qh
+.... ./common/monsters/monster/_mod.qh
+..... ./common/monsters/monster/golem.qh
+..... ./common/monsters/monster/mage.qh
+...... ./common/items/_mod.qh
+....... ./common/items/item/_mod.qh
+..... ./common/monsters/monster/spider.qh
+..... ./common/monsters/monster/wyvern.qh
+..... ./common/monsters/monster/zombie.qh
+... ./common/mutators/mutator/status_effects/_mod.qh
+.... ./common/mutators/mutator/status_effects/status_effects.qh
+.... ./common/mutators/mutator/status_effects/sv_status_effects.qh
+.... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+..... ./common/mutators/mutator/status_effects/status_effect/burning.qh
+..... ./common/mutators/mutator/status_effects/status_effect/spawnshield.qh
+..... ./common/mutators/mutator/status_effects/status_effect/stunned.qh
+..... ./common/mutators/mutator/status_effects/status_effect/superweapons.qh
+... ./lib/csqcmodel/sv_model.qh
+.... ./lib/csqcmodel/common.qh
+..... ./common/csqcmodel_settings.qh
+... ./lib/warpzone/anglestransform.qh
+... ./lib/warpzone/util_server.qh
+... ./server/clientkill.qh
+... ./server/mutators/_mod.qh
+... ./server/player.qh
+.. ./server/client.qc
+... ./common/debug.qh
+... ./common/ent_cs.qh
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./common/items/_mod.qh
+.... ./common/items/item/_mod.qh
+... ./common/items/inventory.qh
+... ./common/mapobjects/func/conveyor.qh
+... ./common/mapobjects/func/ladder.qh
+... ./common/mapobjects/target/spawnpoint.qh
+... ./common/mapobjects/trigger/counter.qh
+... ./common/mapobjects/trigger/swamp.qh
+... ./common/minigames/sv_minigames.qh
+... ./common/mutators/mutator/instagib/sv_instagib.qh
+.... ./common/mutators/mutator/instagib/items.qh
+..... ./common/items/_mod.qh
+...... ./common/items/item/_mod.qh
+..... ./common/mutators/mutator/powerups/_mod.qh
+...... ./common/mutators/mutator/powerups/powerup/_mod.qh
+.... ./common/gamemodes/_mod.qh
+..... ./common/gamemodes/gamemode/_mod.qh
+...... ./common/gamemodes/gamemode/assault/_mod.qh
+...... ./common/gamemodes/gamemode/clanarena/_mod.qh
+...... ./common/gamemodes/gamemode/ctf/_mod.qh
+...... ./common/gamemodes/gamemode/cts/_mod.qh
+...... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+...... ./common/gamemodes/gamemode/domination/_mod.qh
+...... ./common/gamemodes/gamemode/duel/_mod.qh
+...... ./common/gamemodes/gamemode/freezetag/_mod.qh
+...... ./common/gamemodes/gamemode/invasion/_mod.qh
+...... ./common/gamemodes/gamemode/keepaway/_mod.qh
+...... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+...... ./common/gamemodes/gamemode/lms/_mod.qh
+...... ./common/gamemodes/gamemode/mayhem/_mod.qh
+...... ./common/gamemodes/gamemode/nexball/_mod.qh
+...... ./common/gamemodes/gamemode/onslaught/_mod.qh
+...... ./common/gamemodes/gamemode/race/_mod.qh
+...... ./common/gamemodes/gamemode/survival/_mod.qh
+...... ./common/gamemodes/gamemode/tdm/_mod.qh
+...... ./common/gamemodes/gamemode/tka/_mod.qh
+...... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.... ./common/mutators/mutator/powerups/_mod.qh
+..... ./common/mutators/mutator/powerups/powerup/_mod.qh
+... ./common/mutators/mutator/nades/nades.qh
+.... ./common/mutators/mutator/nades/effects.inc
+.... ./common/mutators/mutator/nades/nades.inc
+... ./common/mutators/mutator/overkill/oknex.qh
+... ./common/mutators/mutator/status_effects/_mod.qh
+.... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+... ./common/net_linked.qh
+.... ./lib/csqcmodel/net.qh
+... ./common/net_notice.qh
+... ./common/viewloc.qh
+... ./server/bot/default/cvars.qh
+... ./server/bot/default/waypoints.qh
+... ./server/command/banning.qh
+... ./server/handicap.qh
+... ./server/hook.qh
+... ./server/impulse.qh
+... ./server/ipban.qh
+... ./server/mutators/_mod.qh
+... ./server/portals.qh
+... ./server/scores.qh
+... ./server/scores_rules.qh
+... ./server/spawnpoints.qh
+... ./server/teamplay.qh
+... ./server/weapons/accuracy.qh
+... ./server/weapons/hitplot.qh
+... ./server/weapons/selection.qh
+.. ./server/clientkill.qc
+... ./server/mutators/_mod.qh
+.. ./server/damage.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./common/items/_mod.qh
+.... ./common/items/item/_mod.qh
+... ./common/mutators/mutator/buffs/buffs.qh
+.... ./common/mutators/mutator/status_effects/_mod.qh
+..... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+.... ./common/mutators/mutator/buffs/all.inc
+... ./common/mutators/mutator/buffs/sv_buffs.qh
+... ./common/mutators/mutator/status_effects/_mod.qh
+.... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+... ./server/mutators/_mod.qh
+... ./server/weapons/csqcprojectile.qh
+.. ./server/elimination.qc
+.. ./server/gamelog.qc
+.. ./server/handicap.qc
+.. ./server/hook.qc
+... ./server/mutators/_mod.qh
+.. ./server/impulse.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./server/mutators/_mod.qh
+... ./server/weapons/throwing.qh
+.. ./server/intermission.qc
+.. ./server/ipban.qc
+.. ./server/main.qc
+... ./server/mutators/_mod.qh
+.. ./server/mapvoting.qc
+... ./server/command/getreplies.qh
+.. ./server/matrix.qc
+... ./server/matrix.qh
+.. ./server/player.qc
+... ./common/effects/qc/_mod.qh
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./common/mapobjects/_mod.qh
+.... ./common/mapobjects/bgmscript.qh
+.... ./common/mapobjects/models.qh
+.... ./common/mapobjects/platforms.qh
+.... ./common/mapobjects/func/_mod.qh
+..... ./common/mapobjects/func/bobbing.qh
+..... ./common/mapobjects/func/button.qh
+..... ./common/mapobjects/func/door.qh
+..... ./common/mapobjects/func/door_rotating.qh
+..... ./common/mapobjects/func/door_secret.qh
+..... ./common/mapobjects/func/fourier.qh
+..... ./common/mapobjects/func/pointparticles.qh
+..... ./common/mapobjects/func/rainsnow.qh
+..... ./common/mapobjects/func/rotating.qh
+..... ./common/mapobjects/func/train.qh
+..... ./common/mapobjects/func/vectormamamam.qh
+.... ./common/mapobjects/misc/_mod.qh
+..... ./common/mapobjects/misc/dynlight.qh
+..... ./common/mapobjects/misc/follow.qh
+..... ./common/mapobjects/misc/keys.qh
+..... ./common/mapobjects/misc/laser.qh
+.... ./common/mapobjects/target/_mod.qh
+..... ./common/mapobjects/target/changelevel.qh
+..... ./common/mapobjects/target/music.qh
+..... ./common/mapobjects/target/speaker.qh
+.... ./common/mapobjects/trigger/_mod.qh
+..... ./common/mapobjects/trigger/gravity.qh
+..... ./common/mapobjects/trigger/heal.qh
+..... ./common/mapobjects/trigger/hurt.qh
+..... ./common/mapobjects/trigger/impulse.qh
+..... ./common/mapobjects/trigger/jumppads.qh
+..... ./common/mapobjects/trigger/keylock.qh
+..... ./common/mapobjects/trigger/magicear.qh
+..... ./common/mapobjects/trigger/monoflop.qh
+..... ./common/mapobjects/trigger/multi.qh
+..... ./common/mapobjects/trigger/relay_if.qh
+..... ./common/mapobjects/trigger/relay_teamcheck.qh
+..... ./common/mapobjects/trigger/teleport.qh
+..... ./common/mapobjects/trigger/viewloc.qh
+... ./common/mutators/mutator/status_effects/_mod.qh
+.... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+... ./server/mutators/_mod.qh
+... ./server/weapons/weaponstats.qh
+.. ./server/portals.qc
+... ./server/mutators/_mod.qh
+.. ./server/race.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./server/mutators/_mod.qh
+.. ./server/round_handler.qc
+.. ./server/scores.qc
+... ./server/mutators/_mod.qh
+.. ./server/scores_rules.qc
+.. ./server/spawnpoints.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./server/mutators/_mod.qh
+.. ./server/steerlib.qc
+... ./server/steerlib.qh
+... ./server/pathlib/utility.qh
+.. ./server/teamplay.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./server/mutators/_mod.qh
+.. ./server/tests.qc
+... ./server/tests.qh
+.... ./server/command/_mod.qh
+..... ./server/command/radarmap.qh
+..... ./server/command/reg.qh
+.. ./server/world.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./common/items/_mod.qh
+.... ./common/items/item/_mod.qh
+... ./common/monsters/_mod.qh
+.... ./common/monsters/monster/_mod.qh
+... ./server/mutators/_mod.qh
+.. ./server/bot/_mod.inc
+... ./server/bot/api.qc
+... ./server/bot/default/_mod.inc
+.... ./server/bot/default/aim.qc
+..... ./server/bot/default/aim.qh
+..... ./server/bot/default/bot.qh
+..... ./server/mutators/_mod.qh
+.... ./server/bot/default/bot.qc
+..... ./server/bot/default/havocbot/havocbot.qh
+..... ./server/bot/default/havocbot/scripting.qh
+..... ./server/bot/default/navigation.qh
+..... ./server/bot/default/scripting.qh
+..... ./server/mutators/_mod.qh
+.... ./server/bot/default/cvars.qc
+.... ./server/bot/default/navigation.qc
+..... ./common/items/_mod.qh
+...... ./common/items/item/_mod.qh
+.... ./server/bot/default/scripting.qc
+.... ./server/bot/default/waypoints.qc
+..... ./common/gamemodes/_mod.qh
+...... ./common/gamemodes/gamemode/_mod.qh
+....... ./common/gamemodes/gamemode/assault/_mod.qh
+....... ./common/gamemodes/gamemode/clanarena/_mod.qh
+....... ./common/gamemodes/gamemode/ctf/_mod.qh
+....... ./common/gamemodes/gamemode/cts/_mod.qh
+....... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+....... ./common/gamemodes/gamemode/domination/_mod.qh
+....... ./common/gamemodes/gamemode/duel/_mod.qh
+....... ./common/gamemodes/gamemode/freezetag/_mod.qh
+....... ./common/gamemodes/gamemode/invasion/_mod.qh
+....... ./common/gamemodes/gamemode/keepaway/_mod.qh
+....... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+....... ./common/gamemodes/gamemode/lms/_mod.qh
+....... ./common/gamemodes/gamemode/mayhem/_mod.qh
+....... ./common/gamemodes/gamemode/nexball/_mod.qh
+....... ./common/gamemodes/gamemode/onslaught/_mod.qh
+....... ./common/gamemodes/gamemode/race/_mod.qh
+....... ./common/gamemodes/gamemode/survival/_mod.qh
+....... ./common/gamemodes/gamemode/tdm/_mod.qh
+....... ./common/gamemodes/gamemode/tka/_mod.qh
+....... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.... ./server/bot/default/havocbot/_mod.inc
+..... ./server/bot/default/havocbot/havocbot.qc
+...... ./common/items/_mod.qh
+....... ./common/items/item/_mod.qh
+...... ./common/mutators/mutator/powerups/_mod.qh
+....... ./common/mutators/mutator/powerups/powerup/_mod.qh
+...... ./common/mutators/mutator/status_effects/_mod.qh
+....... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+...... ./server/bot/default/havocbot/roles.qh
+...... ./server/mutators/_mod.qh
+..... ./server/bot/default/havocbot/roles.qc
+...... ./common/mutators/mutator/powerups/_mod.qh
+....... ./common/mutators/mutator/powerups/powerup/_mod.qh
+...... ./common/mutators/mutator/status_effects/_mod.qh
+....... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+...... ./server/mutators/_mod.qh
+... ./server/bot/null/_mod.inc
+.... ./server/bot/null/bot_null.qc
+..... ./server/bot/null/bot_null.qh
+.. ./server/command/_mod.inc
+... ./server/command/banning.qc
+.... ./common/command/_mod.qh
+... ./server/command/cmd.qc
+.... ./common/command/_mod.qh
+.... ./common/gamemodes/_mod.qh
+..... ./common/gamemodes/gamemode/_mod.qh
+...... ./common/gamemodes/gamemode/assault/_mod.qh
+...... ./common/gamemodes/gamemode/clanarena/_mod.qh
+...... ./common/gamemodes/gamemode/ctf/_mod.qh
+...... ./common/gamemodes/gamemode/cts/_mod.qh
+...... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+...... ./common/gamemodes/gamemode/domination/_mod.qh
+...... ./common/gamemodes/gamemode/duel/_mod.qh
+...... ./common/gamemodes/gamemode/freezetag/_mod.qh
+...... ./common/gamemodes/gamemode/invasion/_mod.qh
+...... ./common/gamemodes/gamemode/keepaway/_mod.qh
+...... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+...... ./common/gamemodes/gamemode/lms/_mod.qh
+...... ./common/gamemodes/gamemode/mayhem/_mod.qh
+...... ./common/gamemodes/gamemode/nexball/_mod.qh
+...... ./common/gamemodes/gamemode/onslaught/_mod.qh
+...... ./common/gamemodes/gamemode/race/_mod.qh
+...... ./common/gamemodes/gamemode/survival/_mod.qh
+...... ./common/gamemodes/gamemode/tdm/_mod.qh
+...... ./common/gamemodes/gamemode/tka/_mod.qh
+...... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.... ./common/monsters/_mod.qh
+..... ./common/monsters/monster/_mod.qh
+.... ./server/mutators/_mod.qh
+... ./server/command/sv_cmd.qc
+.... ./common/gamemodes/_mod.qh
+..... ./common/gamemodes/gamemode/_mod.qh
+...... ./common/gamemodes/gamemode/assault/_mod.qh
+...... ./common/gamemodes/gamemode/clanarena/_mod.qh
+...... ./common/gamemodes/gamemode/ctf/_mod.qh
+...... ./common/gamemodes/gamemode/cts/_mod.qh
+...... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+...... ./common/gamemodes/gamemode/domination/_mod.qh
+...... ./common/gamemodes/gamemode/duel/_mod.qh
+...... ./common/gamemodes/gamemode/freezetag/_mod.qh
+...... ./common/gamemodes/gamemode/invasion/_mod.qh
+...... ./common/gamemodes/gamemode/keepaway/_mod.qh
+...... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+...... ./common/gamemodes/gamemode/lms/_mod.qh
+...... ./common/gamemodes/gamemode/mayhem/_mod.qh
+...... ./common/gamemodes/gamemode/nexball/_mod.qh
+...... ./common/gamemodes/gamemode/onslaught/_mod.qh
+...... ./common/gamemodes/gamemode/race/_mod.qh
+...... ./common/gamemodes/gamemode/survival/_mod.qh
+...... ./common/gamemodes/gamemode/tdm/_mod.qh
+...... ./common/gamemodes/gamemode/tka/_mod.qh
+...... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.... ./server/command/_mod.qh
+.... ./server/mutators/_mod.qh
+... ./server/command/common.qc
+.... ./common/command/_mod.qh
+.... ./common/monsters/_mod.qh
+..... ./common/monsters/monster/_mod.qh
+.... ./server/mutators/_mod.qh
+... ./server/command/getreplies.qc
+.... ./common/command/_mod.qh
+.... ./common/gamemodes/_mod.qh
+..... ./common/gamemodes/gamemode/_mod.qh
+...... ./common/gamemodes/gamemode/assault/_mod.qh
+...... ./common/gamemodes/gamemode/clanarena/_mod.qh
+...... ./common/gamemodes/gamemode/ctf/_mod.qh
+...... ./common/gamemodes/gamemode/cts/_mod.qh
+...... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+...... ./common/gamemodes/gamemode/domination/_mod.qh
+...... ./common/gamemodes/gamemode/duel/_mod.qh
+...... ./common/gamemodes/gamemode/freezetag/_mod.qh
+...... ./common/gamemodes/gamemode/invasion/_mod.qh
+...... ./common/gamemodes/gamemode/keepaway/_mod.qh
+...... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+...... ./common/gamemodes/gamemode/lms/_mod.qh
+...... ./common/gamemodes/gamemode/mayhem/_mod.qh
+...... ./common/gamemodes/gamemode/nexball/_mod.qh
+...... ./common/gamemodes/gamemode/onslaught/_mod.qh
+...... ./common/gamemodes/gamemode/race/_mod.qh
+...... ./common/gamemodes/gamemode/survival/_mod.qh
+...... ./common/gamemodes/gamemode/tdm/_mod.qh
+...... ./common/gamemodes/gamemode/tka/_mod.qh
+...... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.... ./common/monsters/_mod.qh
+..... ./common/monsters/monster/_mod.qh
+.... ./server/mutators/_mod.qh
+... ./server/command/radarmap.qc
+... ./server/command/reg.qc
+... ./server/command/vote.qc
+.... ./common/command/_mod.qh
+.... ./common/gamemodes/_mod.qh
+..... ./common/gamemodes/gamemode/_mod.qh
+...... ./common/gamemodes/gamemode/assault/_mod.qh
+...... ./common/gamemodes/gamemode/clanarena/_mod.qh
+...... ./common/gamemodes/gamemode/ctf/_mod.qh
+...... ./common/gamemodes/gamemode/cts/_mod.qh
+...... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+...... ./common/gamemodes/gamemode/domination/_mod.qh
+...... ./common/gamemodes/gamemode/duel/_mod.qh
+...... ./common/gamemodes/gamemode/freezetag/_mod.qh
+...... ./common/gamemodes/gamemode/invasion/_mod.qh
+...... ./common/gamemodes/gamemode/keepaway/_mod.qh
+...... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+...... ./common/gamemodes/gamemode/lms/_mod.qh
+...... ./common/gamemodes/gamemode/mayhem/_mod.qh
+...... ./common/gamemodes/gamemode/nexball/_mod.qh
+...... ./common/gamemodes/gamemode/onslaught/_mod.qh
+...... ./common/gamemodes/gamemode/race/_mod.qh
+...... ./common/gamemodes/gamemode/survival/_mod.qh
+...... ./common/gamemodes/gamemode/tdm/_mod.qh
+...... ./common/gamemodes/gamemode/tka/_mod.qh
+...... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.... ./server/mutators/_mod.qh
+.. ./server/compat/_mod.inc
+... ./server/compat/halflife.qc
+.... ./server/compat/halflife.qh
+... ./server/compat/quake.qc
+... ./server/compat/quake2.qc
+.... ./server/compat/quake2.qh
+.... ./common/items/_mod.qh
+..... ./common/items/item/_mod.qh
+... ./server/compat/quake3.qc
+.... ./common/gamemodes/_mod.qh
+..... ./common/gamemodes/gamemode/_mod.qh
+...... ./common/gamemodes/gamemode/assault/_mod.qh
+...... ./common/gamemodes/gamemode/clanarena/_mod.qh
+...... ./common/gamemodes/gamemode/ctf/_mod.qh
+...... ./common/gamemodes/gamemode/cts/_mod.qh
+...... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+...... ./common/gamemodes/gamemode/domination/_mod.qh
+...... ./common/gamemodes/gamemode/duel/_mod.qh
+...... ./common/gamemodes/gamemode/freezetag/_mod.qh
+...... ./common/gamemodes/gamemode/invasion/_mod.qh
+...... ./common/gamemodes/gamemode/keepaway/_mod.qh
+...... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+...... ./common/gamemodes/gamemode/lms/_mod.qh
+...... ./common/gamemodes/gamemode/mayhem/_mod.qh
+...... ./common/gamemodes/gamemode/nexball/_mod.qh
+...... ./common/gamemodes/gamemode/onslaught/_mod.qh
+...... ./common/gamemodes/gamemode/race/_mod.qh
+...... ./common/gamemodes/gamemode/survival/_mod.qh
+...... ./common/gamemodes/gamemode/tdm/_mod.qh
+...... ./common/gamemodes/gamemode/tka/_mod.qh
+...... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.... ./common/mutators/mutator/powerups/_mod.qh
+..... ./common/mutators/mutator/powerups/powerup/_mod.qh
+.... ./common/mutators/mutator/status_effects/_mod.qh
+..... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+... ./server/compat/wop.qc
+.... ./server/compat/wop.qh
+.... ./common/mutators/mutator/powerups/_mod.qh
+..... ./common/mutators/mutator/powerups/powerup/_mod.qh
+.. ./server/items/_mod.inc
+... ./server/items/items.qc
+.... ./common/items/_mod.qh
+..... ./common/items/item/_mod.qh
+.... ./common/monsters/_mod.qh
+..... ./common/monsters/monster/_mod.qh
+.... ./common/mutators/mutator/powerups/_mod.qh
+..... ./common/mutators/mutator/powerups/powerup/_mod.qh
+.... ./common/mutators/mutator/status_effects/_mod.qh
+..... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+.... ./server/mutators/_mod.qh
+... ./server/items/spawning.qc
+.... ./server/mutators/_mod.qh
+.... ./server/weapons/spawning.qh
+.. ./server/mutators/_mod.inc
+... ./server/mutators/events.qc
+... ./server/mutators/loader.qc
+.. ./server/pathlib/_mod.inc
+... ./server/pathlib/costs.qc
+.... ./server/pathlib/costs.qh
+..... ./server/pathlib/pathlib.qh
+... ./server/pathlib/debug.qc
+.... ./server/pathlib/debug.qh
+... ./server/pathlib/expandnode.qc
+.... ./server/pathlib/expandnode.qh
+... ./server/pathlib/main.qc
+.... ./server/pathlib/main.qh
+.... ./common/turrets/util.qh
+... ./server/pathlib/movenode.qc
+... ./server/pathlib/path_waypoint.qc
+... ./server/pathlib/utility.qc
+.. ./server/weapons/_mod.inc
+... ./server/weapons/accuracy.qc
+.... ./server/mutators/_mod.qh
+... ./server/weapons/common.qc
+.... ./common/items/_mod.qh
+..... ./common/items/item/_mod.qh
+.... ./server/mutators/_mod.qh
+... ./server/weapons/csqcprojectile.qc
+... ./server/weapons/hitplot.qc
+... ./server/weapons/selection.qc
+... ./server/weapons/spawning.qc
+.... ./server/mutators/_mod.qh
+... ./server/weapons/throwing.qc
+.... ./common/mutators/mutator/status_effects/_mod.qh
+..... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+.... ./server/mutators/_mod.qh
+... ./server/weapons/tracing.qc
+.... ./server/mutators/_mod.qh
+... ./server/weapons/weaponstats.qc
+... ./server/weapons/weaponsystem.qc
+.... ./common/items/_mod.qh
+..... ./common/items/item/_mod.qh
+.... ./common/monsters/_mod.qh
+..... ./common/monsters/monster/_mod.qh
+.... ./common/mutators/mutator/status_effects/_mod.qh
+..... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+.... ./server/mutators/_mod.qh
+. ./common/_all.inc
+.. ./common/anim.qc
+.. ./common/animdecide.qc
+... ./common/monsters/_mod.qh
+.... ./common/monsters/monster/_mod.qh
+.. ./common/ent_cs.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.. ./common/net_notice.qc
+.. ./common/wepent.qc
+.. ./common/mapinfo.qc
+... ./common/monsters/_mod.qh
+.... ./common/monsters/monster/_mod.qh
+.. ./common/playerstats.qc
+.. ./common/state.qc
+... ./common/mutators/mutator/status_effects/_mod.qh
+.... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+.. ./common/util.qc
+... ./common/gamemodes/_mod.qh
+.... ./common/gamemodes/gamemode/_mod.qh
+..... ./common/gamemodes/gamemode/assault/_mod.qh
+..... ./common/gamemodes/gamemode/clanarena/_mod.qh
+..... ./common/gamemodes/gamemode/ctf/_mod.qh
+..... ./common/gamemodes/gamemode/cts/_mod.qh
+..... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+..... ./common/gamemodes/gamemode/domination/_mod.qh
+..... ./common/gamemodes/gamemode/duel/_mod.qh
+..... ./common/gamemodes/gamemode/freezetag/_mod.qh
+..... ./common/gamemodes/gamemode/invasion/_mod.qh
+..... ./common/gamemodes/gamemode/keepaway/_mod.qh
+..... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+..... ./common/gamemodes/gamemode/lms/_mod.qh
+..... ./common/gamemodes/gamemode/mayhem/_mod.qh
+..... ./common/gamemodes/gamemode/nexball/_mod.qh
+..... ./common/gamemodes/gamemode/onslaught/_mod.qh
+..... ./common/gamemodes/gamemode/race/_mod.qh
+..... ./common/gamemodes/gamemode/survival/_mod.qh
+..... ./common/gamemodes/gamemode/tdm/_mod.qh
+..... ./common/gamemodes/gamemode/tka/_mod.qh
+..... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./server/mutators/_mod.qh
+.. ./common/campaign_file.qc
+.. ./common/campaign_setup.qc
+.. ./common/physics/all.inc
+... ./common/physics/player.qc
+.... ./common/mapobjects/_mod.qh
+..... ./common/mapobjects/func/_mod.qh
+..... ./common/mapobjects/misc/_mod.qh
+..... ./common/mapobjects/target/_mod.qh
+..... ./common/mapobjects/trigger/_mod.qh
+... ./common/physics/movelib.qc
+.... ./common/physics/movelib.qh
+... ./common/physics/movetypes/all.inc
+.... ./common/physics/movetypes/toss.qc
+.... ./common/physics/movetypes/walk.qc
+.... ./common/physics/movetypes/step.qc
+.... ./common/physics/movetypes/follow.qc
+.... ./common/physics/movetypes/push.qc
+..... ./common/physics/movetypes/push.qh
+.... ./common/physics/movetypes/movetypes.qc
+.. ./common/mapobjects/_mod.inc
+... ./common/mapobjects/bgmscript.qc
+... ./common/mapobjects/models.qc
+... ./common/mapobjects/platforms.qc
+... ./common/mapobjects/subs.qc
+... ./common/mapobjects/teleporters.qc
+.... ./common/gamemodes/_mod.qh
+..... ./common/gamemodes/gamemode/_mod.qh
+...... ./common/gamemodes/gamemode/assault/_mod.qh
+...... ./common/gamemodes/gamemode/clanarena/_mod.qh
+...... ./common/gamemodes/gamemode/ctf/_mod.qh
+...... ./common/gamemodes/gamemode/cts/_mod.qh
+...... ./common/gamemodes/gamemode/deathmatch/_mod.qh
+...... ./common/gamemodes/gamemode/domination/_mod.qh
+...... ./common/gamemodes/gamemode/duel/_mod.qh
+...... ./common/gamemodes/gamemode/freezetag/_mod.qh
+...... ./common/gamemodes/gamemode/invasion/_mod.qh
+...... ./common/gamemodes/gamemode/keepaway/_mod.qh
+...... ./common/gamemodes/gamemode/keyhunt/_mod.qh
+...... ./common/gamemodes/gamemode/lms/_mod.qh
+...... ./common/gamemodes/gamemode/mayhem/_mod.qh
+...... ./common/gamemodes/gamemode/nexball/_mod.qh
+...... ./common/gamemodes/gamemode/onslaught/_mod.qh
+...... ./common/gamemodes/gamemode/race/_mod.qh
+...... ./common/gamemodes/gamemode/survival/_mod.qh
+...... ./common/gamemodes/gamemode/tdm/_mod.qh
+...... ./common/gamemodes/gamemode/tka/_mod.qh
+...... ./common/gamemodes/gamemode/tmayhem/_mod.qh
+... ./common/mapobjects/triggers.qc
+... ./common/mapobjects/func/_mod.inc
+.... ./common/mapobjects/func/bobbing.qc
+.... ./common/mapobjects/func/breakable.qc
+.... ./common/mapobjects/func/button.qc
+.... ./common/mapobjects/func/conveyor.qc
+.... ./common/mapobjects/func/door.qc
+.... ./common/mapobjects/func/door_rotating.qc
+.... ./common/mapobjects/func/door_secret.qc
+.... ./common/mapobjects/func/fourier.qc
+.... ./common/mapobjects/func/ladder.qc
+.... ./common/mapobjects/func/pendulum.qc
+.... ./common/mapobjects/func/plat.qc
+.... ./common/mapobjects/func/pointparticles.qc
+.... ./common/mapobjects/func/rainsnow.qc
+.... ./common/mapobjects/func/rotating.qc
+.... ./common/mapobjects/func/stardust.qc
+.... ./common/mapobjects/func/train.qc
+.... ./common/mapobjects/func/vectormamamam.qc
+... ./common/mapobjects/misc/_mod.inc
+.... ./common/mapobjects/misc/corner.qc
+.... ./common/mapobjects/misc/dynlight.qc
+.... ./common/mapobjects/misc/follow.qc
+.... ./common/mapobjects/misc/keys.qc
+.... ./common/mapobjects/misc/laser.qc
+.... ./common/mapobjects/misc/teleport_dest.qc
+... ./common/mapobjects/target/_mod.inc
+.... ./common/mapobjects/target/changelevel.qc
+.... ./common/mapobjects/target/kill.qc
+.... ./common/mapobjects/target/levelwarp.qc
+.... ./common/mapobjects/target/location.qc
+.... ./common/mapobjects/target/music.qc
+.... ./common/mapobjects/target/spawn.qc
+.... ./common/mapobjects/target/spawnpoint.qc
+.... ./common/mapobjects/target/speaker.qc
+.... ./common/mapobjects/target/voicescript.qc
+... ./common/mapobjects/trigger/_mod.inc
+.... ./common/mapobjects/trigger/counter.qc
+.... ./common/mapobjects/trigger/delay.qc
+.... ./common/mapobjects/trigger/disablerelay.qc
+.... ./common/mapobjects/trigger/flipflop.qc
+.... ./common/mapobjects/trigger/gamestart.qc
+.... ./common/mapobjects/trigger/gravity.qc
+.... ./common/mapobjects/trigger/heal.qc
+.... ./common/mapobjects/trigger/hurt.qc
+.... ./common/mapobjects/trigger/impulse.qc
+.... ./common/mapobjects/trigger/jumppads.qc
+.... ./common/mapobjects/trigger/keylock.qc
+.... ./common/mapobjects/trigger/magicear.qc
+.... ./common/mapobjects/trigger/monoflop.qc
+.... ./common/mapobjects/trigger/multi.qc
+.... ./common/mapobjects/trigger/multivibrator.qc
+.... ./common/mapobjects/trigger/relay.qc
+.... ./common/mapobjects/trigger/relay_activators.qc
+.... ./common/mapobjects/trigger/relay_if.qc
+.... ./common/mapobjects/trigger/relay_teamcheck.qc
+.... ./common/mapobjects/trigger/secret.qc
+.... ./common/mapobjects/trigger/swamp.qc
+.... ./common/mapobjects/trigger/teleport.qc
+.... ./common/mapobjects/trigger/viewloc.qc
+.. ./common/viewloc.qc
+.. ./common/minigames/minigames.qc
+... ./common/minigames/minigames.qh
+.... ./common/minigames/minigame/all.qh
+..... ./common/minigames/minigame/nmm.qc
+..... ./common/minigames/minigame/ttt.qc
+..... ./common/minigames/minigame/c4.qc
+..... ./common/minigames/minigame/pong.qc
+..... ./common/minigames/minigame/ps.qc
+..... ./common/minigames/minigame/pp.qc
+..... ./common/minigames/minigame/bd.qc
+... ./common/minigames/sv_minigames.qc
+.. ./common/command/_mod.inc
+... ./common/command/generic.qc
+.... ./common/command/_mod.qh
+.... ./server/command/_mod.qh
+... ./common/command/markup.qc
+... ./common/command/reg.qc
+... ./common/command/rpn.qc
+.. ./common/deathtypes/all.qc
+.. ./common/effects/all.qc
+.. ./common/impulses/all.qc
+.. ./common/notifications/all.qc
+... ./server/mutators/_mod.qh
+.. ./common/items/_mod.inc
+... ./common/items/all.qc
+... ./common/items/item/_mod.inc
+.... ./common/items/item/ammo.qc
+.... ./common/items/item/armor.qc
+.... ./common/items/item/health.qc
+.... ./common/items/item/jetpack.qc
+.... ./common/items/item/pickup.qc
+.. ./common/weapons/_all.inc
+... ./common/weapons/all.qc
+.... ./common/items/_mod.qh
+..... ./common/items/item/_mod.qh
+.... ./common/monsters/_mod.qh
+..... ./common/monsters/monster/_mod.qh
+.... ./common/weapons/calculations.qc
+.... ./common/weapons/config.qc
+.... ./common/weapons/weapon/_mod.inc
+..... ./common/weapons/weapon/arc.qc
+..... ./common/weapons/weapon/blaster.qc
+..... ./common/weapons/weapon/crylink.qc
+..... ./common/weapons/weapon/devastator.qc
+..... ./common/weapons/weapon/electro.qc
+...... ./common/effects/qc/_mod.qh
+..... ./common/weapons/weapon/fireball.qc
+..... ./common/weapons/weapon/hagar.qc
+..... ./common/weapons/weapon/hlac.qc
+..... ./common/weapons/weapon/hook.qc
+..... ./common/weapons/weapon/machinegun.qc
+..... ./common/weapons/weapon/minelayer.qc
+..... ./common/weapons/weapon/mortar.qc
+..... ./common/weapons/weapon/porto.qc
+..... ./common/weapons/weapon/rifle.qc
+..... ./common/weapons/weapon/seeker.qc
+..... ./common/weapons/weapon/shockwave.qc
+..... ./common/weapons/weapon/shotgun.qc
+..... ./common/weapons/weapon/tuba.qc
+..... ./common/weapons/weapon/vaporizer.qc
+..... ./common/weapons/weapon/vortex.qc
+.... ./server/command/_mod.qh
+.... ./server/mutators/_mod.qh
+.. ./common/monsters/_mod.inc
+... ./common/monsters/all.qc
+... ./common/monsters/sv_monsters.qc
+.... ./common/items/_mod.qh
+..... ./common/items/item/_mod.qh
+.... ./common/mutators/mutator/status_effects/_mod.qh
+..... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+.... ./common/weapons/_mod.qh
+.... ./server/command/_mod.qh
+.... ./server/mutators/_mod.qh
+.... ./server/weapons/_mod.qh
+... ./common/monsters/sv_spawn.qc
+... ./common/monsters/sv_spawner.qc
+... ./common/monsters/monster/_mod.inc
+.... ./common/monsters/monster/golem.qc
+..... ./common/effects/qc/_mod.qh
+.... ./common/monsters/monster/mage.qc
+.... ./common/monsters/monster/spider.qc
+.... ./common/monsters/monster/wyvern.qc
+.... ./common/monsters/monster/zombie.qc
+.. ./common/turrets/_mod.inc
+... ./common/turrets/all.qc
+... ./common/turrets/checkpoint.qc
+... ./common/turrets/config.qc
+... ./common/turrets/targettrigger.qc
+... ./common/turrets/turrets.qc
+... ./common/turrets/sv_turrets.qc
+... ./common/turrets/util.qc
+... ./common/turrets/turret/_mod.inc
+.... ./common/turrets/turret/ewheel.qc
+.... ./common/turrets/turret/ewheel_weapon.qc
+.... ./common/turrets/turret/flac.qc
+.... ./common/turrets/turret/flac_weapon.qc
+.... ./common/turrets/turret/fusionreactor.qc
+.... ./common/turrets/turret/hellion.qc
+.... ./common/turrets/turret/hellion_weapon.qc
+.... ./common/turrets/turret/hk.qc
+.... ./common/turrets/turret/hk_weapon.qc
+.... ./common/turrets/turret/machinegun.qc
+.... ./common/turrets/turret/machinegun_weapon.qc
+.... ./common/turrets/turret/mlrs.qc
+.... ./common/turrets/turret/mlrs_weapon.qc
+.... ./common/turrets/turret/phaser.qc
+.... ./common/turrets/turret/phaser_weapon.qc
+.... ./common/turrets/turret/plasma.qc
+.... ./common/turrets/turret/plasma_dual.qc
+.... ./common/turrets/turret/plasma_weapon.qc
+.... ./common/turrets/turret/tesla.qc
+.... ./common/turrets/turret/tesla_weapon.qc
+.... ./common/turrets/turret/walker.qc
+.... ./common/turrets/turret/walker_weapon.qc
+.. ./common/vehicles/_mod.inc
+... ./common/vehicles/all.qc
+... ./common/vehicles/vehicles.qc
+.... ./common/vehicles/vehicles.qh
+... ./common/vehicles/sv_vehicles.qc
+.... ./common/items/_mod.qh
+..... ./common/items/item/_mod.qh
+... ./common/vehicles/vehicle/_mod.inc
+.... ./common/vehicles/vehicle/bumblebee.qc
+.... ./common/vehicles/vehicle/bumblebee_weapons.qc
+.... ./common/vehicles/vehicle/racer.qc
+.... ./common/vehicles/vehicle/racer_weapon.qc
+.... ./common/vehicles/vehicle/raptor.qc
+.... ./common/vehicles/vehicle/raptor_weapons.qc
+.... ./common/vehicles/vehicle/spiderbot.qc
+.... ./common/vehicles/vehicle/spiderbot_weapons.qc
+.. ./common/mutators/_mod.inc
+... ./common/mutators/mutator/_mod.inc
+.... ./common/mutators/mutator/bloodloss/_mod.inc
+..... ./common/mutators/mutator/bloodloss/bloodloss.qc
+...... ./common/mutators/mutator/bloodloss/bloodloss.qh
+.... ./common/mutators/mutator/breakablehook/_mod.inc
+..... ./common/mutators/mutator/breakablehook/sv_breakablehook.qc
+.... ./common/mutators/mutator/buffs/_mod.inc
+..... ./common/mutators/mutator/buffs/buffs.qc
+..... ./common/mutators/mutator/buffs/sv_buffs.qc
+...... ./common/mutators/mutator/powerups/_mod.qh
+....... ./common/mutators/mutator/powerups/powerup/_mod.qh
+...... ./common/gamemodes/_mod.qh
+....... ./common/gamemodes/gamemode/_mod.qh
+........ ./common/gamemodes/gamemode/assault/_mod.qh
+........ ./common/gamemodes/gamemode/clanarena/_mod.qh
+........ ./common/gamemodes/gamemode/ctf/_mod.qh
+........ ./common/gamemodes/gamemode/cts/_mod.qh
+........ ./common/gamemodes/gamemode/deathmatch/_mod.qh
+........ ./common/gamemodes/gamemode/domination/_mod.qh
+........ ./common/gamemodes/gamemode/duel/_mod.qh
+........ ./common/gamemodes/gamemode/freezetag/_mod.qh
+........ ./common/gamemodes/gamemode/invasion/_mod.qh
+........ ./common/gamemodes/gamemode/keepaway/_mod.qh
+........ ./common/gamemodes/gamemode/keyhunt/_mod.qh
+........ ./common/gamemodes/gamemode/lms/_mod.qh
+........ ./common/gamemodes/gamemode/mayhem/_mod.qh
+........ ./common/gamemodes/gamemode/nexball/_mod.qh
+........ ./common/gamemodes/gamemode/onslaught/_mod.qh
+........ ./common/gamemodes/gamemode/race/_mod.qh
+........ ./common/gamemodes/gamemode/survival/_mod.qh
+........ ./common/gamemodes/gamemode/tdm/_mod.qh
+........ ./common/gamemodes/gamemode/tka/_mod.qh
+........ ./common/gamemodes/gamemode/tmayhem/_mod.qh
+.... ./common/mutators/mutator/bugrigs/_mod.inc
+..... ./common/mutators/mutator/bugrigs/bugrigs.qc
+.... ./common/mutators/mutator/campcheck/_mod.inc
+..... ./common/mutators/mutator/campcheck/campcheck.qc
+..... ./common/mutators/mutator/campcheck/sv_campcheck.qc
+.... ./common/mutators/mutator/cloaked/_mod.inc
+..... ./common/mutators/mutator/cloaked/sv_cloaked.qc
+.... ./common/mutators/mutator/damagetext/_mod.inc
+..... ./common/mutators/mutator/damagetext/damagetext.qc
+...... ./common/mutators/mutator/damagetext/damagetext.qh
+..... ./common/mutators/mutator/damagetext/sv_damagetext.qc
+...... ./common/mutators/mutator/damagetext/sv_damagetext.qh
+.... ./common/mutators/mutator/dodging/_mod.inc
+..... ./common/mutators/mutator/dodging/dodging.qc
+...... ./common/mutators/mutator/dodging/dodging.qh
+..... ./common/mutators/mutator/dodging/sv_dodging.qc
+...... ./common/mutators/mutator/dodging/sv_dodging.qh
+.... ./common/mutators/mutator/doublejump/_mod.inc
+..... ./common/mutators/mutator/doublejump/doublejump.qc
+.... ./common/mutators/mutator/dynamic_handicap/_mod.inc
+..... ./common/mutators/mutator/dynamic_handicap/sv_dynamic_handicap.qc
+...... ./common/mutators/mutator/dynamic_handicap/sv_dynamic_handicap.qh
+.... ./common/mutators/mutator/globalforces/_mod.inc
+..... ./common/mutators/mutator/globalforces/sv_globalforces.qc
+.... ./common/mutators/mutator/hook/_mod.inc
+..... ./common/mutators/mutator/hook/sv_hook.qc
+.... ./common/mutators/mutator/instagib/_mod.inc
+..... ./common/mutators/mutator/instagib/sv_instagib.qc
+...... ./common/items/_mod.qh
+....... ./common/items/item/_mod.qh
+...... ./common/mutators/mutator/powerups/_mod.qh
+....... ./common/mutators/mutator/powerups/powerup/_mod.qh
+...... ./common/mutators/mutator/status_effects/_mod.qh
+....... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+...... ./common/mutators/mutator/instagib/../random_items/sv_random_items.qh
+..... ./common/mutators/mutator/instagib/items.qc
+.... ./common/mutators/mutator/invincibleproj/_mod.inc
+..... ./common/mutators/mutator/invincibleproj/sv_invincibleproj.qc
+.... ./common/mutators/mutator/itemstime/_mod.inc
+..... ./common/mutators/mutator/itemstime/itemstime.qc
+.... ./common/mutators/mutator/kick_teamkiller/_mod.inc
+..... ./common/mutators/mutator/kick_teamkiller/sv_kick_teamkiller.qc
+...... ./common/mutators/mutator/kick_teamkiller/sv_kick_teamkiller.qh
+.... ./common/mutators/mutator/melee_only/_mod.inc
+..... ./common/mutators/mutator/melee_only/sv_melee_only.qc
+...... ./common/mutators/mutator/melee_only/../overkill/sv_overkill.qh
+.... ./common/mutators/mutator/midair/_mod.inc
+..... ./common/mutators/mutator/midair/sv_midair.qc
+.... ./common/mutators/mutator/multijump/_mod.inc
+..... ./common/mutators/mutator/multijump/multijump.qc
+...... ./common/mutators/mutator/multijump/multijump.qh
+.... ./common/mutators/mutator/nades/_mod.inc
+..... ./common/mutators/mutator/nades/nades.qc
+...... ./common/mutators/mutator/nades/../overkill/okmachinegun.qh
+...... ./common/mutators/mutator/nades/../overkill/okshotgun.qh
+...... ./common/gamemodes/_mod.qh
+....... ./common/gamemodes/gamemode/_mod.qh
+........ ./common/gamemodes/gamemode/assault/_mod.qh
+........ ./common/gamemodes/gamemode/clanarena/_mod.qh
+........ ./common/gamemodes/gamemode/ctf/_mod.qh
+........ ./common/gamemodes/gamemode/cts/_mod.qh
+........ ./common/gamemodes/gamemode/deathmatch/_mod.qh
+........ ./common/gamemodes/gamemode/domination/_mod.qh
+........ ./common/gamemodes/gamemode/duel/_mod.qh
+........ ./common/gamemodes/gamemode/freezetag/_mod.qh
+........ ./common/gamemodes/gamemode/invasion/_mod.qh
+........ ./common/gamemodes/gamemode/keepaway/_mod.qh
+........ ./common/gamemodes/gamemode/keyhunt/_mod.qh
+........ ./common/gamemodes/gamemode/lms/_mod.qh
+........ ./common/gamemodes/gamemode/mayhem/_mod.qh
+........ ./common/gamemodes/gamemode/nexball/_mod.qh
+........ ./common/gamemodes/gamemode/onslaught/_mod.qh
+........ ./common/gamemodes/gamemode/race/_mod.qh
+........ ./common/gamemodes/gamemode/survival/_mod.qh
+........ ./common/gamemodes/gamemode/tdm/_mod.qh
+........ ./common/gamemodes/gamemode/tka/_mod.qh
+........ ./common/gamemodes/gamemode/tmayhem/_mod.qh
+..... ./common/mutators/mutator/nades/net.qc
+.... ./common/mutators/mutator/new_toys/_mod.inc
+..... ./common/mutators/mutator/new_toys/sv_new_toys.qc
+.... ./common/mutators/mutator/nix/_mod.inc
+..... ./common/mutators/mutator/nix/sv_nix.qc
+.... ./common/mutators/mutator/offhand_blaster/_mod.inc
+..... ./common/mutators/mutator/offhand_blaster/sv_offhand_blaster.qc
+.... ./common/mutators/mutator/overkill/_mod.inc
+..... ./common/mutators/mutator/overkill/okhmg.qc
+...... ./common/mutators/mutator/overkill/okhmg.qh
+..... ./common/mutators/mutator/overkill/okmachinegun.qc
+..... ./common/mutators/mutator/overkill/oknex.qc
+..... ./common/mutators/mutator/overkill/okrpc.qc
+...... ./common/mutators/mutator/overkill/okrpc.qh
+..... ./common/mutators/mutator/overkill/okshotgun.qc
+..... ./common/mutators/mutator/overkill/overkill.qc
+...... ./common/mutators/mutator/overkill/overkill.qh
+..... ./common/mutators/mutator/overkill/sv_overkill.qc
+..... ./common/mutators/mutator/overkill/sv_weapons.qc
+.... ./common/mutators/mutator/physical_items/_mod.inc
+..... ./common/mutators/mutator/physical_items/sv_physical_items.qc
+.... ./common/mutators/mutator/pinata/_mod.inc
+..... ./common/mutators/mutator/pinata/sv_pinata.qc
+.... ./common/mutators/mutator/powerups/_mod.inc
+..... ./common/mutators/mutator/powerups/powerups.qc
+..... ./common/mutators/mutator/powerups/sv_powerups.qc
+..... ./common/mutators/mutator/powerups/powerup/_mod.inc
+...... ./common/mutators/mutator/powerups/powerup/invisibility.qc
+...... ./common/mutators/mutator/powerups/powerup/shield.qc
+...... ./common/mutators/mutator/powerups/powerup/speed.qc
+...... ./common/mutators/mutator/powerups/powerup/strength.qc
+.... ./common/mutators/mutator/random_gravity/_mod.inc
+..... ./common/mutators/mutator/random_gravity/sv_random_gravity.qc
+.... ./common/mutators/mutator/random_items/_mod.inc
+..... ./common/mutators/mutator/random_items/sv_random_items.qc
+.... ./common/mutators/mutator/rocketflying/_mod.inc
+..... ./common/mutators/mutator/rocketflying/sv_rocketflying.qc
+.... ./common/mutators/mutator/rocketminsta/_mod.inc
+..... ./common/mutators/mutator/rocketminsta/sv_rocketminsta.qc
+.... ./common/mutators/mutator/running_guns/_mod.inc
+..... ./common/mutators/mutator/running_guns/sv_running_guns.qc
+.... ./common/mutators/mutator/sandbox/_mod.inc
+..... ./common/mutators/mutator/sandbox/sv_sandbox.qc
+...... ./common/mutators/mutator/sandbox/sv_sandbox.qh
+.... ./common/mutators/mutator/spawn_near_teammate/_mod.inc
+..... ./common/mutators/mutator/spawn_near_teammate/spawn_near_teammate.qc
+...... ./common/mutators/mutator/spawn_near_teammate/spawn_near_teammate.qh
+..... ./common/mutators/mutator/spawn_near_teammate/sv_spawn_near_teammate.qc
+.... ./common/mutators/mutator/stale_move_negation/_mod.inc
+..... ./common/mutators/mutator/stale_move_negation/sv_stale_move_negation.qc
+...... ./common/mutators/mutator/stale_move_negation/sv_stale_move_negation.qh
+.... ./common/mutators/mutator/status_effects/_mod.inc
+..... ./common/mutators/mutator/status_effects/all.qc
+..... ./common/mutators/mutator/status_effects/status_effects.qc
+..... ./common/mutators/mutator/status_effects/sv_status_effects.qc
+..... ./common/mutators/mutator/status_effects/status_effect/_mod.inc
+...... ./common/mutators/mutator/status_effects/status_effect/burning.qc
+...... ./common/mutators/mutator/status_effects/status_effect/spawnshield.qc
+...... ./common/mutators/mutator/status_effects/status_effect/stunned.qc
+...... ./common/mutators/mutator/status_effects/status_effect/superweapons.qc
+.... ./common/mutators/mutator/superspec/_mod.inc
+..... ./common/mutators/mutator/superspec/sv_superspec.qc
+.... ./common/mutators/mutator/touchexplode/_mod.inc
+..... ./common/mutators/mutator/touchexplode/sv_touchexplode.qc
+.... ./common/mutators/mutator/vampire/_mod.inc
+..... ./common/mutators/mutator/vampire/sv_vampire.qc
+.... ./common/mutators/mutator/vampirehook/_mod.inc
+..... ./common/mutators/mutator/vampirehook/sv_vampirehook.qc
+.... ./common/mutators/mutator/walljump/_mod.inc
+..... ./common/mutators/mutator/walljump/walljump.qc
+...... ./common/mutators/mutator/walljump/walljump.qh
+.... ./common/mutators/mutator/waypoints/_mod.inc
+..... ./common/mutators/mutator/waypoints/waypointsprites.qc
+.... ./common/mutators/mutator/weaponarena_random/_mod.inc
+..... ./common/mutators/mutator/weaponarena_random/sv_weaponarena_random.qc
+...... ./common/mutators/mutator/weaponarena_random/sv_weaponarena_random.qh
+.. ./common/gamemodes/_mod.inc
+... ./common/gamemodes/rules.qc
+... ./common/gamemodes/sv_rules.qc
+... ./common/gamemodes/gamemode/_mod.inc
+.... ./common/gamemodes/gamemode/assault/_mod.inc
+..... ./common/gamemodes/gamemode/assault/assault.qc
+..... ./common/gamemodes/gamemode/assault/sv_assault.qc
+.... ./common/gamemodes/gamemode/clanarena/_mod.inc
+..... ./common/gamemodes/gamemode/clanarena/clanarena.qc
+..... ./common/gamemodes/gamemode/clanarena/sv_clanarena.qc
+.... ./common/gamemodes/gamemode/ctf/_mod.inc
+..... ./common/gamemodes/gamemode/ctf/ctf.qc
+..... ./common/gamemodes/gamemode/ctf/sv_ctf.qc
+...... ./common/mutators/mutator/powerups/_mod.qh
+....... ./common/mutators/mutator/powerups/powerup/_mod.qh
+.... ./common/gamemodes/gamemode/cts/_mod.inc
+..... ./common/gamemodes/gamemode/cts/cts.qc
+..... ./common/gamemodes/gamemode/cts/sv_cts.qc
+.... ./common/gamemodes/gamemode/deathmatch/_mod.inc
+..... ./common/gamemodes/gamemode/deathmatch/deathmatch.qc
+..... ./common/gamemodes/gamemode/deathmatch/sv_deathmatch.qc
+.... ./common/gamemodes/gamemode/domination/_mod.inc
+..... ./common/gamemodes/gamemode/domination/domination.qc
+..... ./common/gamemodes/gamemode/domination/sv_domination.qc
+.... ./common/gamemodes/gamemode/duel/_mod.inc
+..... ./common/gamemodes/gamemode/duel/duel.qc
+..... ./common/gamemodes/gamemode/duel/sv_duel.qc
+.... ./common/gamemodes/gamemode/freezetag/_mod.inc
+..... ./common/gamemodes/gamemode/freezetag/freezetag.qc
+..... ./common/gamemodes/gamemode/freezetag/sv_freezetag.qc
+.... ./common/gamemodes/gamemode/invasion/_mod.inc
+..... ./common/gamemodes/gamemode/invasion/invasion.qc
+..... ./common/gamemodes/gamemode/invasion/sv_invasion.qc
+...... ./common/mutators/mutator/status_effects/_mod.qh
+....... ./common/mutators/mutator/status_effects/status_effect/_mod.qh
+.... ./common/gamemodes/gamemode/keepaway/_mod.inc
+..... ./common/gamemodes/gamemode/keepaway/keepaway.qc
+..... ./common/gamemodes/gamemode/keepaway/sv_keepaway.qc
+.... ./common/gamemodes/gamemode/keyhunt/_mod.inc
+..... ./common/gamemodes/gamemode/keyhunt/keyhunt.qc
+..... ./common/gamemodes/gamemode/keyhunt/sv_keyhunt.qc
+.... ./common/gamemodes/gamemode/lms/_mod.inc
+..... ./common/gamemodes/gamemode/lms/lms.qc
+..... ./common/gamemodes/gamemode/lms/sv_lms.qc
+...... ./server/command/_mod.qh
+.... ./common/gamemodes/gamemode/mayhem/_mod.inc
+..... ./common/gamemodes/gamemode/mayhem/mayhem.qc
+..... ./common/gamemodes/gamemode/mayhem/sv_mayhem.qc
+.... ./common/gamemodes/gamemode/nexball/_mod.inc
+..... ./common/gamemodes/gamemode/nexball/nexball.qc
+..... ./common/gamemodes/gamemode/nexball/sv_nexball.qc
+..... ./common/gamemodes/gamemode/nexball/weapon.qc
+..... ./common/gamemodes/gamemode/nexball/sv_weapon.qc
+.... ./common/gamemodes/gamemode/onslaught/_mod.inc
+..... ./common/gamemodes/gamemode/onslaught/controlpoint.qc
+..... ./common/gamemodes/gamemode/onslaught/sv_controlpoint.qc
+..... ./common/gamemodes/gamemode/onslaught/generator.qc
+..... ./common/gamemodes/gamemode/onslaught/sv_generator.qc
+..... ./common/gamemodes/gamemode/onslaught/onslaught.qc
+..... ./common/gamemodes/gamemode/onslaught/sv_onslaught.qc
+.... ./common/gamemodes/gamemode/race/_mod.inc
+..... ./common/gamemodes/gamemode/race/race.qc
+..... ./common/gamemodes/gamemode/race/sv_race.qc
+.... ./common/gamemodes/gamemode/survival/_mod.inc
+..... ./common/gamemodes/gamemode/survival/survival.qc
+..... ./common/gamemodes/gamemode/survival/sv_survival.qc
+.... ./common/gamemodes/gamemode/tdm/_mod.inc
+..... ./common/gamemodes/gamemode/tdm/tdm.qc
+..... ./common/gamemodes/gamemode/tdm/sv_tdm.qc
+.... ./common/gamemodes/gamemode/tka/_mod.inc
+..... ./common/gamemodes/gamemode/tka/tka.qc
+..... ./common/gamemodes/gamemode/tka/sv_tka.qc
+.... ./common/gamemodes/gamemode/tmayhem/_mod.inc
+..... ./common/gamemodes/gamemode/tmayhem/tmayhem.qc
+..... ./common/gamemodes/gamemode/tmayhem/sv_tmayhem.qc
+.. ./common/resources/_mod.inc
+... ./common/resources/resources.qc
+... ./common/resources/sv_resources.qc
+.... ./server/mutators/_mod.qh
+. ./common/effects/qc/_mod.inc
+.. ./common/effects/qc/casings.qc
+.. ./common/effects/qc/damageeffects.qc
+.. ./common/effects/qc/gibs.qc
+.. ./common/effects/qc/globalsound.qc
+.. ./common/effects/qc/lightningarc.qc
+.. ./common/effects/qc/modeleffects.qc
+.. ./common/effects/qc/rubble.qc
+. ./lib/csqcmodel/sv_model.qc
+. ./lib/warpzone/anglestransform.qc
+. ./lib/warpzone/common.qc
+. ./lib/warpzone/server.qc
+. ./lib/warpzone/util_server.qc
+. ./ecs/_mod.inc
+.. ./ecs/main.qc
+... ./ecs/components/_mod.qh
+... ./ecs/events/_mod.qh
+... ./ecs/systems/_mod.qh
+.. ./ecs/components/_mod.inc
+... ./ecs/components/input.qc
+... ./ecs/components/physics.qc
+.. ./ecs/events/_mod.inc
+... ./ecs/events/physics.qc
+.. ./ecs/systems/_mod.inc
+... ./ecs/systems/input.qc
+... ./ecs/systems/physics.qc
+... ./ecs/systems/sv_physics.qc
+Multiple include guards may be useful for:
+./common/_all.inc
+./common/anim.qc
+./common/animdecide.qc
+./common/campaign_file.qc
+./common/campaign_setup.qc
+./common/command/_mod.inc
+./common/command/generic.qc
+./common/command/markup.qc
+./common/command/reg.qc
+./common/command/rpn.qc
+./common/deathtypes/all.qc
+./common/effects/all.qc
+./common/effects/qc/_mod.inc
+./common/effects/qc/casings.qc
+./common/effects/qc/damageeffects.qc
+./common/effects/qc/gibs.qc
+./common/effects/qc/globalsound.qc
+./common/effects/qc/lightningarc.qc
+./common/effects/qc/modeleffects.qc
+./common/effects/qc/rubble.qc
+./common/ent_cs.qc
+./common/gamemodes/_mod.inc
+./common/gamemodes/gamemode/_mod.inc
+./common/gamemodes/gamemode/assault/_mod.inc
+./common/gamemodes/gamemode/assault/assault.qc
+./common/gamemodes/gamemode/assault/sv_assault.qc
+./common/gamemodes/gamemode/clanarena/_mod.inc
+./common/gamemodes/gamemode/clanarena/clanarena.qc
+./common/gamemodes/gamemode/clanarena/sv_clanarena.qc
+./common/gamemodes/gamemode/ctf/_mod.inc
+./common/gamemodes/gamemode/ctf/ctf.qc
+./common/gamemodes/gamemode/ctf/sv_ctf.qc
+./common/gamemodes/gamemode/cts/_mod.inc
+./common/gamemodes/gamemode/cts/cts.qc
+./common/gamemodes/gamemode/cts/sv_cts.qc
+./common/gamemodes/gamemode/deathmatch/_mod.inc
+./common/gamemodes/gamemode/deathmatch/deathmatch.qc
+./common/gamemodes/gamemode/deathmatch/sv_deathmatch.qc
+./common/gamemodes/gamemode/domination/_mod.inc
+./common/gamemodes/gamemode/domination/domination.qc
+./common/gamemodes/gamemode/domination/sv_domination.qc
+./common/gamemodes/gamemode/duel/_mod.inc
+./common/gamemodes/gamemode/duel/duel.qc
+./common/gamemodes/gamemode/duel/sv_duel.qc
+./common/gamemodes/gamemode/freezetag/_mod.inc
+./common/gamemodes/gamemode/freezetag/freezetag.qc
+./common/gamemodes/gamemode/freezetag/sv_freezetag.qc
+./common/gamemodes/gamemode/invasion/_mod.inc
+./common/gamemodes/gamemode/invasion/invasion.qc
+./common/gamemodes/gamemode/invasion/sv_invasion.qc
+./common/gamemodes/gamemode/keepaway/_mod.inc
+./common/gamemodes/gamemode/keepaway/keepaway.qc
+./common/gamemodes/gamemode/keepaway/sv_keepaway.qc
+./common/gamemodes/gamemode/keyhunt/_mod.inc
+./common/gamemodes/gamemode/keyhunt/keyhunt.qc
+./common/gamemodes/gamemode/keyhunt/sv_keyhunt.qc
+./common/gamemodes/gamemode/lms/_mod.inc
+./common/gamemodes/gamemode/lms/lms.qc
+./common/gamemodes/gamemode/lms/sv_lms.qc
+./common/gamemodes/gamemode/mayhem/_mod.inc
+./common/gamemodes/gamemode/mayhem/mayhem.qc
+./common/gamemodes/gamemode/mayhem/sv_mayhem.qc
+./common/gamemodes/gamemode/nexball/_mod.inc
+./common/gamemodes/gamemode/nexball/nexball.qc
+./common/gamemodes/gamemode/nexball/sv_nexball.qc
+./common/gamemodes/gamemode/nexball/sv_weapon.qc
+./common/gamemodes/gamemode/nexball/weapon.qc
+./common/gamemodes/gamemode/onslaught/_mod.inc
+./common/gamemodes/gamemode/onslaught/controlpoint.qc
+./common/gamemodes/gamemode/onslaught/generator.qc
+./common/gamemodes/gamemode/onslaught/onslaught.qc
+./common/gamemodes/gamemode/onslaught/sv_controlpoint.qc
+./common/gamemodes/gamemode/onslaught/sv_generator.qc
+./common/gamemodes/gamemode/onslaught/sv_onslaught.qc
+./common/gamemodes/gamemode/race/_mod.inc
+./common/gamemodes/gamemode/race/race.qc
+./common/gamemodes/gamemode/race/sv_race.qc
+./common/gamemodes/gamemode/survival/_mod.inc
+./common/gamemodes/gamemode/survival/survival.qc
+./common/gamemodes/gamemode/survival/sv_survival.qc
+./common/gamemodes/gamemode/tdm/_mod.inc
+./common/gamemodes/gamemode/tdm/sv_tdm.qc
+./common/gamemodes/gamemode/tdm/tdm.qc
+./common/gamemodes/gamemode/tka/_mod.inc
+./common/gamemodes/gamemode/tka/sv_tka.qc
+./common/gamemodes/gamemode/tka/tka.qc
+./common/gamemodes/gamemode/tmayhem/_mod.inc
+./common/gamemodes/gamemode/tmayhem/sv_tmayhem.qc
+./common/gamemodes/gamemode/tmayhem/tmayhem.qc
+./common/gamemodes/rules.qc
+./common/gamemodes/sv_rules.qc
+./common/impulses/all.qc
+./common/items/_mod.inc
+./common/items/all.qc
+./common/items/item/_mod.inc
+./common/items/item/ammo.qc
+./common/items/item/armor.qc
+./common/items/item/health.qc
+./common/items/item/jetpack.qc
+./common/items/item/pickup.qc
+./common/mapinfo.qc
+./common/mapobjects/_mod.inc
+./common/mapobjects/bgmscript.qc
+./common/mapobjects/func/_mod.inc
+./common/mapobjects/func/bobbing.qc
+./common/mapobjects/func/breakable.qc
+./common/mapobjects/func/button.qc
+./common/mapobjects/func/conveyor.qc
+./common/mapobjects/func/door.qc
+./common/mapobjects/func/door_rotating.qc
+./common/mapobjects/func/door_secret.qc
+./common/mapobjects/func/fourier.qc
+./common/mapobjects/func/ladder.qc
+./common/mapobjects/func/pendulum.qc
+./common/mapobjects/func/plat.qc
+./common/mapobjects/func/pointparticles.qc
+./common/mapobjects/func/rainsnow.qc
+./common/mapobjects/func/rotating.qc
+./common/mapobjects/func/stardust.qc
+./common/mapobjects/func/train.qc
+./common/mapobjects/func/vectormamamam.qc
+./common/mapobjects/misc/_mod.inc
+./common/mapobjects/misc/corner.qc
+./common/mapobjects/misc/dynlight.qc
+./common/mapobjects/misc/follow.qc
+./common/mapobjects/misc/keys.qc
+./common/mapobjects/misc/laser.qc
+./common/mapobjects/misc/teleport_dest.qc
+./common/mapobjects/models.qc
+./common/mapobjects/platforms.qc
+./common/mapobjects/subs.qc
+./common/mapobjects/target/_mod.inc
+./common/mapobjects/target/changelevel.qc
+./common/mapobjects/target/kill.qc
+./common/mapobjects/target/levelwarp.qc
+./common/mapobjects/target/location.qc
+./common/mapobjects/target/music.qc
+./common/mapobjects/target/spawn.qc
+./common/mapobjects/target/spawnpoint.qc
+./common/mapobjects/target/speaker.qc
+./common/mapobjects/target/voicescript.qc
+./common/mapobjects/teleporters.qc
+./common/mapobjects/trigger/_mod.inc
+./common/mapobjects/trigger/counter.qc
+./common/mapobjects/trigger/delay.qc
+./common/mapobjects/trigger/disablerelay.qc
+./common/mapobjects/trigger/flipflop.qc
+./common/mapobjects/trigger/gamestart.qc
+./common/mapobjects/trigger/gravity.qc
+./common/mapobjects/trigger/heal.qc
+./common/mapobjects/trigger/hurt.qc
+./common/mapobjects/trigger/impulse.qc
+./common/mapobjects/trigger/jumppads.qc
+./common/mapobjects/trigger/keylock.qc
+./common/mapobjects/trigger/magicear.qc
+./common/mapobjects/trigger/monoflop.qc
+./common/mapobjects/trigger/multi.qc
+./common/mapobjects/trigger/multivibrator.qc
+./common/mapobjects/trigger/relay.qc
+./common/mapobjects/trigger/relay_activators.qc
+./common/mapobjects/trigger/relay_if.qc
+./common/mapobjects/trigger/relay_teamcheck.qc
+./common/mapobjects/trigger/secret.qc
+./common/mapobjects/trigger/swamp.qc
+./common/mapobjects/trigger/teleport.qc
+./common/mapobjects/trigger/viewloc.qc
+./common/mapobjects/triggers.qc
+./common/minigames/minigame/bd.qc
+./common/minigames/minigame/c4.qc
+./common/minigames/minigame/nmm.qc
+./common/minigames/minigame/pong.qc
+./common/minigames/minigame/pp.qc
+./common/minigames/minigame/ps.qc
+./common/minigames/minigame/ttt.qc
+./common/minigames/minigames.qc
+./common/minigames/sv_minigames.qc
+./common/monsters/_mod.inc
+./common/monsters/all.qc
+./common/monsters/monster/_mod.inc
+./common/monsters/monster/golem.qc
+./common/monsters/monster/mage.qc
+./common/monsters/monster/spider.qc
+./common/monsters/monster/wyvern.qc
+./common/monsters/monster/zombie.qc
+./common/monsters/sv_monsters.qc
+./common/monsters/sv_spawn.qc
+./common/monsters/sv_spawner.qc
+./common/mutators/_mod.inc
+./common/mutators/mutator/_mod.inc
+./common/mutators/mutator/bloodloss/_mod.inc
+./common/mutators/mutator/bloodloss/bloodloss.qc
+./common/mutators/mutator/breakablehook/_mod.inc
+./common/mutators/mutator/breakablehook/sv_breakablehook.qc
+./common/mutators/mutator/buffs/_mod.inc
+./common/mutators/mutator/buffs/all.inc
+./common/mutators/mutator/buffs/buffs.qc
+./common/mutators/mutator/buffs/sv_buffs.qc
+./common/mutators/mutator/bugrigs/_mod.inc
+./common/mutators/mutator/bugrigs/bugrigs.qc
+./common/mutators/mutator/campcheck/_mod.inc
+./common/mutators/mutator/campcheck/campcheck.qc
+./common/mutators/mutator/campcheck/sv_campcheck.qc
+./common/mutators/mutator/cloaked/_mod.inc
+./common/mutators/mutator/cloaked/sv_cloaked.qc
+./common/mutators/mutator/damagetext/_mod.inc
+./common/mutators/mutator/damagetext/damagetext.qc
+./common/mutators/mutator/damagetext/sv_damagetext.qc
+./common/mutators/mutator/dodging/_mod.inc
+./common/mutators/mutator/dodging/dodging.qc
+./common/mutators/mutator/dodging/sv_dodging.qc
+./common/mutators/mutator/doublejump/_mod.inc
+./common/mutators/mutator/doublejump/doublejump.qc
+./common/mutators/mutator/dynamic_handicap/_mod.inc
+./common/mutators/mutator/dynamic_handicap/sv_dynamic_handicap.qc
+./common/mutators/mutator/globalforces/_mod.inc
+./common/mutators/mutator/globalforces/sv_globalforces.qc
+./common/mutators/mutator/hook/_mod.inc
+./common/mutators/mutator/hook/sv_hook.qc
+./common/mutators/mutator/instagib/_mod.inc
+./common/mutators/mutator/instagib/items.qc
+./common/mutators/mutator/instagib/sv_instagib.qc
+./common/mutators/mutator/invincibleproj/_mod.inc
+./common/mutators/mutator/invincibleproj/sv_invincibleproj.qc
+./common/mutators/mutator/itemstime/_mod.inc
+./common/mutators/mutator/itemstime/itemstime.qc
+./common/mutators/mutator/kick_teamkiller/_mod.inc
+./common/mutators/mutator/kick_teamkiller/sv_kick_teamkiller.qc
+./common/mutators/mutator/melee_only/_mod.inc
+./common/mutators/mutator/melee_only/sv_melee_only.qc
+./common/mutators/mutator/midair/_mod.inc
+./common/mutators/mutator/midair/sv_midair.qc
+./common/mutators/mutator/multijump/_mod.inc
+./common/mutators/mutator/multijump/multijump.qc
+./common/mutators/mutator/nades/_mod.inc
+./common/mutators/mutator/nades/effects.inc
+./common/mutators/mutator/nades/nades.inc
+./common/mutators/mutator/nades/nades.qc
+./common/mutators/mutator/nades/net.qc
+./common/mutators/mutator/new_toys/_mod.inc
+./common/mutators/mutator/new_toys/sv_new_toys.qc
+./common/mutators/mutator/nix/_mod.inc
+./common/mutators/mutator/nix/sv_nix.qc
+./common/mutators/mutator/offhand_blaster/_mod.inc
+./common/mutators/mutator/offhand_blaster/sv_offhand_blaster.qc
+./common/mutators/mutator/overkill/_mod.inc
+./common/mutators/mutator/overkill/okhmg.qc
+./common/mutators/mutator/overkill/okmachinegun.qc
+./common/mutators/mutator/overkill/oknex.qc
+./common/mutators/mutator/overkill/okrpc.qc
+./common/mutators/mutator/overkill/okshotgun.qc
+./common/mutators/mutator/overkill/overkill.qc
+./common/mutators/mutator/overkill/sv_overkill.qc
+./common/mutators/mutator/overkill/sv_weapons.qc
+./common/mutators/mutator/physical_items/_mod.inc
+./common/mutators/mutator/physical_items/sv_physical_items.qc
+./common/mutators/mutator/pinata/_mod.inc
+./common/mutators/mutator/pinata/sv_pinata.qc
+./common/mutators/mutator/powerups/_mod.inc
+./common/mutators/mutator/powerups/powerup/_mod.inc
+./common/mutators/mutator/powerups/powerup/invisibility.qc
+./common/mutators/mutator/powerups/powerup/shield.qc
+./common/mutators/mutator/powerups/powerup/speed.qc
+./common/mutators/mutator/powerups/powerup/strength.qc
+./common/mutators/mutator/powerups/powerups.qc
+./common/mutators/mutator/powerups/sv_powerups.qc
+./common/mutators/mutator/random_gravity/_mod.inc
+./common/mutators/mutator/random_gravity/sv_random_gravity.qc
+./common/mutators/mutator/random_items/_mod.inc
+./common/mutators/mutator/random_items/sv_random_items.qc
+./common/mutators/mutator/rocketflying/_mod.inc
+./common/mutators/mutator/rocketflying/sv_rocketflying.qc
+./common/mutators/mutator/rocketminsta/_mod.inc
+./common/mutators/mutator/rocketminsta/sv_rocketminsta.qc
+./common/mutators/mutator/running_guns/_mod.inc
+./common/mutators/mutator/running_guns/sv_running_guns.qc
+./common/mutators/mutator/sandbox/_mod.inc
+./common/mutators/mutator/sandbox/sv_sandbox.qc
+./common/mutators/mutator/spawn_near_teammate/_mod.inc
+./common/mutators/mutator/spawn_near_teammate/spawn_near_teammate.qc
+./common/mutators/mutator/spawn_near_teammate/sv_spawn_near_teammate.qc
+./common/mutators/mutator/stale_move_negation/_mod.inc
+./common/mutators/mutator/stale_move_negation/sv_stale_move_negation.qc
+./common/mutators/mutator/status_effects/_mod.inc
+./common/mutators/mutator/status_effects/all.qc
+./common/mutators/mutator/status_effects/status_effect/_mod.inc
+./common/mutators/mutator/status_effects/status_effect/burning.qc
+./common/mutators/mutator/status_effects/status_effect/spawnshield.qc
+./common/mutators/mutator/status_effects/status_effect/stunned.qc
+./common/mutators/mutator/status_effects/status_effect/superweapons.qc
+./common/mutators/mutator/status_effects/status_effects.qc
+./common/mutators/mutator/status_effects/sv_status_effects.qc
+./common/mutators/mutator/superspec/_mod.inc
+./common/mutators/mutator/superspec/sv_superspec.qc
+./common/mutators/mutator/touchexplode/_mod.inc
+./common/mutators/mutator/touchexplode/sv_touchexplode.qc
+./common/mutators/mutator/vampire/_mod.inc
+./common/mutators/mutator/vampire/sv_vampire.qc
+./common/mutators/mutator/vampirehook/_mod.inc
+./common/mutators/mutator/vampirehook/sv_vampirehook.qc
+./common/mutators/mutator/walljump/_mod.inc
+./common/mutators/mutator/walljump/walljump.qc
+./common/mutators/mutator/waypoints/_mod.inc
+./common/mutators/mutator/waypoints/waypointsprites.qc
+./common/mutators/mutator/weaponarena_random/_mod.inc
+./common/mutators/mutator/weaponarena_random/sv_weaponarena_random.qc
+./common/net_notice.qc
+./common/notifications/all.qc
+./common/physics/all.inc
+./common/physics/movelib.qc
+./common/physics/movetypes/all.inc
+./common/physics/movetypes/follow.qc
+./common/physics/movetypes/movetypes.qc
+./common/physics/movetypes/push.qc
+./common/physics/movetypes/step.qc
+./common/physics/movetypes/toss.qc
+./common/physics/movetypes/walk.qc
+./common/physics/player.qc
+./common/playerstats.qc
+./common/resources/_mod.inc
+./common/resources/resources.qc
+./common/resources/sv_resources.qc
+./common/state.qc
+./common/turrets/_mod.inc
+./common/turrets/all.qc
+./common/turrets/checkpoint.qc
+./common/turrets/config.qc
+./common/turrets/sv_turrets.qc
+./common/turrets/targettrigger.qc
+./common/turrets/turret/_mod.inc
+./common/turrets/turret/_mod.qh
+./common/turrets/turret/ewheel.qc
+./common/turrets/turret/ewheel_weapon.qc
+./common/turrets/turret/flac.qc
+./common/turrets/turret/flac_weapon.qc
+./common/turrets/turret/fusionreactor.qc
+./common/turrets/turret/hellion.qc
+./common/turrets/turret/hellion_weapon.qc
+./common/turrets/turret/hk.qc
+./common/turrets/turret/hk_weapon.qc
+./common/turrets/turret/machinegun.qc
+./common/turrets/turret/machinegun_weapon.qc
+./common/turrets/turret/mlrs.qc
+./common/turrets/turret/mlrs_weapon.qc
+./common/turrets/turret/phaser.qc
+./common/turrets/turret/phaser_weapon.qc
+./common/turrets/turret/plasma.qc
+./common/turrets/turret/plasma_dual.qc
+./common/turrets/turret/plasma_weapon.qc
+./common/turrets/turret/tesla.qc
+./common/turrets/turret/tesla_weapon.qc
+./common/turrets/turret/walker.qc
+./common/turrets/turret/walker_weapon.qc
+./common/turrets/turrets.qc
+./common/turrets/util.qc
+./common/util.qc
+./common/vehicles/_mod.inc
+./common/vehicles/all.qc
+./common/vehicles/sv_vehicles.qc
+./common/vehicles/vehicle/_mod.inc
+./common/vehicles/vehicle/_mod.qh
+./common/vehicles/vehicle/bumblebee.qc
+./common/vehicles/vehicle/bumblebee_weapons.qc
+./common/vehicles/vehicle/racer.qc
+./common/vehicles/vehicle/racer_weapon.qc
+./common/vehicles/vehicle/raptor.qc
+./common/vehicles/vehicle/raptor_weapons.qc
+./common/vehicles/vehicle/spiderbot.qc
+./common/vehicles/vehicle/spiderbot_weapons.qc
+./common/vehicles/vehicles.qc
+./common/viewloc.qc
+./common/weapons/_all.inc
+./common/weapons/_mod.qh
+./common/weapons/all.qc
+./common/weapons/calculations.qc
+./common/weapons/config.qc
+./common/weapons/weapon/_mod.inc
+./common/weapons/weapon/arc.qc
+./common/weapons/weapon/blaster.qc
+./common/weapons/weapon/crylink.qc
+./common/weapons/weapon/devastator.qc
+./common/weapons/weapon/electro.qc
+./common/weapons/weapon/fireball.qc
+./common/weapons/weapon/hagar.qc
+./common/weapons/weapon/hlac.qc
+./common/weapons/weapon/hook.qc
+./common/weapons/weapon/machinegun.qc
+./common/weapons/weapon/minelayer.qc
+./common/weapons/weapon/mortar.qc
+./common/weapons/weapon/porto.qc
+./common/weapons/weapon/rifle.qc
+./common/weapons/weapon/seeker.qc
+./common/weapons/weapon/shockwave.qc
+./common/weapons/weapon/shotgun.qc
+./common/weapons/weapon/tuba.qc
+./common/weapons/weapon/vaporizer.qc
+./common/weapons/weapon/vortex.qc
+./common/wepent.qc
+./dpdefs/upstream/dpextensions.qc
+./dpdefs/upstream/progsdefs.qc
+./ecs/_mod.inc
+./ecs/_mod.qh
+./ecs/components/_mod.inc
+./ecs/components/_mod.qh
+./ecs/components/_mod.qh
+./ecs/components/input.qc
+./ecs/components/physics.qc
+./ecs/events/_mod.inc
+./ecs/events/_mod.qh
+./ecs/events/_mod.qh
+./ecs/events/physics.qc
+./ecs/main.qc
+./ecs/systems/_mod.inc
+./ecs/systems/_mod.qh
+./ecs/systems/_mod.qh
+./ecs/systems/input.qc
+./ecs/systems/physics.qc
+./ecs/systems/sv_physics.qc
+./lib/_all.inc
+./lib/angle.qc
+./lib/csqcmodel/sv_model.qc
+./lib/deglobalization.qh
+./lib/json.qc
+./lib/markdown.qh
+./lib/matrix/_mod.inc
+./lib/matrix/command.qc
+./lib/matrix/matrix.qc
+./lib/p2mathlib.qc
+./lib/promise.qc
+./lib/random.qc
+./lib/sortlist.qc
+./lib/test.qc
+./lib/urllib.qc
+./lib/warpzone/anglestransform.qc
+./lib/warpzone/common.qc
+./lib/warpzone/mathlib.qc
+./lib/warpzone/server.qc
+./lib/warpzone/util_server.qc
+./server/_mod.inc
+./server/anticheat.qc
+./server/antilag.qc
+./server/bot/_mod.inc
+./server/bot/api.qc
+./server/bot/default/_mod.inc
+./server/bot/default/aim.qc
+./server/bot/default/bot.qc
+./server/bot/default/cvars.qc
+./server/bot/default/havocbot/_mod.inc
+./server/bot/default/havocbot/havocbot.qc
+./server/bot/default/havocbot/roles.qc
+./server/bot/default/navigation.qc
+./server/bot/default/scripting.qc
+./server/bot/default/waypoints.qc
+./server/bot/null/_mod.inc
+./server/bot/null/bot_null.qc
+./server/campaign.qc
+./server/chat.qc
+./server/cheats.qc
+./server/client.qc
+./server/clientkill.qc
+./server/command/_mod.inc
+./server/command/banning.qc
+./server/command/cmd.qc
+./server/command/common.qc
+./server/command/getreplies.qc
+./server/command/radarmap.qc
+./server/command/reg.qc
+./server/command/sv_cmd.qc
+./server/command/vote.qc
+./server/compat/_mod.inc
+./server/compat/halflife.qc
+./server/compat/quake.qc
+./server/compat/quake2.qc
+./server/compat/quake3.qc
+./server/compat/wop.qc
+./server/damage.qc
+./server/elimination.qc
+./server/gamelog.qc
+./server/handicap.qc
+./server/hook.qc
+./server/impulse.qc
+./server/intermission.qc
+./server/ipban.qc
+./server/items/_mod.inc
+./server/items/items.qc
+./server/items/spawning.qc
+./server/main.qc
+./server/mapvoting.qc
+./server/matrix.qc
+./server/mutators/_mod.inc
+./server/mutators/events.qc
+./server/mutators/loader.qc
+./server/pathlib/_mod.inc
+./server/pathlib/costs.qc
+./server/pathlib/debug.qc
+./server/pathlib/expandnode.qc
+./server/pathlib/main.qc
+./server/pathlib/movenode.qc
+./server/pathlib/path_waypoint.qc
+./server/pathlib/utility.qc
+./server/player.qc
+./server/portals.qc
+./server/race.qc
+./server/round_handler.qc
+./server/scores.qc
+./server/scores_rules.qc
+./server/spawnpoints.qc
+./server/steerlib.qc
+./server/teamplay.qc
+./server/tests.qc
+./server/weapons/_mod.inc
+./server/weapons/_mod.qh
+./server/weapons/accuracy.qc
+./server/weapons/common.qc
+./server/weapons/csqcprojectile.qc
+./server/weapons/hitplot.qc
+./server/weapons/selection.qc
+./server/weapons/spawning.qc
+./server/weapons/throwing.qc
+./server/weapons/tracing.qc
+./server/weapons/weaponstats.qc
+./server/weapons/weaponsystem.qc
+./server/world.qc

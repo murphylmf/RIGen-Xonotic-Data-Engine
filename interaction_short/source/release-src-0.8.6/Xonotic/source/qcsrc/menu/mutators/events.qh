@@ -1,0 +1,45 @@
+#pragma once
+
+#include <common/mutators/base.qh>
+
+                                   
+
+                                                                    
+                                                       
+
+          
+
+string cmd_name;
+int cmd_argc;
+string cmd_string;
+
+   
+                                       
+                                                                     
+                                                                                  
+                                                    
+              
+                                                   
+                                                                            
+                                                     
+                                             
+                       
+        
+                                                       
+                                                                                                             
+                       
+        
+                    
+    
+   
+#define EV_Menu_ConsoleCommand(i, o) \
+	                    i(string, cmd_name) \
+	                                i(int, cmd_argc) \
+	                                                     i(string, cmd_string) \
+	    
+MUTATOR_HOOKABLE(Menu_ConsoleCommand, EV_Menu_ConsoleCommand);
+
+#define EV_ConfigureDialogs(i, o) \
+	                          i(entity, MUTATOR_ARGV_0_entity) \
+	    
+MUTATOR_HOOKABLE(ConfigureDialogs, EV_ConfigureDialogs);

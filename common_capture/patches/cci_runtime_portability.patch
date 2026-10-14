@@ -1,0 +1,36 @@
+--- a/scripts/xonotic_capture.py
++++ b/scripts/xonotic_capture.py
+@@ -14,6 +14,7 @@
+ import json
+ import math
+ import os
++import platform
+ import re
+ import shutil
+ import signal
+@@ -38,7 +39,11 @@
+ BASEDIR = ROOT / "assets/release-0.8.6/Xonotic"
+ ASSET_ALLOWLIST = ROOT / "assets/OFFICIAL_ASSET_ALLOWLIST.json"
+ ANCHOR_CATALOG_PATH = ROOT / "configs/OFFICIAL_MAP_ANCHORS.json"
+-CONDA_PREFIX_REQUIRED = Path("./environment")
++CONDA_PREFIX_REQUIRED = Path(
++    os.environ.get(
++        "XONOTIC_CONDA_PREFIX_REQUIRED", "./environment"
++    )
++)
+ TICK_HZ = 64
+ WARMUP_TICKS = 64
+ OUTPUT_TICKS = 320
+@@ -197,8 +202,11 @@
+ 
+ 
+ def build_root() -> Path:
++    build_glob = os.environ.get(
++        "XONOTIC_BUILD_GLOB", f"build/capture-*-{platform.machine()}"
++    )
+     candidates = sorted(
+-        ROOT.glob("build/capture-*-aarch64"),
++        ROOT.glob(build_glob),
+         key=lambda path: path.stat().st_mtime,
+         reverse=True,
+     )

@@ -1,0 +1,336 @@
+
+#ifndef DPSOFTRAST_H
+#define DPSOFTRAST_H
+
+#include <stdlib.h>
+
+#define DPSOFTRAST_MAXMIPMAPS 16
+#define DPSOFTRAST_TEXTURE_MAXSIZE (1<<(DPSOFTRAST_MAXMIPMAPS - 1))
+#define DPSOFTRAST_MAXTEXTUREUNITS 16
+#define DPSOFTRAST_MAXTEXCOORDARRAYS 8
+
+                                                                             
+#define DPSOFTRAST_TEXTURE_FORMAT_BGRA8 0
+#define DPSOFTRAST_TEXTURE_FORMAT_DEPTH 1
+#define DPSOFTRAST_TEXTURE_FORMAT_RGBA8 2
+#define DPSOFTRAST_TEXTURE_FORMAT_ALPHA8 3
+#define DPSOFTRAST_TEXTURE_FORMAT_RGBA16F 4
+#define DPSOFTRAST_TEXTURE_FORMAT_RGBA32F 5
+#define DPSOFTRAST_TEXTURE_FORMAT_COMPAREMASK 0x0F
+
+                                                                 
+#define DPSOFTRAST_TEXTURE_FLAG_MIPMAP 0x10
+#define DPSOFTRAST_TEXTURE_FLAG_CUBEMAP 0x20
+#define DPSOFTRAST_TEXTURE_FLAG_USEALPHA 0x40
+#define DPSOFTRAST_TEXTURE_FLAG_CLAMPTOEDGE 0x80
+
+typedef enum DPSOFTRAST_TEXTURE_FILTER_e
+{
+	DPSOFTRAST_TEXTURE_FILTER_NEAREST = 0,
+	DPSOFTRAST_TEXTURE_FILTER_LINEAR = 1,
+	DPSOFTRAST_TEXTURE_FILTER_NEAREST_MIPMAP_TRIANGLE = 2,
+	DPSOFTRAST_TEXTURE_FILTER_LINEAR_MIPMAP_TRIANGLE = 3,
+}
+DPSOFTRAST_TEXTURE_FILTER;
+
+int DPSOFTRAST_Init(int width, int height, int numthreads, int interlace, unsigned int *colorpixels, unsigned int *depthpixels);
+void DPSOFTRAST_Shutdown(void);
+void DPSOFTRAST_Flush(void);
+void DPSOFTRAST_Finish(void);
+
+int DPSOFTRAST_Texture_New(int flags, int width, int height, int depth);
+void DPSOFTRAST_Texture_Free(int index);
+void DPSOFTRAST_Texture_UpdatePartial(int index, int mip, const unsigned char *pixels, int blockx, int blocky, int blockwidth, int blockheight);
+void DPSOFTRAST_Texture_UpdateFull(int index, const unsigned char *pixels);
+int DPSOFTRAST_Texture_GetWidth(int index, int mip);
+int DPSOFTRAST_Texture_GetHeight(int index, int mip);
+int DPSOFTRAST_Texture_GetDepth(int index, int mip);
+unsigned char *DPSOFTRAST_Texture_GetPixelPointer(int index, int mip);
+void DPSOFTRAST_Texture_Filter(int index, DPSOFTRAST_TEXTURE_FILTER filter);
+
+void DPSOFTRAST_SetRenderTargets(int width, int height, unsigned int *depthpixels, unsigned int *colorpixels0, unsigned int *colorpixels1, unsigned int *colorpixels2, unsigned int *colorpixels3);
+void DPSOFTRAST_Viewport(int x, int y, int width, int height);
+void DPSOFTRAST_ClearColor(float r, float g, float b, float a);
+void DPSOFTRAST_ClearDepth(float d);
+void DPSOFTRAST_ColorMask(int r, int g, int b, int a);
+void DPSOFTRAST_DepthTest(int enable);
+void DPSOFTRAST_ScissorTest(int enable);
+void DPSOFTRAST_Scissor(float x, float y, float width, float height);
+void DPSOFTRAST_ClipPlane(float x, float y, float z, float w);
+
+void DPSOFTRAST_BlendFunc(int smodulate, int dmodulate);
+void DPSOFTRAST_BlendSubtract(int enable);
+void DPSOFTRAST_DepthMask(int enable);
+void DPSOFTRAST_DepthFunc(int comparemode);
+void DPSOFTRAST_DepthRange(float range0, float range1);
+void DPSOFTRAST_PolygonOffset(float alongnormal, float intoview);
+void DPSOFTRAST_CullFace(int mode);
+void DPSOFTRAST_Color4f(float r, float g, float b, float a);
+void DPSOFTRAST_GetPixelsBGRA(int blockx, int blocky, int blockwidth, int blockheight, unsigned char *outpixels);
+void DPSOFTRAST_CopyRectangleToTexture(int index, int mip, int tx, int ty, int sx, int sy, int width, int height);
+void DPSOFTRAST_SetTexture(int unitnum, int index);
+
+void DPSOFTRAST_SetVertexPointer(const float *vertex3f, size_t stride);
+void DPSOFTRAST_SetColorPointer(const float *color4f, size_t stride);
+void DPSOFTRAST_SetColorPointer4ub(const unsigned char *color4ub, size_t stride);
+void DPSOFTRAST_SetTexCoordPointer(int unitnum, int numcomponents, size_t stride, const float *texcoordf);
+
+typedef enum gl20_texunit_e
+{
+	                                            
+	GL20TU_FIRST = 0,
+	GL20TU_SECOND = 1,
+	GL20TU_GAMMARAMPS = 2,
+	                               
+	GL20TU_NORMAL = 0,
+	GL20TU_COLOR = 1,
+	GL20TU_GLOSS = 2,
+	GL20TU_GLOW = 3,
+	                                            
+	GL20TU_SECONDARY_NORMAL = 4,
+	GL20TU_SECONDARY_COLOR = 5,
+	GL20TU_SECONDARY_GLOSS = 6,
+	GL20TU_SECONDARY_GLOW = 7,
+	                                                 
+	                                    
+	GL20TU_PANTS = 4,
+	GL20TU_SHIRT = 7,
+	                           
+	GL20TU_FOGMASK = 8,
+	                                          
+	GL20TU_LIGHTMAP = 9,
+	GL20TU_DELUXEMAP = 10,
+	                                    
+	GL20TU_REFRACTION = 3,
+	                                                                         
+	                                    
+	GL20TU_REFLECTION = 7,
+	                                                                                
+	                                    
+	GL20TU_ATTENUATION = 9,
+	GL20TU_CUBE = 10,
+	GL20TU_SHADOWMAP2D = 15,
+	GL20TU_CUBEPROJECTION = 12,
+	                                                         
+                       
+	GL20TU_SCREENNORMALMAP = 14,
+	                                                                       
+	GL20TU_SCREENDIFFUSE = 11,
+	GL20TU_SCREENSPECULAR = 12,
+	                   
+	GL20TU_REFLECTMASK = 5,
+	GL20TU_REFLECTCUBE = 6,
+	GL20TU_FOGHEIGHTTEXTURE = 14
+}
+gl20_texunit;
+
+typedef enum glsl_attrib_e
+{
+	GLSLATTRIB_POSITION = 0,
+	GLSLATTRIB_COLOR = 1,
+	GLSLATTRIB_TEXCOORD0 = 2,
+	GLSLATTRIB_TEXCOORD1 = 3,
+	GLSLATTRIB_TEXCOORD2 = 4,
+	GLSLATTRIB_TEXCOORD3 = 5,
+	GLSLATTRIB_TEXCOORD4 = 6,
+	GLSLATTRIB_TEXCOORD5 = 7,
+	GLSLATTRIB_TEXCOORD6 = 8,
+	GLSLATTRIB_TEXCOORD7 = 9,
+}
+glsl_attrib;
+
+typedef enum shaderlanguage_e
+{
+	SHADERLANGUAGE_GLSL,
+	SHADERLANGUAGE_HLSL,
+	SHADERLANGUAGE_COUNT
+}
+shaderlanguage_t;
+
+                                                                           
+typedef enum shadermode_e
+{
+	SHADERMODE_GENERIC,                                                                            
+	SHADERMODE_POSTPROCESS,                                                
+	SHADERMODE_DEPTH_OR_SHADOW,                                             
+	SHADERMODE_FLATCOLOR,                                                                 
+	SHADERMODE_VERTEXCOLOR,                                                          
+	SHADERMODE_LIGHTMAP,                                                                    
+	SHADERMODE_FAKELIGHT,                                                                                
+	SHADERMODE_LIGHTDIRECTIONMAP_MODELSPACE,                                                                                                                    
+	SHADERMODE_LIGHTDIRECTIONMAP_TANGENTSPACE,                                                                                                                      
+	SHADERMODE_LIGHTDIRECTIONMAP_FORCED_LIGHTMAP,                                                 
+	SHADERMODE_LIGHTDIRECTIONMAP_FORCED_VERTEXCOLOR,                                               
+	SHADERMODE_LIGHTDIRECTION,                                                                                 
+	SHADERMODE_LIGHTSOURCE,                                                                             
+	SHADERMODE_REFRACTION,                                                                            
+	SHADERMODE_WATER,                                                                                           
+	SHADERMODE_DEFERREDGEOMETRY,                                                                           
+	SHADERMODE_DEFERREDLIGHTSOURCE,                                                                                                          
+	SHADERMODE_COUNT
+}
+shadermode_t;
+
+typedef enum shaderpermutation_e
+{
+	SHADERPERMUTATION_DIFFUSE = 1<<0,                                                      
+	SHADERPERMUTATION_VERTEXTEXTUREBLEND = 1<<1,                                                                                
+	SHADERPERMUTATION_VIEWTINT = 1<<2,                                                                       
+	SHADERPERMUTATION_COLORMAPPING = 1<<3,                                          
+	SHADERPERMUTATION_SATURATION = 1<<4,                                      
+	SHADERPERMUTATION_FOGINSIDE = 1<<5,                                                                       
+	SHADERPERMUTATION_FOGOUTSIDE = 1<<6,                                                                       
+	SHADERPERMUTATION_FOGHEIGHTTEXTURE = 1<<7,                                                                         
+	SHADERPERMUTATION_FOGALPHAHACK = 1<<8,                                                                         
+	SHADERPERMUTATION_GAMMARAMPS = 1<<9,                                 
+	SHADERPERMUTATION_CUBEFILTER = 1<<10,                                            
+	SHADERPERMUTATION_GLOW = 1<<11,                                                  
+	SHADERPERMUTATION_BLOOM = 1<<12,                                 
+	SHADERPERMUTATION_SPECULAR = 1<<13,                                                            
+	SHADERPERMUTATION_POSTPROCESSING = 1<<14,                                                       
+	SHADERPERMUTATION_REFLECTION = 1<<15,                                                                                                                
+	SHADERPERMUTATION_OFFSETMAPPING = 1<<16,                                                                        
+	SHADERPERMUTATION_OFFSETMAPPING_RELIEFMAPPING = 1<<17,                                                                                                                    
+	SHADERPERMUTATION_SHADOWMAP2D = 1<<18,                                                         
+	SHADERPERMUTATION_SHADOWMAPVSDCT = 1<<19,                                                                                
+	SHADERPERMUTATION_SHADOWMAPORTHO = 1<<20,                                                         
+	SHADERPERMUTATION_DEFERREDLIGHTMAP = 1<<21,                                                                                                 
+	SHADERPERMUTATION_ALPHAKILL = 1<<22,                                                                                                       
+	SHADERPERMUTATION_REFLECTCUBE = 1<<23,                                                                  
+	SHADERPERMUTATION_NORMALMAPSCROLLBLEND = 1<<24,                                                    
+	SHADERPERMUTATION_BOUNCEGRID = 1<<25,                                                                                
+	SHADERPERMUTATION_BOUNCEGRIDDIRECTIONAL = 1<<26,                                                                                                                        
+	SHADERPERMUTATION_TRIPPY = 1<<27,                                     
+	SHADERPERMUTATION_DEPTHRGB = 1<<28,                                                                                                 
+	SHADERPERMUTATION_ALPHAGEN_VERTEX = 1<<29,                     
+	SHADERPERMUTATION_SKELETAL = 1<<30,                                                                               
+	SHADERPERMUTATION_OCCLUDE = 1<<31,                                     
+	SHADERPERMUTATION_COUNT = 32                                         
+}
+shaderpermutation_t;
+
+typedef enum DPSOFTRAST_UNIFORM_e
+{
+	DPSOFTRAST_UNIFORM_Texture_First,
+	DPSOFTRAST_UNIFORM_Texture_Second,
+	DPSOFTRAST_UNIFORM_Texture_GammaRamps,
+	DPSOFTRAST_UNIFORM_Texture_Normal,
+	DPSOFTRAST_UNIFORM_Texture_Color,
+	DPSOFTRAST_UNIFORM_Texture_Gloss,
+	DPSOFTRAST_UNIFORM_Texture_Glow,
+	DPSOFTRAST_UNIFORM_Texture_SecondaryNormal,
+	DPSOFTRAST_UNIFORM_Texture_SecondaryColor,
+	DPSOFTRAST_UNIFORM_Texture_SecondaryGloss,
+	DPSOFTRAST_UNIFORM_Texture_SecondaryGlow,
+	DPSOFTRAST_UNIFORM_Texture_Pants,
+	DPSOFTRAST_UNIFORM_Texture_Shirt,
+	DPSOFTRAST_UNIFORM_Texture_FogHeightTexture,
+	DPSOFTRAST_UNIFORM_Texture_FogMask,
+	DPSOFTRAST_UNIFORM_Texture_Lightmap,
+	DPSOFTRAST_UNIFORM_Texture_Deluxemap,
+	DPSOFTRAST_UNIFORM_Texture_Attenuation,
+	DPSOFTRAST_UNIFORM_Texture_Cube,
+	DPSOFTRAST_UNIFORM_Texture_Refraction,
+	DPSOFTRAST_UNIFORM_Texture_Reflection,
+	DPSOFTRAST_UNIFORM_Texture_ShadowMap2D,
+	DPSOFTRAST_UNIFORM_Texture_CubeProjection,
+	DPSOFTRAST_UNIFORM_Texture_ScreenNormalMap,
+	DPSOFTRAST_UNIFORM_Texture_ScreenDiffuse,
+	DPSOFTRAST_UNIFORM_Texture_ScreenSpecular,
+	DPSOFTRAST_UNIFORM_Texture_ReflectMask,
+	DPSOFTRAST_UNIFORM_Texture_ReflectCube,
+	DPSOFTRAST_UNIFORM_Alpha,
+	DPSOFTRAST_UNIFORM_BloomBlur_Parameters,
+	DPSOFTRAST_UNIFORM_ClientTime,
+	DPSOFTRAST_UNIFORM_Color_Ambient,
+	DPSOFTRAST_UNIFORM_Color_Diffuse,
+	DPSOFTRAST_UNIFORM_Color_Specular,
+	DPSOFTRAST_UNIFORM_Color_Glow,
+	DPSOFTRAST_UNIFORM_Color_Pants,
+	DPSOFTRAST_UNIFORM_Color_Shirt,
+	DPSOFTRAST_UNIFORM_DeferredColor_Ambient,
+	DPSOFTRAST_UNIFORM_DeferredColor_Diffuse,
+	DPSOFTRAST_UNIFORM_DeferredColor_Specular,
+	DPSOFTRAST_UNIFORM_DeferredMod_Diffuse,
+	DPSOFTRAST_UNIFORM_DeferredMod_Specular,
+	DPSOFTRAST_UNIFORM_DistortScaleRefractReflect,
+	DPSOFTRAST_UNIFORM_EyePosition,
+	DPSOFTRAST_UNIFORM_FogColor,
+	DPSOFTRAST_UNIFORM_FogHeightFade,
+	DPSOFTRAST_UNIFORM_FogPlane,
+	DPSOFTRAST_UNIFORM_FogPlaneViewDist,
+	DPSOFTRAST_UNIFORM_FogRangeRecip,
+	DPSOFTRAST_UNIFORM_LightColor,
+	DPSOFTRAST_UNIFORM_LightDir,
+	DPSOFTRAST_UNIFORM_LightPosition,
+	DPSOFTRAST_UNIFORM_OffsetMapping_ScaleSteps,
+	DPSOFTRAST_UNIFORM_PixelSize,
+	DPSOFTRAST_UNIFORM_ReflectColor,
+	DPSOFTRAST_UNIFORM_ReflectFactor,
+	DPSOFTRAST_UNIFORM_ReflectOffset,
+	DPSOFTRAST_UNIFORM_RefractColor,
+	DPSOFTRAST_UNIFORM_Saturation,
+	DPSOFTRAST_UNIFORM_ScreenCenterRefractReflect,
+	DPSOFTRAST_UNIFORM_ScreenScaleRefractReflect,
+	DPSOFTRAST_UNIFORM_ScreenToDepth,
+	DPSOFTRAST_UNIFORM_ShadowMap_Parameters,
+	DPSOFTRAST_UNIFORM_ShadowMap_TextureScale,
+	DPSOFTRAST_UNIFORM_SpecularPower,
+	DPSOFTRAST_UNIFORM_UserVec1,
+	DPSOFTRAST_UNIFORM_UserVec2,
+	DPSOFTRAST_UNIFORM_UserVec3,
+	DPSOFTRAST_UNIFORM_UserVec4,
+	DPSOFTRAST_UNIFORM_ViewTintColor,
+	DPSOFTRAST_UNIFORM_ViewToLightM1,
+	DPSOFTRAST_UNIFORM_ViewToLightM2,
+	DPSOFTRAST_UNIFORM_ViewToLightM3,
+	DPSOFTRAST_UNIFORM_ViewToLightM4,
+	DPSOFTRAST_UNIFORM_ModelToLightM1,
+	DPSOFTRAST_UNIFORM_ModelToLightM2,
+	DPSOFTRAST_UNIFORM_ModelToLightM3,
+	DPSOFTRAST_UNIFORM_ModelToLightM4,
+	DPSOFTRAST_UNIFORM_TexMatrixM1,
+	DPSOFTRAST_UNIFORM_TexMatrixM2,
+	DPSOFTRAST_UNIFORM_TexMatrixM3,
+	DPSOFTRAST_UNIFORM_TexMatrixM4,
+	DPSOFTRAST_UNIFORM_BackgroundTexMatrixM1,
+	DPSOFTRAST_UNIFORM_BackgroundTexMatrixM2,
+	DPSOFTRAST_UNIFORM_BackgroundTexMatrixM3,
+	DPSOFTRAST_UNIFORM_BackgroundTexMatrixM4,
+	DPSOFTRAST_UNIFORM_ModelViewProjectionMatrixM1,
+	DPSOFTRAST_UNIFORM_ModelViewProjectionMatrixM2,
+	DPSOFTRAST_UNIFORM_ModelViewProjectionMatrixM3,
+	DPSOFTRAST_UNIFORM_ModelViewProjectionMatrixM4,
+	DPSOFTRAST_UNIFORM_ModelViewMatrixM1,
+	DPSOFTRAST_UNIFORM_ModelViewMatrixM2,
+	DPSOFTRAST_UNIFORM_ModelViewMatrixM3,
+	DPSOFTRAST_UNIFORM_ModelViewMatrixM4,
+	DPSOFTRAST_UNIFORM_PixelToScreenTexCoord,
+	DPSOFTRAST_UNIFORM_ModelToReflectCubeM1,
+	DPSOFTRAST_UNIFORM_ModelToReflectCubeM2,
+	DPSOFTRAST_UNIFORM_ModelToReflectCubeM3,
+	DPSOFTRAST_UNIFORM_ModelToReflectCubeM4,
+	DPSOFTRAST_UNIFORM_ShadowMapMatrixM1,
+	DPSOFTRAST_UNIFORM_ShadowMapMatrixM2,
+	DPSOFTRAST_UNIFORM_ShadowMapMatrixM3,
+	DPSOFTRAST_UNIFORM_ShadowMapMatrixM4,
+	DPSOFTRAST_UNIFORM_BloomColorSubtract,
+	DPSOFTRAST_UNIFORM_NormalmapScrollBlend,
+	DPSOFTRAST_UNIFORM_OffsetMapping_LodDistance,
+	DPSOFTRAST_UNIFORM_OffsetMapping_Bias,
+	DPSOFTRAST_UNIFORM_TOTAL
+}
+DPSOFTRAST_UNIFORM;
+
+void DPSOFTRAST_SetShader(int mode, dpuint64 permutation, int exactspecularmath);
+#define DPSOFTRAST_Uniform1f(index, v0) DPSOFTRAST_Uniform4f(index, v0, 0, 0, 0)
+#define DPSOFTRAST_Uniform2f(index, v0, v1) DPSOFTRAST_Uniform4f(index, v0, v1, 0, 0)
+#define DPSOFTRAST_Uniform3f(index, v0, v1, v2) DPSOFTRAST_Uniform4f(index, v0, v1, v2, 0)
+void DPSOFTRAST_Uniform4f(DPSOFTRAST_UNIFORM index, float v0, float v1, float v2, float v3);
+void DPSOFTRAST_Uniform4fv(DPSOFTRAST_UNIFORM index, const float *v);
+void DPSOFTRAST_UniformMatrix4fv(DPSOFTRAST_UNIFORM index, int arraysize, int transpose, const float *v);
+void DPSOFTRAST_Uniform1i(DPSOFTRAST_UNIFORM index, int i0);
+
+void DPSOFTRAST_DrawTriangles(int firstvertex, int numvertices, int numtriangles, const int *element3i, const unsigned short *element3s);
+
+#endif                

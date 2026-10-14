@@ -1,0 +1,1652 @@
+#define _CONCAT3_(a,b,c) a ##b ##c
+#define __SSP_STRONG__ 3
+#define __DBL_MIN_EXP__ (-1021)
+#define REGISTER_STAT(...) EVAL_REGISTER_STAT(OVERLOAD(REGISTER_STAT, __VA_ARGS__))
+#define __GNUC_EXECUTION_CHARSET_NAME "UTF-8"
+#define SYSTEM(sys,frameLimit,minfps) void sys_ ##sys ##_update(entity this, float dt); noref float autocvar_xon_sys_ ##sys ##_dt = ((frameLimit) ? (1 / (frameLimit)) : 0); noref float autocvar_xon_sys_ ##sys ##_minfps = (1 / (1 / (minfps)))
+#define __UINT_LEAST16_MAX__ 0xffff
+#define adddynamiclight(org,radius,lightcolours) MACRO_BEGIN DEGLOB_LOG(DEGLOB_ORIGINAL, "adddynamiclight", #org, #radius, #lightcolours); _adddynamiclight_hidden(org, radius, lightcolours); MACRO_END
+#define __FLT128_MAX_10_EXP__ 4932
+#define HUD_Panel_DrawBg() MACRO_BEGIN if(panel.current_panel_bg != "0" && panel.current_panel_bg != "") draw_BorderPicture( HUD_Shift(panel_pos - '1 1 0' * panel_bg_border), panel.current_panel_bg, HUD_Scale(panel_size + '1 1 0' * 2 * panel_bg_border), panel_bg_color, panel_bg_alpha, HUD_Scale('1 1 0' * BORDER_MULTIPLIER * panel_bg_border) ); MACRO_END
+#define PHYS_TRACK_CANJUMP(s) STAT(MOVEVARS_TRACK_CANJUMP, s)
+#define remove(this) delete(this)
+#define PHYS_INPUT_BUTTON_BUTTON1(s) boolean(input_buttons & BIT(0))
+#define ftoe(i) entitybyindex(i)
+#define ACCUMULATE_FUNCTION(func,otherfunc) ACCUMULATE void func() { otherfunc(); }
+#define PHYS_INPUT_BUTTON_BUTTON3(s) boolean(input_buttons & BIT(2))
+#define M_ARGV(x,type) MUTATOR_ARGV_ ##x ##_ ##type
+#define NUM_URL_ID (URI_GET_URLLIB_END - URI_GET_URLLIB + 1)
+#define PHYS_INPUT_BUTTON_BUTTON5(s) boolean(input_buttons & BIT(4))
+#define vec2_2(x,y) (_vec2_x = (x), _vec2_y = (y), _vec2)
+#define TR_PROPS(L,class,prefix) L(TR_CONFIG_BEGIN, TR_CONFIG, TR_CONFIG_END, class, prefix)
+#define PHYS_INPUT_BUTTON_BUTTON7(s) boolean(input_buttons & BIT(6))
+#define METHOD(cname,name,prototype) STATIC_METHOD(cname, name, prototype); classfield(cname) .prototype name; _INIT_STATIC(cname) { this.name = METHOD_REFERENCE(cname, name); } STATIC_METHOD(cname, name, prototype)
+#define WEP_IMPULSE_BEGIN 230
+#define __CHAR_BIT__ 8
+#define count_minutes(time) count_fill(time, _("CI_ZER^%d minutes"), _("CI_FIR^%d minute"), _("CI_SEC^%d minutes"), _("CI_THI^%d minutes"), _("CI_MUL^%d minutes"))
+#define WAS_ONGROUND(s) boolean((s).lastflags & FL_ONGROUND)
+#define _R_MAP(r,max) ArrayList r; STATIC_INIT(r) { AL_NEW(r, max, NULL, e); }
+#define PHYS_JETPACK_FUEL(s) STAT(JETPACK_FUEL, s)
+#define IS_CSQC 1
+#define MSG_CHOICE_NOTIF_TEAM(teamnum,name,cvarname,defaultvalue,challow,chtype,optiona,optionb) MSG_CHOICE_NOTIF_(teamnum, CHOICE_ ##name, CHOICE_ ##cvarname, defaultvalue, challow, chtype, optiona, optionb)
+#define REGISTRY_SORT_1(id) REGISTRY_SORT_2(id, 0)
+#define REGISTRY_SORT_2(id,skip) void _REGISTRY_SWAP_ ##id(int i, int j, entity pass) { i += skip; j += skip; entity a = _R_GET(_ ##id, i), b = _R_GET(_ ##id, j); _R_SET(_ ##id, i, b); _R_SET(_ ##id, j, a); entity a_next = a.REGISTRY_NEXT, b_next = b.REGISTRY_NEXT; a.REGISTRY_NEXT = b_next; b.REGISTRY_NEXT = a_next; if (i == 0) id ##_first = b; else _R_GET(_ ##id, i - 1).REGISTRY_NEXT = b; if (j == 0) id ##_first = a; else _R_GET(_ ##id, j - 1).REGISTRY_NEXT = a; } int _REGISTRY_CMP_ ##id(int i, int j, entity pass) { i += skip; j += skip; string a = _R_GET(_ ##id, i).registered_id; string b = _R_GET(_ ##id, j).registered_id; return strcmp(a, b); } STATIC_INIT(Registry_sort_ ##id) { heapsort(id ##_COUNT - (skip), _REGISTRY_SWAP_ ##id, _REGISTRY_CMP_ ##id, NULL); }
+#define MOVE_NOTHING -1
+#define _STRUCT_STORE(x,id,type,END) _CONCAT3(_STRUCT_STORE_DST x, _, id) = _CONCAT3(_STRUCT_STORE_SRC x, _, id);
+#define DAYS_UP_TO_EPOCH 719469
+#define MIN_URL_ID URI_GET_URLLIB
+#define ISGAMETYPE(NAME) (gametype == MAPINFO_TYPE_ ##NAME)
+#define __BFLT16_NORM_MAX__ 3.38953138925153547590470800371487867e+38BF16
+#define WEPSET(id) (WEP_ ##id.m_wepset)
+#define STAT_1(id) (RVALUE, _STAT(id))
+#define __INT32_C(c) c
+#define _LOG_DEBUG(s) _LOG(dprint2, "^2DEBUG", s)
+#define __ORDER_LITTLE_ENDIAN__ 1234
+#define PHYS_ENTGRAVITY(s) STAT(MOVEVARS_ENTGRAVITY, s)
+#define TICRATE ticrate
+#define W_NET_PRI(class,fld,T,wepname) _W_NET(class, primary_ ##fld, T, wepname)
+#define walkmove(e,...) (__self = (e), builtin_walkmove(__VA_ARGS__))
+#define __FLT32X_DECIMAL_DIG__ 17
+#define __DEC128_MIN_EXP__ (-6142)
+#define _STRUCT_PARAM(x,id,type,isend) _STRUCT_PARAM_ ##isend(x, id, type)
+#define PHYS_MULTIJUMP(s) STAT(MULTIJUMP, s)
+#define PHYS_WARSOWBUNNY_TURNACCEL(s) STAT(MOVEVARS_WARSOWBUNNY_TURNACCEL, s)
+#define TELEPORT_FLAGS_PORTAL (TELEPORT_FLAG_SOUND | TELEPORT_FLAG_PARTICLES | TELEPORT_FLAG_TDEATH | TELEPORT_FLAG_FORCE_TDEATH)
+#define EVAL_LL_DELETE(...) __VA_ARGS__
+#define USING(name,T) typedef T name
+#define EXPECT_NO_FATAL_FAILURE__(statement,then) MACRO_BEGIN int TEST_prevfatal = TEST_fatal; LAMBDA(statement); if (TEST_fatal != TEST_prevfatal) LAMBDA(then); MACRO_END
+#define SND_NADE_BONUS SND_KH_ALARM
+#define CROSSHAIR_DO_BLUR(M,sz,wcross_name,wcross_alpha) MACRO_BEGIN vector scaled_sz = sz * wcross_size; if(wcross_blur > 0) { for(i = -2; i <= 2; ++i) for(j = -2; j <= 2; ++j) M(i,j,sz,scaled_sz,wcross_name,wcross_alpha*0.04); } else { M(0,0,sz,scaled_sz,wcross_name,wcross_alpha); } MACRO_END
+#define MSG_CENTER_NOTIF_TEAM(teamnum,name,cvarname,defaultvalue,strnum,flnum,args,cpid,durcnt,normal,gentle) MSG_CENTER_NOTIF_(teamnum, CENTER_ ##name, CENTER_ ##cvarname, defaultvalue, strnum, flnum, args, cpid, durcnt, normal, gentle)
+#define __FLT32X_DIG__ 15
+#define Read_string() ReadString()
+#define bool float
+#define __UINT_FAST64_MAX__ 0xffffffffffffffffUL
+#define __SIG_ATOMIC_TYPE__ int
+#define __DBL_MIN_10_EXP__ (-307)
+#define ATTRIBARRAY(cname,name,type,cnt) classfield(cname) .type name[cnt]
+#define ChangeYaw(e,...) (__self = (e), builtin_ChangeYaw(__VA_ARGS__))
+#define BUFF_SPAWNFUNCS(e,b) 
+#define PHYS_PL_CROUCH_VIEWOFS(s) STAT(PL_CROUCH_VIEW_OFS, s)
+#define WATERMARK "xonotic-v0.8.6-duel-v10-authoritative-actions"
+#define W_PROP_BOTH(class,fld,T,wepname) W_PROP_PRI(class, fld, T, wepname) W_PROP_SEC(class, fld, T, wepname)
+#define MULTITEAM_CHOICE(prefix,defaultvalue,challow,chtype,optiona,optionb) NOTIF_ADD_AUTOCVAR(CHOICE_ ##prefix, defaultvalue) NOTIF_ADD_AUTOCVAR(CHOICE_ ##prefix ##_ALLOWED, challow) MSG_CHOICE_NOTIF_TEAM(NUM_TEAM_1, prefix ##_RED, prefix, defaultvalue, challow, chtype, optiona ##_RED, optionb ##_RED) MSG_CHOICE_NOTIF_TEAM(NUM_TEAM_2, prefix ##_BLUE, prefix, defaultvalue, challow, chtype, optiona ##_BLUE, optionb ##_BLUE) MSG_CHOICE_NOTIF_TEAM(NUM_TEAM_3, prefix ##_YELLOW, prefix, defaultvalue, challow, chtype, optiona ##_YELLOW, optionb ##_YELLOW) MSG_CHOICE_NOTIF_TEAM(NUM_TEAM_4, prefix ##_PINK, prefix, defaultvalue, challow, chtype, optiona ##_PINK, optionb ##_PINK)
+#define CSQC_Ent_Update _CSQC_Ent_Update
+#define __GNUC_PATCHLEVEL__ 0
+#define ALLPROPERTIES_COMMON CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_FRAME, int, ReadByte, WriteByte, frame) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_MODELINDEX, int, ReadShort, WriteShort, modelindex) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_ORIGIN, vector, ReadVector, WriteVector, origin) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_SIZE, vector, ReadVector, WriteVector, mins) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_SIZE, vector, ReadVector, WriteVector, maxs) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_PITCHROLL, float, ReadAngle, WriteAngle, angles_x) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_YAW, float, ReadAngle, WriteAngle, angles_y) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_PITCHROLL, float, ReadAngle, WriteAngle, angles_z) CSQCMODEL_EXTRAPROPERTIES
+#define g_stat_VIEWHEIGHT getstati(STAT_VIEWHEIGHT)
+#define __FLT32_HAS_DENORM__ 1
+#define __FLT64X_HAS_INFINITY__ 1
+#define UPWARD_VELOCITY_CLEARS_ONGROUND(s) STAT(GAMEPLAYFIX_UPVELOCITYCLEARSONGROUND)
+#define CSQC_ConsoleCommand _CSQC_ConsoleCommand
+#define __UINT_FAST8_MAX__ 0xff
+#define HUD_Write_PanelCvar(cvar_suf) str = strcat("hud_panel_", panel.panel_name, cvar_suf), HUD_Write_Cvar(str)
+#define WEP_CVAR_PRI(wepname,name) WEP_CVAR(wepname, primary_ ##name)
+#define _STRUCT_STORE_DST(_,it) it
+#define ITEM_KEY_MAX 24
+#define __INT_LEAST8_WIDTH__ 8
+#define PHYS_INPUT_BUTTON_JETPACK(s) PHYS_INPUT_BUTTON_BUTTON10(s)
+#define MULTIICON_INFO(name,defaultvalue,strnum,flnum,args,hudargs,iconargs,icon,normal,gentle) MULTIICON_INFO_(INFO_ ##name, defaultvalue, strnum, flnum, args, hudargs, iconargs, icon, normal, gentle)
+#define MUTATOR_ADD(name) Mutator_Add(MUTATOR_ ##name)
+#define __UINT_LEAST64_MAX__ 0xffffffffffffffffUL
+#define SFL_ZERO_IS_WORST SFL_TIME
+#define HUD_Panel_UpdatePosSize() MACRO_BEGIN Hud_Panel_GetPanelEnabled(); panel_pos = stov(cvar_string(strcat("hud_panel_", panel.panel_name, "_pos"))); panel_size = stov(cvar_string(strcat("hud_panel_", panel.panel_name, "_size"))); HUD_Panel_ScalePosSize(); if (hud_configure_menu_open == 2 && panel == highlightedPanel) { HUD_Panel_UpdatePosSize_ForMenu(); } panel_bg_border_str = cvar_string(strcat("hud_panel_", panel.panel_name, "_bg_border")); HUD_Panel_GetBorder(); MACRO_END
+#define PHYS_MULTIJUMP_MAXSPEED(s) STAT(MULTIJUMP_MAXSPEED, s)
+#define QCC_SUPPORT_NIL 
+#define SET_POS_AND_SZ_Y_ASPECT(allow_colors) MACRO_BEGIN float textaspect, oldsz; vector dfs = drawfontscale; drawfontscale = '1 1 0'; textaspect = stringwidth(text, allow_colors, '1 1 1' * sz.y) / sz.y; drawfontscale = dfs; if(sz.x/sz.y > textaspect) { oldsz = sz.x; sz.x = sz.y * textaspect; pos.x += (oldsz - sz.x) * 0.5; } else { oldsz = sz.y; sz.y = sz.x / textaspect; pos.y += (oldsz - sz.y) * 0.5; } MACRO_END
+#define ENUMCAST(T,it) (it)
+#define __DEC64_MAX__ 9.999999999999999E384DD
+#define __BFLT16_MAX_10_EXP__ 38
+#define MUTATOR_STATIC() MACRO_BEGIN MUTATOR_ONADD { if (time > 1) { error("This is a game type and it cannot be added at runtime."); } } MUTATOR_ONREMOVE { LOG_INFO("This is a game type and it cannot be removed at runtime."); return -1; } MACRO_END
+#define __BFLT16_MAX_EXP__ 128
+#define CONSTRUCT(cname,...) OVERLOAD_(spawn ##cname, this P99_IF_EMPTY(__VA_ARGS__)()(, __VA_ARGS__))
+#define __ARM_FP 14
+#define string_null nil
+#define REGISTER_NADE(id) REGISTER(Nades, NADE_TYPE, id, m_id, NEW(Nade))
+#define FOREACH_ENTITY_FLAGS(fld,match,body) ORDERED(FOREACH_ENTITY_FLAGS)(fld, match, body)
+#define __UINT_LEAST8_MAX__ 0xff
+#define MSLE_CLEAN_Float(x) 
+#define REGISTER(...) EVAL_REGISTER(OVERLOAD_(REGISTER, __VA_ARGS__))
+#define _W_PROP(class,fld,T,wepname) T _W_PROP_CVAR(wepname, fld); ATTRIB(class, wepvar_ ##fld, T, _W_PROP_CVAR(wepname, fld));
+#define __UINTMAX_TYPE__ long unsigned int
+#define PHYS_HIGHSPEED(s) STAT(MOVEVARS_HIGHSPEED, s)
+#define __linux 1
+#define __unix 1
+#define __UINT32_MAX__ 0xffffffffU
+#define PHYS_MULTIJUMP_SPEED(s) STAT(MULTIJUMP_SPEED, s)
+#define SCOREBOARD_DEFAULT_COLUMNS "ping pl fps name |" " -teams,rc,cts,surv,inv,lms/kills +ft,tdm,tmayhem/kills ?+rc,inv/kills" " -teams,surv,lms/deaths +ft,tdm,tmayhem/deaths" " +tdm/sum" " -teams,lms,rc,cts,surv,inv,ka/suicides +ft,tdm,tmayhem/suicides ?+rc,inv/suicides" " -cts,dm,tdm,surv,ka,ft,mayhem,tmayhem/frags" " +tdm,ft,dom,ons,as,tmayhem/teamkills"" -rc,cts,surv,nb/dmg -rc,cts,surv,nb/dmgtaken" " +surv/survivals +surv/hunts" " +ctf/pickups +ctf/fckills +ctf/returns +ctf/caps +ons/takes +ons/caps" " +lms/lives +lms/rank" " +kh/kckills +kh/losses +kh/caps" " ?+rc/laps ?+rc/time +rc,cts/fastest" " +as/objectives +nb/faults +nb/goals" " +ka,tka/pickups +ka,tka/bckills +ka,tka/bctime +ft/revivals" " +dom/ticks +dom/takes" " -lms,rc,cts,inv,nb/score"
+#define __FLT128_MIN_EXP__ (-16381)
+#define _MUTATOR_CALLBACK(name,func) Callback CB_ ##name; bool func(); ACCUMULATE void RegisterCallbacks() { CB_ ##name = NEW(Callback, func); }
+#define MSLE_CLEAN_String(x) strunzone(x);
+#define AL_EACH(this,T,cond,body) MACRO_BEGIN const noref ArrayList _al = this; for (int i = 0, n = _al.al_len; i < n; ++i) { const noref _AL_type__ ##T() it = AL_get ##T(_al, i); if (cond) { body } } MACRO_END
+#define ReadAnimation() ReadRegistered(Animations)
+#define __INT_LEAST16_WIDTH__ 16
+#define __SCHAR_MAX__ 0x7f
+#define LOG_SEVERE(...) _LOG_SEVERE(strcat1n(__VA_ARGS__))
+#define Registry_send(id,hash) 
+#define drawsetcliparea(xposition,yposition,w,h) drawsetcliparea_builtin(HUD_ShiftX(xposition), HUD_ShiftY(yposition), HUD_ScaleX(w), HUD_ScaleY(h))
+#define STRING_ITERATOR_SET(this,s,i) MACRO_BEGIN this ##_s = s; this ##_i = i; MACRO_END
+#define entcs_receiver_1(i) AL_gete(_entcs, i)
+#define __INT64_C(c) c ## L
+#define MAGIC_STATS_FIX(it) it.m_id += g_magic_stats_hole; MAGIC_STATS(MAGIC_STATS_FIX_MANUAL, it) { MAGIC_STATS(MAGIC_STATS_FIX_AUTO, it) }
+#define GAMEPLAYFIX_WATERTRANSITION(s) STAT(GAMEPLAYFIX_WATERTRANSITION)
+#define teamscores_label(i) _teamscores_label[i]
+#define CTF_RECORD "/ctf100record/"
+#define PHYS_INPUT_BUTTON_JUMP(s) PHYS_INPUT_BUTTON_BUTTON2(s)
+#define MURDER_FRAGGED BOLD(_("^K1%sYou were fragged by ^BG%s"))
+#define HM_sets(this,key,val) db_put(this, key, val)
+#define _MUTATOR_CALLHOOK(id,...) APPLY(__Mutator_Send_ ##id, 0 P99_IF_EMPTY(__VA_ARGS__)()(, __VA_ARGS__))
+#define PHYS_INPUT_BUTTON_BUTTON12(s) boolean(input_buttons & BIT(14))
+#define PHYS_INPUT_BUTTON_BUTTON14(s) boolean(input_buttons & BIT(16))
+#define PHYS_INPUT_BUTTON_BUTTON15(s) boolean(input_buttons & BIT(17))
+#define REGISTRY(id,max) void Register ##id(); ACCUMULATE void REGISTRY_DEPENDS_(id) {} REGISTRY_BEGIN(id) {} REGISTRY_END(id) {} void _Register ##id() {} int id ##_state = 0; void Register ##id() { if (id ##_state) return; id ##_state = 1; REGISTRY_DEPENDS_(id); REGISTRY_BEGIN_(id); _Register ##id(); id ##_state = 2; REGISTRY_END_(id); } const int id ##_MAX = max; int id ##_COUNT; noref entity id ##_first, id ##_last; _R_MAP(_ ##id, id ##_MAX); SHUTDOWN(id) { _R_DEL(_ ##id); }
+#define __SIZEOF_INT__ 4
+#define STATIC_INIT(func) _STATIC_INIT(func ##_1, __static_init_1)
+#define MEAN_ACCUMULATE(s,prefix,v,w) mean_accumulate(s, prefix ##_accumulator, prefix ##_count, prefix ##_mean, v, w)
+#define Read_byte() ReadByte()
+#define drawpic_skin(pos,pic,sz,color,theAlpha,drawflag) MACRO_BEGIN _drawpic_picpath = strcat(hud_skin_path, "/", pic); if(precache_pic(_drawpic_picpath) == "") { _drawpic_picpath = strcat("gfx/hud/default/", pic); } drawpic(pos, _drawpic_picpath, sz, color, theAlpha, drawflag); _drawpic_picpath = string_null; MACRO_END
+#define PHYS_INPUT_BUTTON_BUTTON_CHAT(s) boolean(input_buttons & BIT(9))
+#define NDEBUG 1
+#define ReadInt48_t() vec2(ReadInt24_t(), ReadInt24_t())
+#define Team_ColorName_Upper(teamid) strtoupper(Team_ColorName(teamid))
+#define PHYS_FIXANGLE(s) ('0 0 0')
+#define __USER_LABEL_PREFIX__ 
+#define MSLE_CLEAN_Byte(x) 
+#define EXPECT_NO_FATAL_FAILURE_(statement,then) EXPECT_NO_FATAL_FAILURE__(statement, { LOG_WARNF( "  Actual: %d fatal failures\n" "Expected: no fatal failures\n", TEST_fatal - TEST_prevfatal ); LAMBDA(then); })
+#define REGISTER_STAT_2(id,T) T _STAT(id); REGISTER(Stats, STAT_ ##id, m_id, new_pure(stat)) { if (#T == "vector" || #T == "vectori") { REGISTRY_RESERVE(Stats, m_id, STAT_ ##id, y); REGISTRY_RESERVE(Stats, m_id, STAT_ ##id, z); } } ACCUMULATE void stats_get() { T it = getstat_ ##T(STAT_ ##id.m_id); _STAT(id) = it; }
+#define REGISTER_STAT_3(x,T,expr) REGISTER_STAT_2(x, T)
+#define fixedmakevectors makevectors
+#define SET_DUCKED(s) ((s).flags |= FL_DUCKED)
+#define ENTCS_SET_NORMAL(var,x) MACRO_BEGIN var = x; MACRO_END
+#define __ARM_ALIGN_MAX_STACK_PWR 16
+#define IS_DIGIT(d) (strstrofs(DIGITS, (d), 0) >= 0)
+#define LEGACY_IMPULSE(alias,id,new) STATIC_INIT(legacy_ ##alias) { string s = new; _impCheck(s, #alias); IMPULSE_ALIAS(alias, s); } SHUTDOWN(legacy_ ##alias) { IMPULSE_ALIAS(alias, "impulse " #id); }
+#define _STRUCT_STORE_SRC(it,_) it
+#define VTBL(cname,base) _INIT_STATIC(cname); entity cname ##_vtbl; void cname ##_vtbl_init() { cname e = new_pure(vtbl); spawn ##cname ##_static(e); e.vtblname = #cname; e.vtblbase = base ##_vtbl ? base ##_vtbl : e; cname ##_vtbl = e; } ACCUMULATE_FUNCTION(RegisterClasses, cname ##_vtbl_init)
+#define PHYS_INPUT_BUTTON_MINIGAME(s) PHYS_INPUT_BUTTON_BUTTON12(s)
+#define sound(e,c,s,v,a) _sound(e, c, Sound_fixpath(s), v, a)
+#define PFLOAT (1/1024)
+#define __FLT32_DIG__ 6
+#define __FLT16_EPSILON__ 9.76562500000000000000000000000000000e-4F16
+#define QCC_SUPPORT_ALIAS 
+#define __FLT_EPSILON__ 1.19209289550781250000000000000000000e-7F
+#define JETPACK_JUMP(s) autocvar_cl_jetpack_jump
+#define NEW(cname,...) OVERLOAD_(spawn ##cname, new_pure(cname) P99_IF_EMPTY(__VA_ARGS__)()(, __VA_ARGS__))
+#define HUD_Panel_GetBorder() MACRO_BEGIN if (panel_bg_border_str == "") { panel_bg_border = autocvar_hud_panel_bg_border; } else { panel_bg_border = stof(panel_bg_border_str); } MACRO_END
+#define SOUND(name,path) string SND_ ##name ##_get() { return path; } REGISTER(Sounds, SND, name, m_id, NEW(Sound, SND_ ##name ##_get))
+#define REGISTER_RADARICON(id,num) REGISTER(RadarIcons, RADARICON, id, m_id, new_pure(RadarIcon)) { this.m_radaricon = num; this.netname = #id; }
+#define __STDC_UTF_16__ 1
+#define __DBL_IS_IEC_60559__ 1
+#define HUD_ScaleX(f) (f * hud_scale.x)
+#define HUD_ScaleY(f) (f * hud_scale.y)
+#define EV_Weapon_ImpactEffect(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define MSG_CENTER_NOTIF_(teamnum,name,cvarname,defaultvalue,strnum,flnum,args,cpid,durcnt,normal,gentle) REGISTER(Notifications, name, m_id, new_pure(msg_center_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(cvarname), MSG_CENTER, strtoupper(#name), teamnum); Create_Notification_Entity_InfoCenter(this, ACVNN(cvarname), strtoupper(#name), strnum, flnum, args, "", "", cpid, durcnt, normal, gentle); }
+#define GAMEPLAYFIX_STEPDOWN(s) STAT(GAMEPLAYFIX_STEPDOWN)
+#define __DEC32_MAX__ 9.999999E96DF
+#define REGISTRY_END(id) ACCUMULATE void REGISTRY_END_(id) { noref void() f = Register ##id; } void REGISTRY_END_(id)
+#define PHYS_GRAVITY(s) STAT(MOVEVARS_GRAVITY, s)
+#define __ARM_SIZEOF_MINIMAL_ENUM 4
+#define ORDERED(F) F ##_UNORDERED
+#define __FLT64X_DENORM_MIN__ 6.47517511943802511092443895822764655e-4966F64x
+#define WriteAnimation(to,it) WriteRegistered(Animations, to, it)
+#define heapify(_count) MACRO_BEGIN for (int start = floor(((_count) - 2) / 2); start >= 0; --start) { siftdown(start, (_count) - 1); } MACRO_END
+#define __FLT32X_HAS_INFINITY__ 1
+#define skel_set_bone(skel,bonenum,org) MACRO_BEGIN DEGLOB_LOG(DEGLOB_ORIGINAL, "skel_set_bone", #skel, #bonenum, #org); _skel_set_bone_hidden(skel, bonenum, org); MACRO_END
+#define EV_ShowRankings(i,o) o(string, MUTATOR_ARGV_0_string)
+#define __INT32_MAX__ 0x7fffffff
+#define CMD_Write_Alias(execute,command,description) CMD_Write(sprintf("alias %-20s \"%-13s %-20s ${* ?}\" // %s\n", command, execute, command, description))
+#define REGISTER_WAYPOINT_(id,init) REGISTER(Waypoints, WP, id, m_id, init)
+#define __INT_WIDTH__ 32
+#define __STDC_ISO_10646__ 201706L
+#define BITCLR(a,b) ((a) - ((a) & (b)))
+#define __PTRDIFF_WIDTH__ 64
+#define NOTIF_HIT_UNKNOWN(token,funcname) { backtrace(sprintf("%s: Hit unknown token in selected string! '%s'\n", funcname, selected)); break; }
+#define g_race IS_GAMETYPE(RACE)
+#define Q3COMPAT_COMMON STAT(Q3COMPAT)
+#define siftdown(_start,_end) MACRO_BEGIN for (int root = (_start); root * 2 + 1 <= (_end); ) { int child = root * 2 + 1; if (child < (_end) && cmp(child, child + 1, pass) < 0) child += 1; if (cmp(root, child, pass) >= 0) break; swap(root, child, pass); root = child; } MACRO_END
+#define __DECIMAL_DIG__ 36
+#define __FLT64_EPSILON__ 2.22044604925031308084726333618164062e-16F64
+#define PHYS_STOPSPEED(s) STAT(MOVEVARS_STOPSPEED, s)
+#define AUTOCVAR_5(file,archive,var,type,desc) __AUTOCVAR(file, archive, var, type, desc, default_ ##type)
+#define AUTOCVAR_6(file,archive,var,type,default,desc) __AUTOCVAR(file, archive, var, type, desc, default)
+#define GROUNDENTITY_NAME ground_networkentity
+#define moveflags STAT(MOVEFLAGS)
+#define EVAL1(...) EVAL2(EVAL2(EVAL2(__VA_ARGS__)))
+#define __FLT128_IS_IEC_60559__ 1
+#define EVAL3(...) EVAL4(EVAL4(EVAL4(__VA_ARGS__)))
+#define EVAL4(...) EVAL5(EVAL5(EVAL5(__VA_ARGS__)))
+#define EVAL5(...) __VA_ARGS__
+#define GET_V_GLOBALS(forward,right,up) MACRO_BEGIN forward = v_forward; right = v_right; up = v_up; MACRO_END
+#define GAMEPLAYFIX_GRAVITYUNAFFECTEDBYTICRATE (boolean(moveflags & MOVEFLAG_GRAVITYUNAFFECTEDBYTICRATE))
+#define vectorvectors DO_NOT_USE_GLOBALS_PREFER_VECTOR_VECTORS_MACRO_INSTEAD
+#define __FLT64X_MIN_10_EXP__ (-4931)
+#define Write_byte(to,f) WriteByte(to, f)
+#define __LDBL_HAS_QUIET_NAN__ 1
+#define fixedvectoangles2(a,b) (_fixedvectoangles2 = vectoangles2(a, b), _fixedvectoangles2.x *= -1, _fixedvectoangles2)
+#define STRUCT(id,...) 
+#define WARN_COND (!autocvar_g_mapinfo_ignore_warnings && MapInfo_Map_bspname == mi_shortname)
+#define Hud_Panel_GetPanelEnabled() panel_enabled = ((panel.panel_configflags & PANEL_CONFIG_CANBEOFF) ? cvar(strcat("hud_panel_", panel.panel_name)) : true)
+#define REGISTER_4(registry,id,fld,inst) entity id; REGISTER_INIT(id) {} void Register_ ##id() { entity this = id; if (this == NULL) { _regCheck(registry ##_COUNT, registry ##_MAX); this = id = inst; this.registered_id = #id; REGISTRY_PUSH(registry, fld, this); } Register_ ##id ##_init(this); } ACCUMULATE_FUNCTION(_Register ##registry, Register_ ##id) REGISTER_INIT(id)
+#define MSLE_CLEAN_Angle(x) 
+#define __GNUC__ 13
+#define PHYS_WALLJUMP_VELOCITY_XY_FACTOR(s) STAT(WALLJUMP_VELOCITY_XY_FACTOR, s)
+#define FOREACH_ENTITY_CLASS_UNORDERED(class,cond,body) _FOREACH_ENTITY_FIND_UNORDERED(clazz, string, classname, class, cond, body)
+#define static_init_late() CALL_ACCUMULATED_FUNCTION(__static_init_2)
+#define EXPECT_EQ(expected_,actual_) MACRO_BEGIN int expected = expected_; int actual = actual_; if ((expected) != (actual)) { ADD_FAILURE(sprintf( "Value of: " #actual_ "\n" "  Actual: %d\n" "Expected: %d\n", actual, expected )); } MACRO_END
+#define CONSTRUCTOR(cname,...) cname OVERLOAD(spawn ##cname, cname this, __VA_ARGS__) { return = this; } ACCUMULATE cname OVERLOAD(spawn ##cname, cname this, __VA_ARGS__)
+#define WEP_CVAR(wepname,name) (_wep_ ##wepname.wepvar_ ##name)
+#define DESTRUCTOR(cname) STATIC_METHOD(cname, dtorimpl, void(cname this)); METHOD(cname, dtor, void(cname this)) { METHOD_REFERENCE(cname, dtorimpl)(this); this.instanceOf ##cname = false; entity super = SUPER(cname); if (super != cname ##_vtbl) super.dtor(this); } STATIC_METHOD(cname, dtorimpl, void(cname this))
+#define EXPECT_GE(val1,val2) EXPECT_TRUE((val1) >= (val2))
+#define EXPECT_GT(val1,val2) EXPECT_TRUE((val1) > (val2))
+#define __BIGGEST_ALIGNMENT__ 16
+#define DIFF_TEAM(a,b) (teamplay ? (a.team != b.team) : (a != b))
+#define fprintf(file,...) fputs(file, sprintf(__VA_ARGS__))
+#define GET(name) name ##get
+#define WriteHeader(to,id) WriteByte(to, NET_ ##id.m_id)
+#define __FLT64_MAX_10_EXP__ 308
+#define PHYS_DODGING_FROZEN(s) STAT(DODGING_FROZEN, s)
+#define repr_cvar_int(x) (ftos(x))
+#define __DEC64_MANT_DIG__ 16
+#define PHYS_WARSOWBUNNY_AIRFORWARDACCEL(s) STAT(MOVEVARS_WARSOWBUNNY_AIRFORWARDACCEL, s)
+#define REGISTER_DEATHTYPE(id,msg_death,msg_death_by,extra) REGISTER(Deathtypes, DEATH, id, m_id, new_pure(deathtype)) { this.m_id += DT_FIRST; this.nent_name = #id; this.death_msgextra = extra; this.death_msgself = msg_death; this.death_msgmurder = msg_death_by; }
+#define EV_WeaponModel(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define __INT_FAST32_MAX__ 0x7fffffffffffffffL
+#define __LDBL_HAS_DENORM__ 1
+#define DEGLOB_CLEAR 1
+#define _TR_CONFIG(class,fld,T,turname) 
+#define _AUTOCVAR(...) EVAL__AUTOCVAR(OVERLOAD(AUTOCVAR, __FILE__, __VA_ARGS__))
+#define HUD_PANEL(NAME) HUD_PANEL_ ##NAME
+#define P99_PASTE3(_1,_2,_3) P99_PASTE2(P99_PASTE2(_1, _2), _3)
+#define EXPECT_LE(val1,val2) EXPECT_TRUE((val1) <= (val2))
+#define EXPECT_LT(val1,val2) EXPECT_TRUE((val1) < (val2))
+#define _CONCAT3(a,b,c) _CONCAT3_(a, b, c)
+#define __INT64_MAX__ 0x7fffffffffffffffL
+#define _MUTATOR_HANDLE_POPOUT(type,id) id = out_ ##id;
+#define PHYS_JUMPVELOCITY_CROUCH(s) STAT(MOVEVARS_JUMPVELOCITY_CROUCH, s)
+#define MUTATOR_HOOKFUNCTION_3(mut,cb,order) _MUTATOR_CALLBACK(mut ##_ ##cb, mut ##_ ##cb) ACCUMULATE bool MUTATORFUNC_ ##mut ##_hooks(int mode) { MUTATOR_HOOK(cb, mut ##_ ##cb, order); } bool mut ##_ ##cb() { return = false; } ACCUMULATE bool mut ##_ ##cb()
+#define int float
+#define ydec_single(stringiter,ret) MACRO_BEGIN int conv = STRING_ITERATOR_GET(stringiter); if (conv <= 0) { ret = -1; } else { if (conv == '=') { conv = STRING_ITERATOR_GET(stringiter); conv -= 64; } if (conv < 42) conv += 256; conv -= 42; ret = conv; } MACRO_END
+#define CLIENT_COMMAND(id,description) CLASS(clientcommand_ ##id, Command) ATTRIB(clientcommand_ ##id, m_name, string, #id); ATTRIB(clientcommand_ ##id, m_description, string, description); ENDCLASS(clientcommand_ ##id) REGISTER(CLIENT_COMMANDS, CMD_CL, id, m_id, NEW(clientcommand_ ##id)); METHOD(clientcommand_ ##id, m_invokecmd, void(clientcommand_ ##id this, int request, entity caller, int arguments, string command))
+#define PHYS_AIRSTOPACCELERATE(s) STAT(MOVEVARS_AIRSTOPACCELERATE, s)
+#define PHYS_INPUT_BUTTON_FORWARD(s) (PHYS_INPUT_MOVEVALUES(s).x > 0)
+#define is_pure(e) ((e).pure_data && (e).solid == SOLID_NOT)
+#define EXPECT_NE(val1,val2) EXPECT_TRUE((val1) != (val2))
+#define PHYS_STEPHEIGHT(s) STAT(MOVEVARS_STEPHEIGHT)
+#define MUTATOR_HOOKABLE(id,params) _MUTATOR_HOOKABLE(id, params)
+#define __INTPTR_WIDTH__ 64
+#define W_CONFIG_END() 
+#define CHIMPULSE(id,n) _CHIMPULSE(CHIMPULSE_ ##id, n)
+#define Team_ColoredFullName(teamid) strcat(Team_ColorCode(teamid), Team_ColorName(teamid), " ", NAME_TEAM, "^7")
+#define TELEPORT_OBSERVERS_ONLY BIT(0)
+#define W_NET_BOTH(class,fld,T,wepname) W_NET_PRI(class, fld, T, wepname) W_NET_SEC(class, fld, T, wepname)
+#define IS_SVQC 0
+#define ENABLE_DEBUGDRAW 0
+#define STRUCT_PASS(id,s) s(_STRUCT_PASS, id)
+#define DEATH_ISSPECIAL(t) (t >= DT_FIRST)
+#define W_PROP_SEC(class,fld,T,wepname) _W_PROP(class, secondary_ ##fld, T, wepname)
+#define PHYS_AIRACCEL_QW_STRETCHFACTOR(s) STAT(MOVEVARS_AIRACCEL_QW_STRETCHFACTOR, s)
+#define IL_CLEAR(this) MACRO_BEGIN IntrusiveList _il = this; assert(_il); .entity il_prev = _il.il_prevfld; .entity il_next = _il.il_nextfld; noref int i = 0; for (entity _next, _it = _il.il_head; _it; (_it = _next, ++i)) { _next = _it.(il_next); _it.(il_next) = _it.(il_prev) = NULL; } _il.il_head = _il.il_tail = NULL; MACRO_END
+#define UNSET_JUMP_HELD(s) ((s).flags |= FL_JUMPRELEASED)
+#define REGISTRY_NEXT enemy
+#define g_duel IS_GAMETYPE(DUEL)
+#define EV_CustomizeEventchase(i,o) i(entity, MUTATOR_ARGV_0_entity) o(vector, MUTATOR_ARGV_0_vector) o(vector, MUTATOR_ARGV_1_vector) o(float, MUTATOR_ARGV_0_float)
+#define PHYS_INPUT_BUTTON_BUTTON_PRYDON(s) boolean(input_buttons & BIT(10))
+#define W_PROP_NONE(class,fld,T,wepname) _W_PROP(class, fld, T, wepname)
+#define __DEC32_MIN__ 1E-95DF
+#define getcommandkey_forcename(cmd_name,command) _getcommandkey(cmd_name, command, true)
+#define P99_IS_EMPTY(...) P00_ISEMPTY( P99_HAS_COMMA(__VA_ARGS__), P99_HAS_COMMA(P00_IS__EQ__ __VA_ARGS__), P99_HAS_COMMA(__VA_ARGS__ ( )), P99_HAS_COMMA(P00_IS__EQ__ __VA_ARGS__ ( )) )
+#define EV_NO_ARGS(i,o) 
+#define __DBL_MAX_EXP__ 1024
+#define APPROXPASTTIME_MAX (16384 * APPROXPASTTIME_ACCURACY_REQUIREMENT)
+#define __WCHAR_WIDTH__ 32
+#define PHYS_JETPACK_MAXSPEED_SIDE(s) STAT(JETPACK_MAXSPEED_SIDE, s)
+#define assert_once(expr,...) MACRO_BEGIN static bool __once; if (!__once) { assert(expr, __VA_ARGS__); __once = true; } MACRO_END
+#define __FLT16_DECIMAL_DIG__ 5
+#define W_CONFIG_SEC(class,fld,T,wepname) _W_CONFIG(class, secondary_ ##fld, T, wepname)
+#define LOG_FATALF(...) _LOG_FATAL(sprintf(__VA_ARGS__))
+#define MAP_2(f,it) f(it)
+#define MAP_3(f,it,...) f(it) MAP_2(f, __VA_ARGS__)
+#define MAP_4(f,it,...) f(it) MAP_3(f, __VA_ARGS__)
+#define MAP_6(f,it,...) f(it) MAP_5(f, __VA_ARGS__)
+#define MAP_7(f,it,...) f(it) MAP_6(f, __VA_ARGS__)
+#define MAP_8(f,it,...) f(it) MAP_7(f, __VA_ARGS__)
+#define MAP_9(f,it,...) f(it) MAP_8(f, __VA_ARGS__)
+#define serialize_marker(stream,this) MACRO_BEGIN if (NDEBUG) { this = true; } else { int _de = 0xDE, _ad = 0xAD, _be = 0xBE, _ef = 0xEF; serialize_byte(stream, _de); serialize_byte(stream, _ad); serialize_byte(stream, _be); serialize_byte(stream, _ef); this = (_de == 0xDE && _ad == 0xAD && _be == 0xBE && _ef == 0xEF); } MACRO_END
+#define AL_gete(this,idx) al_ftoe(AL_getf(this, idx))
+#define AL_getf(this,idx) al_stof(AL_gets(this, idx))
+#define AL_gets(this,idx) bufstr_get(this.al_buf, idx)
+#define LOG_HELPF(...) _LOG_HELP(sprintf(__VA_ARGS__))
+#define __ARM_FEATURE_NUMERIC_MAXMIN 1
+#define REGISTRY_CHECK(id) string REGISTRY_HASH(id); STATIC_INIT(Registry_check_ ##id) { string s = ""; FOREACH(id, true, s = strcat(s, ":", it.registered_id)); s = substring(s, 1, -1); string h = REGISTRY_HASH(id) = strzone(digest_hex("MD4", s)); LOG_DEBUGF(#id ": %s\n[%s]", h, s); } void Registry_check(string r, string sv) { if (r == #id) { string cl = REGISTRY_HASH(id); if (cl != sv) { LOG_FATALF("client/server mismatch (%s).\nCL: %s\nSV: %s", r, cl, sv); } } } void Registry_send_all() { Registry_send(#id, REGISTRY_HASH(id)); }
+#define ColorByTeam(number) Team_IndexToTeam(number + 1)
+#define ALLPROPERTIES ALLPROPERTIES_COMMON
+#define __LONG_LONG_MAX__ 0x7fffffffffffffffLL
+#define QUICKMENU_SMENU_PL(submenu,eng_submenu,command,teamplayers,without_me) { if(QuickMenu_Buffer_Size + 3 < QUICKMENU_BUFFER_MAXENTRIES) { QUICKMENU_SMENU(submenu,eng_submenu) QuickMenu_Buffer_Set(QM_TAG_TITLE, strcat(ftos(teamplayers), ftos(without_me))); ++QuickMenu_Buffer_Size; QuickMenu_Buffer_Set(QM_TAG_PLCOMMAND, command); ++QuickMenu_Buffer_Size; QUICKMENU_SMENU(submenu,eng_submenu) } }
+#define Write_float(to,f) WriteFloat(to, f)
+#define count_weeks(time) count_fill(time, _("CI_ZER^%d weeks"), _("CI_FIR^%d week"), _("CI_SEC^%d weeks"), _("CI_THI^%d weeks"), _("CI_MUL^%d weeks"))
+#define __ARM_ALIGN_MAX_PWR 28
+#define RandomSelection_AddString(s,weight,priority) RandomSelection_Add(NULL, 0, s, '0 0 0', weight, priority)
+#define __BFLT16_HAS_INFINITY__ 1
+#define __SIZEOF_WINT_T__ 4
+#define GAMEQC 1
+#define ClipVelocity(in,normal,out,overbounce) (out = vec_epsilon(vec_reflect(in, normal, (overbounce) - 1), 0.1))
+#define __LONG_LONG_WIDTH__ 64
+#define FOREACH_ENTITY_CLASS(class,cond,body) ORDERED(FOREACH_ENTITY_CLASS)(class, cond, body)
+#define CSQC_Ent_Remove _CSQC_Ent_Remove
+#define P00_IDENT(...) __VA_ARGS__
+#define _R_GET(r,i) AL_gete(r, i)
+#define func_null nil
+#define MSLE_CLEAN_Vector2D(x) 
+#define DEATH_IS(t,dt) (DEATH_ISSPECIAL(t) && (REGISTRY_GET(Deathtypes, t - DT_FIRST)) == dt)
+#define TUR_LAST (REGISTRY_COUNT(Turrets) - 1)
+#define __FLT_MIN_EXP__ (-125)
+#define Team_ColorName_Lower(teamid) strtolower(Team_ColorName(teamid))
+#define setcamera_transform(e,f) SELFWRAP_SET(camera_transform, e, f)
+#define KEY_TEAM_1 CTX(_("KEY^Red"))
+#define KEY_TEAM_2 CTX(_("KEY^Blue"))
+#define KEY_TEAM_3 CTX(_("KEY^Yellow"))
+#define WEP_HARDCODED_IMPULSES 20
+#define MUTATOR_RETURNVALUE CallbackChain_ReturnValue
+#define EXPECT_NO_FATAL_FAILURE(statement) EXPECT_NO_FATAL_FAILURE_(statement, { })
+#define REGISTRY_DEPENDS_(id) Register ##id ##_Depends()
+#define NOTIF_ARGUMENT_LIST ARG_CASE(ARG_CS_SV_HA, "s1", s1) ARG_CASE(ARG_CS_SV_HA, "s2", s2) ARG_CASE(ARG_CS_SV_HA, "s3", s3) ARG_CASE(ARG_CS_SV_HA, "s4", s4) ARG_CASE(ARG_CS_SV, "s2loc", ((autocvar_notification_show_location && (s2 != "")) ? sprintf(( ((tmp_s = autocvar_notification_show_location_string) != "") ? tmp_s : _(" (near %s)") ), s2) : "")) ARG_CASE(ARG_CS_SV, "s3loc", ((autocvar_notification_show_location && (s3 != "")) ? sprintf(( ((tmp_s = autocvar_notification_show_location_string) != "") ? tmp_s : _(" (near %s)") ), s3) : "")) ARG_CASE(ARG_CS_SV_DC, "f1", ftos(f1)) ARG_CASE(ARG_CS_SV_DC, "f2", ftos(f2)) ARG_CASE(ARG_CS_SV, "f3", ftos(f3)) ARG_CASE(ARG_CS_SV, "f4", ftos(f4)) ARG_CASE(ARG_CS_SV, "f1dtime", ftos_decimals(TIME_DECODE(f1), 2)) ARG_CASE(ARG_CS_SV, "f2dtime", ftos_decimals(TIME_DECODE(f2), 2)) ARG_CASE(ARG_CS, "f2primsec", (f2 ? _("secondary") : _("primary"))) ARG_CASE(ARG_CS, "f3primsec", (f3 ? _("secondary") : _("primary"))) ARG_CASE(ARG_CS, "f1secs", count_seconds(f1)) ARG_CASE(ARG_CS, "f1points", (f1 == 1 ? _("point") : _("points"))) ARG_CASE(ARG_CS_SV, "f1ord", count_ordinal(f1)) ARG_CASE(ARG_CS_SV, "f1time", process_time(2, f1)) ARG_CASE(ARG_CS_SV_HA, "f1race_time", TIME_ENCODED_TOSTRING(f1, true)) ARG_CASE(ARG_CS_SV_HA, "f2race_time", TIME_ENCODED_TOSTRING(f2, true)) ARG_CASE(ARG_CS_SV_HA, "f3race_time", TIME_ENCODED_TOSTRING(f3, true)) ARG_CASE(ARG_CS_SV, "race_col", CCR(((f1 == 1) ? "^F1" : "^F2"))) ARG_CASE(ARG_CS_SV, "race_diff", ((f2 > f3) ? sprintf(CCR("^1[+%s]"), TIME_ENCODED_TOSTRING(f2 - f3, true)) : sprintf(CCR("^2[-%s]"), TIME_ENCODED_TOSTRING(f3 - f2, true)))) ARG_CASE(ARG_CS, "missing_teams", notif_arg_missing_teams(f1)) ARG_CASE(ARG_CS, "pass_key", getcommandkey(_("drop flag"), "+use")) ARG_CASE(ARG_CS, "nade_key", getcommandkey(_("throw nade"), "dropweapon")) ARG_CASE(ARG_CS, "join_key", getcommandkey(_("jump"), "+jump")) ARG_CASE(ARG_CS, "frag_ping", notif_arg_frag_ping(true, f2)) ARG_CASE(ARG_CS, "frag_stats", notif_arg_frag_stats(f2, f3, f4)) ARG_CASE(ARG_CS, "spree_cen", (autocvar_notification_show_sprees ? notif_arg_spree_cen(f1) : "")) ARG_CASE(ARG_CS_SV, "spree_inf", (autocvar_notification_show_sprees ? notif_arg_spree_inf(1, input, s2, f2) : "")) ARG_CASE(ARG_CS_SV, "spree_end", (autocvar_notification_show_sprees ? notif_arg_spree_inf(-1, "", "", f1) : "")) ARG_CASE(ARG_CS_SV, "spree_lost", (autocvar_notification_show_sprees ? notif_arg_spree_inf(-2, "", "", f1) : "")) ARG_CASE(ARG_CS_SV, "item_wepname", REGISTRY_GET(Weapons, f1).m_name) ARG_CASE(ARG_CS_SV, "item_buffname", BUFF_NAME(f1)) ARG_CASE(ARG_CS_SV, "f3buffname", BUFF_NAME(f3)) ARG_CASE(ARG_CS_SV, "item_wepammo", (f2 > 0 ? notif_arg_item_wepammo(f1, f2) : "")) ARG_CASE(ARG_DC, "item_centime", ftos(autocvar_notification_item_centerprinttime)) ARG_CASE(ARG_SV, "death_team", Team_ColoredFullName(f1)) ARG_CASE(ARG_CS, "death_team", Team_ColoredFullName(f1 - 1)) ARG_CASE(ARG_CS_SV_HA, "minigame1_name",find(NULL,netname,s1).descriptor.message) ARG_CASE(ARG_CS_SV_HA, "minigame1_d", find(NULL,netname,s1).descriptor.netname)
+#define __WINT_WIDTH__ 32
+#define highpass2_limited(value,frac,limit,ref_store,ref_out) MACRO_BEGIN highpass_limited(value.x, frac, limit, ref_store.x, ref_out.x); highpass_limited(value.y, frac, limit, ref_store.y, ref_out.y); MACRO_END
+#define COLOR_WORST autocvar_hud_panel_scoreboard_ping_worst_color
+#define FOREACH_ENTITY_UNORDERED(cond,body) _FOREACH_ENTITY_FIND_UNORDERED(all, entity, _FOREACH_ENTITY_fld, NULL, cond, body)
+#define __FLT64X_HAS_QUIET_NAN__ 1
+#define __INT_FAST64_TYPE__ long int
+#define ReadAngleVector2D() vec2(ReadAngle(), ReadAngle())
+#define GAMEPLAYFIX_NOGRAVITYONGROUND (boolean(moveflags & MOVEFLAG_NOGRAVITYONGROUND))
+#define __BFLT16_MAX__ 3.38953138925153547590470800371487867e+38BF16
+#define TIME_ENCODE(t) TIME_TO_NTHS(t, TIME_FACTOR)
+#define __FP_FAST_FMAF 1
+#define __FLT128_NORM_MAX__ 1.18973149535723176508575932662800702e+4932F128
+#define __BFLT16_HAS_DENORM__ 1
+#define vec3(_x,_y,_z) (_vec3.x = (_x), _vec3.y = (_y), _vec3.z = (_z), _vec3)
+#define QCC_SUPPORT_POW 
+#define __SIZEOF_DOUBLE__ 8
+#define __FLT16_DENORM_MIN__ 5.96046447753906250000000000000000000e-8F16
+#define __unix__ 1
+#define _MUTATOR_HANDLE_PARAMS(type,id) , type in_ ##id
+#define BITS(n) (BIT(n) - 1)
+#define QM_TAG_TITLE "T"
+#define _AL_type__e() entity
+#define _AL_type__f() float
+#define _AL_type__s() string
+#define __LP64__ 1
+#define __FLT_EVAL_METHOD_C99__ 0
+#define __FLT32X_EPSILON__ 2.22044604925031308084726333618164062e-16F32x
+#define ATTRIB(...) EVAL_ATTRIB(OVERLOAD_(ATTRIB, __VA_ARGS__))
+#define __DECIMAL_BID_FORMAT__ 1
+#define __FLT64_MIN_EXP__ (-1021)
+#define _STAT(id) g_stat_ ##id
+#define _W_PROP_CVAR(wepname,fld) autocvar_g_balance_ ##wepname ##_ ##fld
+#define boolean(value) ((value) != 0)
+#define QuickMenu_Buffer_Set(tag,string) bufstr_set(QuickMenu_Buffer, QuickMenu_Buffer_Size, strcat(tag, string))
+#define FOREACH_ENTITY_ENT_ORDERED(fld,match,body) _FOREACH_ENTITY_FIND_ORDERED(entity, fld, match, true, body)
+#define HUD_Panel_GetColorTeam() MACRO_BEGIN if (panel_bg_color_team_str == "") { panel_bg_color_team = autocvar_hud_panel_bg_color_team; } else { panel_bg_color_team = stof(panel_bg_color_team_str); } MACRO_END
+#define UNSET_ONGROUND(s) ((s).flags &= ~FL_ONGROUND)
+#define IS_DEAD_FRAME(f) ((f) == 0 || (f) == 1)
+#define TIME_ENCODED_TOSTRING(n,compact) mmssth(n, compact)
+#define NADE_PROJECTILE(i,projectile,trail) MACRO_BEGIN this.m_projectile[i] = projectile; this.m_trail[i] = trail; MACRO_END
+#define __FLT16_MIN_10_EXP__ (-4)
+#define REGISTER_HUD_PANEL(id,draw_func,configflags,showflags) _REGISTER_HUD_PANEL(id, draw_func, draw_func ##_Export, configflags, showflags)
+#define __REGISTER_PREFIX__ 
+#define __UINT16_MAX__ 0xffff
+#define __INTPTR_MAX__ 0x7fffffffffffffffL
+#define _sound(e,c,s,v,a) sound7(e, c, s, v, a, 0, 0)
+#define MULTITEAM_ANNCE(prefix,defaultvalue,sound,channel,volume,position) NOTIF_ADD_AUTOCVAR(ANNCE_ ##prefix, defaultvalue) MSG_ANNCE_NOTIF_TEAM(NUM_TEAM_1, prefix ##_RED, prefix, defaultvalue, sprintf(sound, strtolower(STATIC_NAME_TEAM_1)), channel, volume, position) MSG_ANNCE_NOTIF_TEAM(NUM_TEAM_2, prefix ##_BLUE, prefix, defaultvalue, sprintf(sound, strtolower(STATIC_NAME_TEAM_2)), channel, volume, position) MSG_ANNCE_NOTIF_TEAM(NUM_TEAM_3, prefix ##_YELLOW, prefix, defaultvalue, sprintf(sound, strtolower(STATIC_NAME_TEAM_3)), channel, volume, position) MSG_ANNCE_NOTIF_TEAM(NUM_TEAM_4, prefix ##_PINK, prefix, defaultvalue, sprintf(sound, strtolower(STATIC_NAME_TEAM_4)), channel, volume, position)
+#define SET_ONGROUND(s) ((s).flags |= FL_ONGROUND)
+#define DEGLOB_LOG(kind,name,...) deglob_log(kind, name, __FILE__, __LINE__, __FUNC__, #__VA_ARGS__)
+#define Promise_then(this,handler,userdata) Promise_then_(this, Promise_new(), handler, userdata)
+#define getstat_bool(id) boolean(getstati(id))
+#define MAGIC_STATS_FIX_MANUAL(it,var,id) if (it.registered_id == "STAT_" #var) { --g_magic_stats_hole; it.m_id = id; } else
+#define REGISTER_ANIMATION(id,framenames) .vector anim_ ##id; REGISTER(Animations, ANIM_ ##id, m_id, NEW(Animation)) { this.m_framenames = framenames; }
+#define __INT_LEAST32_WIDTH__ 32
+#define strcpy(this,s) MACRO_BEGIN if (this) { strunzone(this); } this = strzone(s); MACRO_END
+#define IL_CEIL(n) IL_FLOOR((n) + 0.5)
+#define __FLT32X_MAX_10_EXP__ 308
+#define strfree(this) MACRO_BEGIN if (this) { strunzone(this); } this = string_null; MACRO_END
+#define FOREACH_ENTITY_STRING_ORDERED(fld,match,body) _FOREACH_ENTITY_FIND_ORDERED(string, fld, match, true, body)
+#define MURDER_TYPEFRAG BOLD(_("^K1%sYou typefragged ^BG%s"))
+#define __STDC_VERSION__ 201710L
+#define PHYS_AIRSTRAFEACCEL_QW(s) STAT(MOVEVARS_AIRSTRAFEACCEL_QW, s)
+#define __FLT_MANT_DIG__ 24
+#define TIME_TO_NTHS(t,n) floor((t) * (n) + 0.5)
+#define scores_label(this) ((this).m_name)
+#define REGISTER_VOICEMSG(id,vt,listed) .string _playersound_ ##id; REGISTER(PlayerSounds, playersound, id, m_id, new_pure(VoiceMessage)) { this.instanceOfVoiceMessage = listed; this.m_playersoundstr = #id; this.m_playersoundfld = _playersound_ ##id; this.m_playersoundvt = vt; }
+#define __VERSION__ "13.3.0"
+#define PHYS_INPUT_BUTTON_BUTTON8(s) boolean(input_buttons & BIT(7))
+#define MURDER_FRAGGED_FIRE BOLD(_("^K1%sYou were burned by ^BG%s"))
+#define make_impure(e) (e).pure_data = false;
+#define BITXOR(a,b) (((a) | (b)) - ((a) & (b)))
+#define LABEL(id) :id
+#define _STDC_PREDEF_H 1
+#define RandomSelection_AddVec(v,weight,priority) RandomSelection_Add(NULL, 0, string_null, v, weight, priority)
+#define _STATIC_INIT(func,where) ACCUMULATE void _static_ ##func(); ACCUMULATE_FUNCTION(where, _static_ ##func) void _static_ ##func()
+#define EV_ShowNames_Draw(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) o(float, MUTATOR_ARGV_1_float)
+#define EVAL__AUTOCVAR(...) __VA_ARGS__
+#define LOG_HELP(...) _LOG_HELP(strcat1n(__VA_ARGS__))
+#define ANNCE_DEFTIME 2
+#define drawpic_aspect_skin(pos,pic,sz,color,theAlpha,drawflag) MACRO_BEGIN _drawpic_picpath = strcat(hud_skin_path, "/", pic); if(precache_pic(_drawpic_picpath) == "") { _drawpic_picpath = strcat("gfx/hud/default/", pic); } drawpic_aspect(pos, _drawpic_picpath, sz, color, theAlpha, drawflag); _drawpic_picpath = string_null; MACRO_END
+#define __INT_LEAST32_MAX__ 0x7fffffff
+#define _STRUCT_PASS(x,id,type,END) _STRUCT_PASS_ ##END(x, id, type)
+#define ASSERT_TRUE(condition) ASSERT_EQ(true, condition)
+#define __FLT128_MAX_EXP__ 16384
+#define emit(T,...) MACRO_BEGIN IL_EACH(g_events, it.evt_ ##T ##_listener, it.evt_ ##T(__VA_ARGS__)); MACRO_END
+#define ATTRIB_STRZONE(cname,name,type,val) classfield(cname).type name; INIT(cname) { strcpy(this.name, val); }
+#define __GNUC_WIDE_EXECUTION_CHARSET_NAME "UTF-32LE"
+#define P00_IGNORE(...) 
+#define setanim(...) anim_set(__VA_ARGS__)
+#define __FLT32_MANT_DIG__ 24
+#define EVAL_REGISTRY_SORT(...) __VA_ARGS__
+#define APPLY(f,...) f(__VA_ARGS__)
+#define __STDC_IEC_60559_BFP__ 201404L
+#define REGISTER_WEAPON(...) EVAL_REGISTER_WEAPON(OVERLOAD(REGISTER_WEAPON, __VA_ARGS__))
+#define ASSERT_NO_FATAL_FAILURE(statement) EXPECT_NO_FATAL_FAILURE_(statement, { ++TEST_fatal; return; })
+#define _TEST_ASSERT(statement) MACRO_BEGIN LAMBDA(statement); ++TEST_fatal; return; MACRO_END
+#define drawstring(position,text,scale,rgb,alpha,flag) drawstring_builtin(HUD_Shift(position), text, scale, rgb, alpha, flag)
+#define _SELFWRAP_SET(T,e,f) ((e).__ ##T = (f))
+#define vlen2(v) (_vlen2 = (v), dotproduct(_vlen2, _vlen2))
+#define __STDC_IEC_60559_COMPLEX__ 201404L
+#define __FLT64_NORM_MAX__ 1.79769313486231570814527423731704357e+308F64
+#define AUTOCVAR_SAVE(...) _AUTOCVAR(true, __VA_ARGS__)
+#define __FLT16_DIG__ 3
+#define __BFLT16_MIN__ 1.17549435082228750796873653722224568e-38BF16
+#define PHYS_AIRCONTROL_SIDEWARDS(s) STAT(MOVEVARS_AIRCONTROL_SIDEWARDS, s)
+#define MSG_MULTI_NOTIF(name,defaultvalue,anncename,infoname,centername) NOTIF_ADD_AUTOCVAR(name, defaultvalue) REGISTER(Notifications, name, m_id, new_pure(msg_multi_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(name), MSG_MULTI, strtoupper(#name), 0); Create_Notification_Entity_Multi(this, ACVNN(name), strtoupper(#name), anncename, infoname, centername); }
+#define _STRUCT_PASS_END(x,id,type) x ##_ ##id
+#define player_currententnum (spectatee_status > 0 ? spectatee_status : player_localnum + 1)
+#define __FLT128_HAS_DENORM__ 1
+#define GENTLE (autocvar_cl_gentle || autocvar_cl_gentle_messages)
+#define QuickMenu_Buffer_Get() bufstr_get(QuickMenu_Buffer, QuickMenu_Buffer_Index)
+#define NOTIF_WRITE_ENTITY_CHOICE(e,descriptiona,descriptionb) NOTIF_WRITE(sprintf( "seta notification_%s \"%d\" \"%s\"\n" "seta notification_%s_ALLOWED \"%d\" \"%s\"\n", Get_Notif_CvarName(e), e.nent_default, descriptiona, Get_Notif_CvarName(e), e.nent_challow_def, descriptionb ))
+#define LL_EACH(list,cond,body) MACRO_BEGIN noref int i = 0; for (entity _it = list.ll_head; _it; (_it = _it.ll_next, ++i)) { ITER_CONST noref entity it = _it.ll_data; if (cond) { body } } MACRO_END
+#define _W_CONFIG(class,fld,T,wepname) 
+#define PHYS_MULTIJUMP_CLIENT(s) autocvar_cl_multijump
+#define __DEC64_EPSILON__ 1E-15DD
+#define __ORDER_PDP_ENDIAN__ 3412
+#define EVAL_STAT(...) __VA_ARGS__
+#define __ARM_64BIT_STATE 1
+#define Read_int() ReadInt24_t()
+#define MUTATOR_ONROLLBACK_OR_REMOVE if (mode == MUTATOR_REMOVING || mode == MUTATOR_ROLLING_BACK)
+#define ORDINAL(it) (it)
+#define FOREACH_ENTITY(cond,body) ORDERED(FOREACH_ENTITY)(cond, body)
+#define dotproduct(a,b) ((a) * (b))
+#define W_NET_END() }
+#define EVAL_REGISTER_WEAPON(...) __VA_ARGS__
+#define LAZY_NEW(id,compute) entity LAZY(id)() { static bool done; static entity it; if (!done) { it = compute; done = true; } return it; }
+#define __FLT16_MIN__ 6.10351562500000000000000000000000000e-5F16
+#define __UINT_LEAST16_TYPE__ short unsigned int
+#define __ARM_ARCH 8
+#define IS_DUCKED(s) (boolean((s).flags & FL_DUCKED))
+#define UNSET_DUCKED(s) ((s).flags &= ~FL_DUCKED)
+#define APP_NUM(num,prefix) ((num) ? APP_TEAM_NUM(num, prefix) : prefix ##_NEUTRAL)
+#define unix 1
+#define PHYS_AIRACCELERATE(s) STAT(MOVEVARS_AIRACCELERATE, s)
+#define weapon2mode STAT(VEHICLESTAT_W2MODE)
+#define PHYS_JETPACK_ANTIGRAVITY(s) STAT(JETPACK_ANTIGRAVITY, s)
+#define EV_WeaponSound(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define RVALUE 0
+#define __INT16_MAX__ 0x7fff
+#define _STRUCT_PASS_(x,id,type) x ##_ ##id,
+#define _MUTATOR_HANDLE_PUSHOUT(type,id) type out_ ##id = id;
+#define __SIZE_TYPE__ long unsigned int
+#define __UINT64_MAX__ 0xffffffffffffffffUL
+#define __FLT_IS_IEC_60559__ 1
+#define POSITIVE_PITCH_IS_DOWN 1
+#define Net_Reject() MACRO_BEGIN if (this) delete(this); MACRO_END
+#define EV_PlayerCanCrouch(i,o) i(entity, MUTATOR_ARGV_0_entity) i(bool, MUTATOR_ARGV_1_bool) o(bool, MUTATOR_ARGV_1_bool)
+#define Read_float() ReadFloat()
+#define REGISTER_IMPULSE(id,n) _REGISTER_IMPULSE(IMP_ ##id, id, n)
+#define P00_ARG(_01,_02,_03,_04,_05,_06,_07,_08,_09,_10,_11,_12,_13,_14,_15,_16,_00,...) _00
+#define ITER_CONST const
+#define MURDER_FRAGGED_FREEZE BOLD(_("^K1%sYou were frozen by ^BG%s"))
+#define W_CONFIG_BEGIN(class) 
+#define FOREACH_ENTITY_RADIUS(org,dist,cond,body) ORDERED(FOREACH_ENTITY_RADIUS)(org, dist, cond, body)
+#define serialize_byte(stream,this) MACRO_BEGIN this = ReadByte(); MACRO_END
+#define STATIC_INIT_LATE(func) _STATIC_INIT(func ##_2, __static_init_2)
+#define IMPULSE_ALIAS(alias,id) localcmd("\nalias " #alias " \"", id ,"\"\n")
+#define scores_flags(this) ((this).m_flags)
+#define fixedvectoangles(a) (_fixedvectoangles = vectoangles(a), _fixedvectoangles.x *= -1, _fixedvectoangles)
+#define QUICKMENU_ENTRY_SPECIAL(title,command) QUICKMENU_ENTRY(title, strcat("\n", command))
+#define EFMASK_CHEAP (EF_ADDITIVE | EF_DOUBLESIDED | EF_FULLBRIGHT | EF_NODEPTHTEST | EF_NODRAW | EF_NOSHADOW | EF_SELECTABLE | EF_TELEPORT_BIT)
+#define __DEC32_EPSILON__ 1E-6DF
+#define __BFLT16_HAS_QUIET_NAN__ 1
+#define __ARM_ARCH_PROFILE 65
+#define __LDBL_EPSILON__ 1.92592994438723585305597794258492732e-34L
+#define W_NET_NONE(class,fld,T,wepname) _W_NET(class, fld, T, wepname)
+#define __UINTMAX_C(c) c ## UL
+#define REGISTER_REGISTRY(id) _REGISTER_REGISTRY(id, #id)
+#define DEATH_ENT(t) (DEATH_ISSPECIAL(t) ? (REGISTRY_GET(Deathtypes, t - DT_FIRST)) : NULL)
+#define NOAIRBORNCORPSE_ALLOWSUSPENDED(s) STAT(NOAIRBORNCORPSE_ALLOWSUSPENDED)
+#define spawn_pure() _spawn()
+#define PHYS_INPUT_BUTTON_ATCK2(s) PHYS_INPUT_BUTTON_BUTTON3(s)
+#define APPROXPASTTIME_RANGE (64 * APPROXPASTTIME_ACCURACY_REQUIREMENT)
+#define MURDER_FRAG_FREEZE BOLD(_("^K3%sYou froze ^BG%s"))
+#define WarpZone_StoreProjectileData(e_) MACRO_BEGIN entity e = e_; e.warpzone_oldorigin = e.origin; e.warpzone_oldvelocity = e.velocity; e.warpzone_oldangles = e.angles; MACRO_END
+#define BITSET(var,mask,flag) (flag ? (var) | (mask) : (var) & ~(mask))
+#define ADD_FAILURE(msg) MACRO_BEGIN ++TEST_failed; LOG_WARN(msg); MACRO_END
+#define STRING_ITERATOR_PEEK(this) str2chr(this ##_s, this ##_i)
+#define skel_get_bonerel DO_NOT_USE_GLOBALS
+#define COMPARE_INCREASING(to,from) (to < from ? from + to + 2 : to - from)
+#define ENTCS_PROP(id,ispublic,checkprop,checkprop_pl,setprop,svsend,clreceive) void id ##_receive(entity ent) { LAMBDA(clreceive); } REGISTER(EntCSProps, ENTCS_PROP, id, m_id, new_pure(entcs_prop)) { this.m_public = ispublic; this.m_receive = id ##_receive; }
+#define _new(class,pure) __spawn(#class, __FILE__ ":" STR(__LINE__), pure)
+#define __ATOMIC_RELAXED 0
+#define ReadVector2D() vec2(ReadFloat(), ReadFloat())
+#define IL_NEW() NEW(IntrusiveList)
+#define PHYS_WALLCLIP(s) STAT(MOVEVARS_WALLCLIP)
+#define g_ctf IS_GAMETYPE(CTF)
+#define __SIZEOF_LONG__ 8
+#define serialize_vector(stream,this) MACRO_BEGIN vector _v = this; serialize_float(stream, _v.x); serialize_float(stream, _v.y); serialize_float(stream, _v.z); this = _v; MACRO_END
+#define TAG_ENTITY_NAME tag_networkentity
+#define __FLT64_IS_IEC_60559__ 1
+#define __AARCH64EL__ 1
+#define __FLT32X_MIN_EXP__ (-1021)
+#define TR_CONFIG(class,turname,fld,T) _TR_CONFIG(class, fld, T, turname)
+#define PROPERTY(type,name) type name; GETTER(type, name)
+#define __INT_FAST16_MAX__ 0x7fffffffffffffffL
+#define MAGIC_STATS(_,x) _(x, MOVEVARS_AIRACCEL_QW_STRETCHFACTOR, 220) _(x, MOVEVARS_AIRCONTROL_PENALTY, 221) _(x, MOVEVARS_AIRSPEEDLIMIT_NONQW, 222) _(x, MOVEVARS_AIRSTRAFEACCEL_QW, 223) _(x, MOVEVARS_AIRCONTROL_POWER, 224) _(x, MOVEFLAGS, 225) _(x, MOVEVARS_WARSOWBUNNY_AIRFORWARDACCEL, 226) _(x, MOVEVARS_WARSOWBUNNY_ACCEL, 227) _(x, MOVEVARS_WARSOWBUNNY_TOPSPEED, 228) _(x, MOVEVARS_WARSOWBUNNY_TURNACCEL, 229) _(x, MOVEVARS_WARSOWBUNNY_BACKTOSIDERATIO, 230) _(x, MOVEVARS_AIRSTOPACCELERATE, 231) _(x, MOVEVARS_AIRSTRAFEACCELERATE, 232) _(x, MOVEVARS_MAXAIRSTRAFESPEED, 233) _(x, MOVEVARS_AIRCONTROL, 234) _(x, FRAGLIMIT, 235) _(x, TIMELIMIT, 236) _(x, MOVEVARS_WALLFRICTION, 237) _(x, MOVEVARS_FRICTION, 238) _(x, MOVEVARS_WATERFRICTION, 239) _(x, MOVEVARS_TICRATE, 240) _(x, MOVEVARS_TIMESCALE, 241) _(x, MOVEVARS_GRAVITY, 242) _(x, MOVEVARS_STOPSPEED, 243) _(x, MOVEVARS_MAXSPEED, 244) _(x, MOVEVARS_SPECTATORMAXSPEED, 245) _(x, MOVEVARS_ACCELERATE, 246) _(x, MOVEVARS_AIRACCELERATE, 247) _(x, MOVEVARS_WATERACCELERATE, 248) _(x, MOVEVARS_ENTGRAVITY, 249) _(x, MOVEVARS_JUMPVELOCITY, 250) _(x, MOVEVARS_EDGEFRICTION, 251) _(x, MOVEVARS_MAXAIRSPEED, 252) _(x, MOVEVARS_STEPHEIGHT, 253) _(x, MOVEVARS_AIRACCEL_QW, 254) _(x, MOVEVARS_AIRACCEL_SIDEWAYS_FRICTION, 255)
+#define REGISTER_TURRET(id,inst) REGISTER(Turrets, TUR, id, m_id, inst)
+#define PHYS_JUMPVELOCITY(s) STAT(MOVEVARS_JUMPVELOCITY, s)
+#define IL_DELETE(this) MACRO_BEGIN delete(this); this = NULL; MACRO_END
+#define WEPENT_SET_NORMAL(var,x) MACRO_BEGIN var = x; MACRO_END
+#define ADD_DYNAMIC_LIGHT(org,radius,lightcolours,forward,right,up) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "ADD_DYNAMIC_LIGHT", #org, #radius, #lightcolours); SET_V_GLOBALS(forward, right, up); _adddynamiclight_hidden(org, radius, lightcolours); CLEAR_V_GLOBALS(); MACRO_END
+#define __FLT64_DIG__ 15
+#define DP_CSQC_ENTITY_REMOVE_IS_B0RKED 
+#define PHYS_INPUT_BUTTON_BUTTON10(s) boolean(input_buttons & BIT(12))
+#define AL_sete(this,idx,val) AL_setf(this, idx, al_etof(val))
+#define AL_setf(this,idx,val) AL_sets(this, idx, al_ftos(val))
+#define AL_sets(this,idx,val) bufstr_set(this.al_buf, idx, val)
+#define PHYS_JETPACK_ACCEL_UP(s) STAT(JETPACK_ACCEL_UP, s)
+#define minigame_hud_fitsqare(pos,mySize) if ( mySize ##_x > mySize ##_y ) { pos ##_x += (mySize ##_x-mySize ##_y)/2; mySize ##_x = mySize ##_y; } else { pos ##_y += (mySize ##_y-mySize ##_x)/2; mySize ##_x = mySize ##_x; } if(panel_bg_padding) { pos += '1 1 0' * panel_bg_padding; mySize -= '2 2 0' * panel_bg_padding; }
+#define VEC_NAN vec3(FLOAT_NAN, FLOAT_NAN, FLOAT_NAN);
+#define __LONG_MAX__ 0x7fffffffffffffffL
+#define __DEC128_SUBNORMAL_MIN__ 0.000000000000000000000000000000001E-6143DL
+#define ENTCS_SET_MUTABLE_STRING(var,x) MACRO_BEGIN strcpy(var, x); MACRO_END
+#define GMQCC 1
+#define __CHAR_UNSIGNED__ 1
+#define IS_CLIENT(s) (((s).isplayermodel & ISPLAYER_CLIENT) || (s) == csqcplayer)
+#define FOREACH_ENTITY_FLOAT_UNORDERED(fld,match,body) _FOREACH_ENTITY_FIND_UNORDERED(, float, fld, match, true, body)
+#define __UINT_FAST16_TYPE__ long unsigned int
+#define __STDC_IEC_559__ 1
+#define PHYS_INPUT_BUTTON_BUTTON16(s) boolean(input_buttons & BIT(18))
+#define EV_DrawViewModel(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EV_WP_Format(i,o) i(entity, MUTATOR_ARGV_0_entity) i(string, MUTATOR_ARGV_1_string) o(vector, MUTATOR_ARGV_2_vector) o(string, MUTATOR_ARGV_3_string) o(string, MUTATOR_ARGV_4_string)
+#define P00_IS__EQ__(...) ,
+#define __PRAGMA_REDEFINE_EXTNAME 1
+#define SPA_POSITION 0
+#define __INT_LEAST16_MAX__ 0x7fff
+#define STRUCT_STORE(from,to,s) s(_STRUCT_STORE, (from, to))
+#define g_freezetag IS_GAMETYPE(FREEZETAG)
+#define CHECK_MAX_COUNT(name,max,count,type) if (count > max) { error(strcat("Maximum ", type, " hit: ", #name, ": ", ftos(count), ".\n")); }
+#define highpass(value,frac,ref_store,ret) MACRO_BEGIN float __f = 0; lowpass(value, frac, ref_store, __f); ret = (value) - __f; MACRO_END
+#define CSQC 1
+#define __FLT32_DENORM_MIN__ 1.40129846432481707092372958328991613e-45F32
+#define bprintf(...) bprint(sprintf(__VA_ARGS__))
+#define __SIG_ATOMIC_WIDTH__ 32
+#define __INT_LEAST64_TYPE__ long int
+#define ASSERT_FALSE(condition) ASSERT_EQ(false, condition)
+#define EVAL(...) EVAL1(EVAL1(EVAL1(__VA_ARGS__)))
+#define __INT16_TYPE__ short int
+#define REGISTER_NET_LINKED(id) ACCUMULATE NET_HANDLE(id, bool isnew) { this = __self; this.sourceLoc = __FILE__":"STR(__LINE__); if (!this) isnew = true; } NET_GUARD(id); REGISTER(LinkedEntities, NET, id, m_id, new_pure(net_linked_packet)) { this.netname = #id; this.m_read = Net_Handle_ ##id ##_guard; }
+#define g_stat_NAILS getstati(STAT_NAILS)
+#define IL_FIRST(this) (this.il_head)
+#define __UINT8_MAX__ 0xff
+#define NET_HANDLE(id,param) bool Net_Handle_ ##id(entity this, entity sender, param)
+#define __FLT128_MAX__ 1.18973149535723176508575932662800702e+4932F128
+#define SET_V_GLOBALS(forward,right,up) MACRO_BEGIN v_forward = forward; v_right = right; v_up = up; MACRO_END
+#define AL_DELETE(this) MACRO_BEGIN buf_del(this.al_buf); delete(this); this = NULL; MACRO_END
+#define linux 1
+#define devassert(...) MACRO_BEGIN if (autocvar_developer > 0) assert(__VA_ARGS__); MACRO_END
+#define __SIZEOF_SHORT__ 2
+#define MAPINFO_SETTEMP_ACL_USER cvar_string("g_mapinfo_settemp_acl")
+#define vmul(a,b) (_vmul_a = (a), _vmul_b = (b), '1 0 0' * (_vmul_a.x * _vmul_b.x) + '0 1 0' * (_vmul_a.y * _vmul_b.y) + '0 0 1' * (_vmul_a.z * _vmul_b.z))
+#define adddynamiclight2 DO_NOT_USE_GLOBALS
+#define KEY_TEAM_4 CTX(_("KEY^Pink"))
+#define DEATH_ISMONSTER(t) (DEATH_ISSPECIAL(t) && (REGISTRY_GET(Deathtypes, t - DT_FIRST)).death_msgextra == "monster")
+#define __FLT32_MIN_10_EXP__ (-37)
+#define trailparticles(e,effect,org,vel) __trailparticles(e, particleeffectnum(effect), org, vel)
+#define TAG_VIEWLOC_TYPE int
+#define _LP64 1
+#define PHYS_INPUT_BUTTON_INFO(s) PHYS_INPUT_BUTTON_BUTTON7(s)
+#define __UINT16_C(c) c
+#define COLOR_HIGH autocvar_hud_panel_scoreboard_ping_high_color
+#define PHYS_MAXAIRSPEED(s) STAT(MOVEVARS_MAXAIRSPEED, s)
+#define GAMEPLAYFIX_STEPDOWN_MAXSPEED(s) STAT(GAMEPLAYFIX_STEPDOWN_MAXSPEED)
+#define __DBL_HAS_QUIET_NAN__ 1
+#define HM_DELETE(this) db_close(this)
+#define __FLT64X_MAX__ 1.18973149535723176508575932662800702e+4932F64x
+#define scores(this) _scores[(this).m_id]
+#define IL_LISTS_PER_BIT IL_CEIL(IL_MAX / (3 * 24))
+#define TRANSMUTE(cname,this,...) MACRO_BEGIN entity _e = (this); if (_e.vtblbase != cname ##_vtbl) { _e.transmute = true; _e.classname = #cname; _TRANSMUTE(cname, _e, __VA_ARGS__); } MACRO_END
+#define drawpic(position,pic,size,rgb,alpha,flag) drawpic_builtin(HUD_Shift(position), pic, HUD_Scale(size), rgb, alpha, flag)
+#define static_init_precache() CALL_ACCUMULATED_FUNCTION(__static_init_3)
+#define __FLT16_MANT_DIG__ 11
+#define MAP_5(f,it,...) f(it) MAP_4(f, __VA_ARGS__)
+#define __INTPTR_TYPE__ long int
+#define __WCHAR_TYPE__ unsigned int
+#define MUTATOR_ONADD if (mode == MUTATOR_ADDING)
+#define __pic__ 2
+#define PHYS_PL_CROUCH_MAX(s) STAT(PL_CROUCH_MAX, s)
+#define __ARM_ARCH_8A 1
+#define __DEC64_MIN_EXP__ (-382)
+#define ITEM_HANDLE(signal,...) __Item_Send_ ##signal(__VA_ARGS__)
+#define GETTER(type,name) type GET(name)() { return name; }
+#define REGISTER_PLAYERSOUND(id) .string _playersound_ ##id; REGISTER(PlayerSounds, playersound, id, m_id, new_pure(PlayerSound)) { this.m_playersoundstr = #id; this.m_playersoundfld = _playersound_ ##id; }
+#define g_stat_HEALTH getstati(STAT_HEALTH)
+#define EXPECT_FALSE(condition) EXPECT_EQ(false, condition)
+#define __FLT32_DECIMAL_DIG__ 9
+#define g_stat_ITEMS getstat_int(STAT_ITEMS)
+#define __INT_FAST64_MAX__ 0x7fffffffffffffffL
+#define __FLT_MAX_10_EXP__ 38
+#define DEATH_ISWEAPON(t,w) (DEATH_WEAPONOF(t) == (w))
+#define STRING_ITERATOR_UNGET(this) MACRO_BEGIN --this ##_i; MACRO_END
+#define PHYS_JUMPSPEEDCAP_MIN autocvar_cl_jumpspeedcap_min
+#define Static_Team_ColorName_Upper(teamid) strtoupper(Static_Team_ColorName(teamid))
+#define FOREACH_ENTITY_ENT_UNORDERED(fld,match,body) _FOREACH_ENTITY_FIND_UNORDERED(, entity, fld, match, true, body)
+#define STATIC_METHOD(cname,name,prototype) prototype METHOD_REFERENCE(cname, name)
+#define crandom() (2 * (random() - 0.5))
+#define PHYS_PL_MAX(s) STAT(PL_MAX, s)
+#define PHYS_WARSOWBUNNY_BACKTOSIDERATIO(s) STAT(MOVEVARS_WARSOWBUNNY_BACKTOSIDERATIO, s)
+#define ReadFloat() ReadCoord()
+#define QM_TAG_COMMAND "C"
+#define __FLT16_HAS_QUIET_NAN__ 1
+#define PHYS_AIRCONTROL_POWER(s) STAT(MOVEVARS_AIRCONTROL_POWER, s)
+#define PHYS_PL_CROUCH_MIN(s) STAT(PL_CROUCH_MIN, s)
+#define __FLT_MAX_EXP__ 128
+#define minigame_cmd(...) minigame_cmd_workaround(0,__VA_ARGS__)
+#define FOREACH_ENTITY_FLAGS_ORDERED(fld,match,body) _FOREACH_ENTITY_FIND_ORDERED(flags, fld, match, true, body)
+#define __DBL_MANT_DIG__ 53
+#define EVAL_REGISTER_STAT(...) __VA_ARGS__
+#define __INT_LEAST64_MAX__ 0x7fffffffffffffffL
+#define MAP_13(f,it,...) f(it) MAP_12(f, __VA_ARGS__)
+#define __DEC64_MIN__ 1E-383DD
+#define __UINT_LEAST32_TYPE__ unsigned int
+#define _STRUCT_DECLARE(x,id,type,END) noref type x ##_ ##id;
+#define PHYS_WORLD_ANGLES(s) input_angles
+#define MAP_16(f,it,...) f(it) MAP_15(f, __VA_ARGS__)
+#define demand(expr,...) _assert(print_assertfailed_fatal, expr, __VA_ARGS__)
+#define MAP_17(f,it,...) f(it) MAP_16(f, __VA_ARGS__)
+#define __LDBL_MIN_EXP__ (-16381)
+#define ATTRIB_3(cname,name,type) classfield(cname) .type name
+#define ATTRIB_4(cname,name,type,val) ATTRIB_3(cname, name, type); INIT(cname) { noref bool strzone; this.name = val; } ATTRIB_3(cname, name, type)
+#define P99_CAT2(_1,_2) _1 ## _2
+#define Sound_fixpath(this) ( _Sound_fixpath_this = (this), _Sound_fixpath_cached = _Sound_fixpath_this.sound_str_, _Sound_fixpath_cached ? _Sound_fixpath_cached : _Sound_fixpath(_Sound_fixpath_this.sound_str()) )
+#define __INT_LEAST8_MAX__ 0x7f
+#define vdist(v,cmp,f) (vlen2(v) cmp ((f) ** 2))
+#define PHYS_MULTIJUMP_CLIENTDEFAULT(s) STAT(MULTIJUMP_CLIENT, s)
+#define SPA_S_AXIS 1
+#define __FLT32_MIN_EXP__ (-125)
+#define __FLT128_MIN__ 3.36210314311209350626267781732175260e-4932F128
+#define FOREACH_ENTITY_STRING(fld,match,body) ORDERED(FOREACH_ENTITY_STRING)(fld, match, body)
+#define SKEL_SET_BONE(skel,bonenum,org,forward,right,up) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "SKEL_SET_BONE", #skel, #bonenum, #org); SET_V_GLOBALS(forward, right, up); _skel_set_bone_hidden(skel, bonenum, org); CLEAR_V_GLOBALS(); MACRO_END
+#define TARGET_TELEPORTER_KEEP_SPEED BIT(0)
+#define __AUTOCVAR(file,archive,var,type,desc,default) ACCUMULATE void RegisterCvars(void(string, string, string, bool, string) f) { f( #var, repr_cvar_ ##type(default), desc, archive, file); } type autocvar_ ##var = default
+#define __UINT8_C(c) c
+#define REGISTRY_MAX(id) id ##_MAX
+#define PHYS_MULTIJUMP_ADD(s) STAT(MULTIJUMP_ADD, s)
+#define g_cts IS_GAMETYPE(CTS)
+#define get_monsterinfo(i) REGISTRY_GET(Monsters, i)
+#define __FLT64_MAX_EXP__ 1024
+#define g_stat_ARMOR getstati(STAT_ARMOR)
+#define __UINT64_TYPE__ long unsigned int
+#define MSLE_CLEAN_Coord(x) 
+#define __ARM_NEON 1
+#define EXACTTRIGGER_TOUCH(e,t) if(!WarpZoneLib_ExactTrigger_Touch((e), (t), true)) return
+#define ReadRegistered(r) REGISTRY_GET(r, Read_byte())
+#define W_NET_SEC(class,fld,T,wepname) _W_NET(class, secondary_ ##fld, T, wepname)
+#define P99_HAS_COMMA(...) P00_ARG(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0)
+#define _CHIMPULSE(id,n) REGISTER(IMPULSES, id, m_id, new_pure(Impulse)) { this.impulse = n; }
+#define W_PROP(class,wepname,fld,T,m) W_PROP_ ##m(class, fld, T, wepname)
+#define __FLT128_HAS_QUIET_NAN__ 1
+#define SPA_TEXCOORDS0 4
+#define PHYS_INPUT_TIMELENGTH input_timelength
+#define PHYS_AIRCONTROL_PENALTY(s) STAT(MOVEVARS_AIRCONTROL_PENALTY, s)
+#define MURDER_FRAGGED2 BOLD(_("^K1%sYou were scored against by ^BG%s"))
+#define __FLT64X_MIN__ 3.36210314311209350626267781732175260e-4932F64x
+#define MSG_INFO_NOTIF_TEAM(teamnum,name,cvarname,defaultvalue,strnum,flnum,args,hudargs,icon,normal,gentle) MSG_INFO_NOTIF_(teamnum, INFO_ ##name, INFO_ ##cvarname, defaultvalue, strnum, flnum, args, hudargs, icon, normal, gentle)
+#define Team_IndexToFullName(index) Team_FullName(Team_IndexToTeam(index))
+#define P00_IS_1_EQ_1(...) ,
+#define __GNUC_STDC_INLINE__ 1
+#define OFF_SCREEN(o) (o.z < 0 || o.x < 0 || o.y < 0 || o.x > vid_conwidth || o.y > vid_conheight)
+#define __FLT64_HAS_DENORM__ 1
+#define FOREACH_COMPONENT(com,body) IL_EACH(g_components, it.com_ ##com, body)
+#define __FLT32_EPSILON__ 1.19209289550781250000000000000000000e-7F32
+#define REGISTRY_SORT(...) EVAL_REGISTRY_SORT(OVERLOAD(REGISTRY_SORT, __VA_ARGS__))
+#define __DBL_DECIMAL_DIG__ 17
+#define __DEC_EVAL_METHOD__ 2
+#define EV_WantEventchase(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EVAL_REGISTER(...) __VA_ARGS__
+#define count_days(time) count_fill(time, _("CI_ZER^%d days"), _("CI_FIR^%d day"), _("CI_SEC^%d days"), _("CI_THI^%d days"), _("CI_MUL^%d days"))
+#define stream_reading(stream) true
+#define HEXDIGIT_TO_DEC_RAW(d) (strstrofs(HEXDIGITS, (d), 0))
+#define avg_factor(avg_time) (1 - exp(-frametime / max(0.001, avg_time)))
+#define STRUCT_PARAM(id,s) s(_STRUCT_PARAM, id)
+#define count_weeks_decs(time,decs) sprintf(CTX(_("CI_DEC^%s weeks")), ftos_decimals(time, decs))
+#define __INTMAX_WIDTH__ 64
+#define ENTCS_PROP_CODED(id,ispublic,checkprop,checkprop_pl,setprop,decfactor,svsend,clreceive) ENTCS_PROP(id, ispublic, checkprop, checkprop_pl, setprop, svsend, clreceive)
+#define HUD_Panel_GetBg() MACRO_BEGIN string panel_bg; if (!autocvar__hud_configure && panel_bg_str == "0") { panel_bg = "0"; } else { if (panel_bg_str == "") { panel_bg_str = autocvar_hud_panel_bg; } if (panel_bg_str == "0" && !autocvar__hud_configure) { panel_bg = "0"; } else { if (panel_bg_str == "0" && autocvar__hud_configure) panel_bg_alpha_str = "0"; panel_bg = strcat(hud_skin_path, "/", panel_bg_str); if (precache_pic(panel_bg) == "") { panel_bg = strcat(hud_skin_path, "/", "border_default"); if (precache_pic(panel_bg) == "") { panel_bg = strcat("gfx/hud/default/", "border_default"); } } } } strcpy(panel.current_panel_bg, panel_bg); MACRO_END
+#define __ORDER_BIG_ENDIAN__ 4321
+#define DEATH_ISTURRET(t) (DEATH_ISSPECIAL(t) && (REGISTRY_GET(Deathtypes, t - DT_FIRST)).death_msgextra == "turret")
+#define CLASS(...) EVAL_CLASS(OVERLOAD__(CLASS, __VA_ARGS__))
+#define __UINT32_C(c) c ## U
+#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
+#define SKEL_GET_BONE_ABS(skel,bonenum,forward,right,up,origin) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "SKEL_GET_BONE_ABS", #skel, #bonenum); origin = _skel_get_boneabs_hidden(skel, bonenum) GET_V_GLOBALS(forward, right, up); CLEAR_V_GLOBALS(); MACRO_END
+#define lowpass_limited(value,frac,limit,ref_store,ret) MACRO_BEGIN float __ignore; lowpass(value, frac, ref_store, __ignore); ret = ref_store = bound((value) - (limit), ref_store, (value) + (limit)); MACRO_END
+#define MSG_INFO_NOTIF(name,defaultvalue,strnum,flnum,args,hudargs,icon,normal,gentle) NOTIF_ADD_AUTOCVAR(INFO_ ##name, defaultvalue) MSG_INFO_NOTIF_(0, INFO_ ##name, INFO_ ##name, defaultvalue, strnum, flnum, args, hudargs, icon, normal, gentle)
+#define STRING_ITERATOR_GET(this) str2chr(this ##_s, this ##_i++)
+#define sound8(e,o,chan,samp,vol,atten,speed,sf) MACRO_BEGIN entity __e; int __chan = chan; string __samp = samp; bool auto = false; if (__chan > 0) __e = e; else { auto = true; __chan = fabs(__chan); entity tmp = __e = new(csqc_autochannel); setthink(tmp, SUB_Remove); tmp.nextthink = time + soundlength(__samp); } vector old_origin = __e.origin; vector old_mins = __e.mins; vector old_maxs = __e.maxs; setorigin(__e, o); setsize(__e, '0 0 0', '0 0 0'); sound7(__e, __chan, __samp, vol, atten, speed, sf); if (!auto) { setorigin(__e, old_origin); setsize(__e, old_mins, old_maxs); } MACRO_END
+#define MAP(f,...) EVAL(OVERLOAD(MAP, f, __VA_ARGS__))
+#define yenc_single(c,ret) MACRO_BEGIN int conv = c; conv += 42; if (conv >= 256) conv -= 256; switch (conv) { default: { string yenc_it = chr2str(conv); ret = yenc_it; break; } case 0: case '\n': case '\r': case '=': { conv += 64; string yenc_it = chr2str('=', conv); ret = yenc_it; break; } } MACRO_END
+#define stream_writing(stream) false
+#define count_hours_decs(time,decs) sprintf(CTX(_("CI_DEC^%s hours")), ftos_decimals(time, decs))
+#define __PIC__ 2
+#define __UINT_FAST32_TYPE__ long unsigned int
+#define __FLT32X_NORM_MAX__ 1.79769313486231570814527423731704357e+308F32x
+#define MAGIC_STATS_FIX_AUTO(it,var,id) if (it.m_id == id) { ++g_magic_stats_hole; ++it.m_id; }
+#define FOREACH_ENTITY_RADIUS_UNORDERED(org,dist,cond,body) _FOREACH_ENTITY_FIND_UNORDERED(, radius, org, dist, cond, body)
+#define __FLT_MAX__ 3.40282346638528859811704183484516925e+38F
+#define MURDER_FRAG_FIRE BOLD(_("^K3%sYou burned ^BG%s"))
+#define makevectors(angles) MACRO_BEGIN DEGLOB_LOG(DEGLOB_ORIGINAL, "makevectors", #angles); _makevectors_hidden(angles); MACRO_END
+#define __FP_FAST_FMA 1
+#define _W_UPDATE(class,fld,T,wepname) 
+#define HUD_Write(s) fputs(fh, s)
+#define skel_mul_bones DO_NOT_USE_GLOBALS
+#define QCC_SUPPORT_ACCUMULATE 
+#define TAG_ENTITY_TYPE float
+#define MEAN_EVALUATE(s,prefix) mean_evaluate(s, prefix ##_accumulator, prefix ##_count, prefix ##_mean)
+#define g_tmayhem IS_GAMETYPE(TEAM_MAYHEM)
+#define __INT32_TYPE__ int
+#define makestatic DO_NOT_USE_GLOBALS
+#define EV_PlayerPhysics(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float)
+#define _assert(f,expr,then) MACRO_BEGIN if (!(expr)) { f(#expr); then; } MACRO_END
+#define LOG_DEBUGF(...) _LOG_DEBUG(sprintf(__VA_ARGS__))
+#define REPLICATE_3(fld,type,var) REPLICATE_4(fld, type, var, )
+#define REPLICATE_4(fld,type,var,func) REPLICATE_ ##type(fld, var, func)
+#define REPLICATE_7(fld,type,var,func,check,update,destroy) void ReplicateVars(int mode) { if (mode == REPLICATEVARS_DESTROY) { destroy } else if (mode == REPLICATEVARS_SEND_ALL || check) { ReplicateVars_Send(var); update } }
+#define FOREACH_ENTITY_ENT(fld,match,body) ORDERED(FOREACH_ENTITY_ENT)(fld, match, body)
+#define __FLT32X_HAS_QUIET_NAN__ 1
+#define IL_FLOOR(n) ((n) | 0)
+#define ITEMS_STAT(s) ((s).items)
+#define OVERLOAD(F,...) P99_IF_EMPTY(__VA_ARGS__)(P99_PASTE2(F, _00)())(P99_PASTE3(F, _, P00_NARG(__VA_ARGS__))(__VA_ARGS__))
+#define PHYS_INPUT_BUTTON_USE(s) PHYS_INPUT_BUTTON_BUTTON_USE(s)
+#define draw_endBoldFont() drawfont = FONT_USER + 1
+#define __INT_FAST16_WIDTH__ 64
+#define __UINTMAX_MAX__ 0xffffffffffffffffUL
+#define LL_CLEAR_1(this) LL_CLEAR_2(this, LAMBDA())
+#define __DBL_MAX_10_EXP__ 308
+#define STAT_2(id,cl) STAT_1(id)
+#define __LDBL_DENORM_MIN__ 6.47517511943802511092443895822764655e-4966L
+#define HUD_Panel_ScalePosSize() MACRO_BEGIN panel_pos.x *= vid_conwidth; panel_pos.y *= vid_conheight; panel_size.x *= vid_conwidth; panel_size.y *= vid_conheight; MACRO_END
+#define devassert_once(...) MACRO_BEGIN if (autocvar_developer > 0) assert_once(__VA_ARGS__); MACRO_END
+#define __INT16_C(c) c
+#define PHYS_JETPACK_REVERSE_THRUST(s) STAT(JETPACK_REVERSE_THRUST, s)
+#define REGISTER_NET_C2S(id) const bool NET_ ##id ##_istemp = true; REGISTER(C2S_Protocol, NET, id, m_id, new_pure(net_c2s_packet)) { this.netname = #id; }
+#define AnnouncerFilename(snd) sprintf("announcer/%s/%s.wav", AnnouncerOption(), snd)
+#define __ARM_ARCH_ISA_A64 1
+#define PHYS_PL_VIEWOFS(s) STAT(PL_VIEW_OFS, s)
+#define __STDC__ 1
+#define GAMEPLAYFIX_Q2AIRACCELERATE (boolean(moveflags & MOVEFLAG_Q2AIRACCELERATE))
+#define DEBUG_STUFF(cname) 
+#define EV_HUD_Command(i,o) i(int, MUTATOR_ARGV_0_int)
+#define PHYS_INPUT_BUTTON_BUTTON_USE(s) boolean(input_buttons & BIT(8))
+#define TeamByColor(teamid) (Team_TeamToIndex(teamid) - 1)
+#define highpass3(value,frac,ref_store,ref_out) MACRO_BEGIN highpass(value.x, frac, ref_store.x, ref_out.x); highpass(value.y, frac, ref_store.y, ref_out.y); highpass(value.z, frac, ref_store.z, ref_out.z); MACRO_END
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_16 1
+#define EXACTTRIGGER_INIT WarpZoneLib_ExactTrigger_Init(this, true)
+#define FOR_EACH_TAG(v) float tagnum; Skeleton_SetBones(v); for(tagnum = 0; tagnum < v.skeleton_bones; tagnum++, gettaginfo(v, tagnum))
+#define CSQC_Shutdown _CSQC_Shutdown
+#define MSLE_CLEAN_Vector(x) 
+#define CROSSHAIR_DRAW_SINGLE(i,j,sz,scaled_sz,wcross_name,wcross_alpha) drawpic(wcross_origin - ('0.5 0 0' * (scaled_sz.x + i * wcross_blur) + '0 0.5 0' * (scaled_sz.y + j * wcross_blur)), wcross_name, scaled_sz, wcross_color, wcross_alpha, DRAWFLAG_NORMAL)
+#define __UINTPTR_TYPE__ long unsigned int
+#define FOREACH_WORD(words,cond,body) MACRO_BEGIN string _words = words; int _i = 0; for (string _it; (_it = car(_words)); (_words = cdr(_words), ++_i)) { const noref int i = _i; const noref string it = _it; if (cond) { LAMBDA(body) } } MACRO_END
+#define MAKE_VECTORS(angles,forward,right,up) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "MAKE_VECTORS", #angles); _makevectors_hidden(angles); GET_V_GLOBALS(forward, right, up); CLEAR_V_GLOBALS(); MACRO_END
+#define __DEC64_SUBNORMAL_MIN__ 0.000000000000001E-383DD
+#define IS_DEAD(s) (((s).classname == "ENT_CLIENT_MODEL") ? (s).csqcmodel_isdead : (GetResource((s), RES_HEALTH) <= 0))
+#define __LDBL_MIN_10_EXP__ (-4931)
+#define EXPECT_TRUE(condition) EXPECT_EQ(true, condition)
+#define getcefc(e) SELFWRAP_GET(customizeentityforclient, e)
+#define PHYS_FRICTION_ONLAND(s) STAT(MOVEVARS_FRICTION_ONLAND, s)
+#define FTOI(f) ((f) * INTEGER_ONE)
+#define SUPER(cname) (cname ##_vtbl.vtblbase)
+#define CLASS_2(cname,base) entityclass(cname, base); classfield(cname).bool instanceOf ##cname; DEBUG_STUFF(cname) VTBL(cname, base) _INIT_STATIC(cname) { if (cname ##_vtbl && !this.transmute) { copyentity_qc(cname ##_vtbl, this); return; } spawn ##base ##_static(this); this.instanceOf ##cname = true; } INIT(cname) { if (cname ##_vtbl.vtblname == this.classname) { spawn ##cname ##_static(this); this.transmute = false; this.classname = #cname; this.vtblname = string_null; this.vtblbase = cname ##_vtbl; } spawn ##base ##_1(this); }
+#define angleofs(from,to) angleofs3(from.origin, from.angles, to.origin)
+#define UNWORDS(...) MAP(IDENTITY, __VA_ARGS__)
+#define STRING_ITERATOR_LOAD(this,n) MACRO_BEGIN this ##_i = n; MACRO_END
+#define __FLT128_DECIMAL_DIG__ 36
+#define __GCC_ATOMIC_LLONG_LOCK_FREE 2
+#define fpc autocvar_cl_forceplayercolors
+#define MULTITEAM_INFO(prefix,defaultvalue,strnum,flnum,args,hudargs,icon,normal,gentle,type) NOTIF_ADD_AUTOCVAR(INFO_ ##prefix, defaultvalue) MSG_INFO_NOTIF_TEAM(NUM_TEAM_1, prefix ##_RED, prefix, defaultvalue, strnum, flnum, args, hudargs, multiteam_info_sprintf(icon, strtolower(STATIC_NAME_TEAM_1)), TCR(normal, type, 1), TCR(gentle, type, 1)) MSG_INFO_NOTIF_TEAM(NUM_TEAM_2, prefix ##_BLUE, prefix, defaultvalue, strnum, flnum, args, hudargs, multiteam_info_sprintf(icon, strtolower(STATIC_NAME_TEAM_2)), TCR(normal, type, 2), TCR(gentle, type, 2)) MSG_INFO_NOTIF_TEAM(NUM_TEAM_3, prefix ##_YELLOW, prefix, defaultvalue, strnum, flnum, args, hudargs, multiteam_info_sprintf(icon, strtolower(STATIC_NAME_TEAM_3)), TCR(normal, type, 3), TCR(gentle, type, 3)) MSG_INFO_NOTIF_TEAM(NUM_TEAM_4, prefix ##_PINK, prefix, defaultvalue, strnum, flnum, args, hudargs, multiteam_info_sprintf(icon, strtolower(STATIC_NAME_TEAM_4)), TCR(normal, type, 4), TCR(gentle, type, 4))
+#define MSG_ANNCE_NOTIF(name,defaultvalue,sound,channel,volume,position,queuetime) NOTIF_ADD_AUTOCVAR(ANNCE_ ##name, defaultvalue) MSG_ANNCE_NOTIF_(0, ANNCE_ ##name, ANNCE_ ##name, defaultvalue, sound, channel, volume, position, queuetime)
+#define __LDBL_NORM_MAX__ 1.18973149535723176508575932662800702e+4932L
+#define Static_Team_ColorName_Lower(teamid) strtolower(Static_Team_ColorName(teamid))
+#define __INT_LEAST64_WIDTH__ 64
+#define __UINT_FAST8_TYPE__ unsigned char
+#define drawcolorcodedstring2(position,text,scale,rgb,alpha,flag) drawcolorcodedstring2_builtin(HUD_Shift(position), text, scale, rgb, alpha, flag)
+#define EV_Particles_VortexBeam(i,o) i(vector, MUTATOR_ARGV_0_vector) i(vector, MUTATOR_ARGV_1_vector)
+#define count_minutes_decs(time,decs) sprintf(CTX(_("CI_DEC^%s minutes")), ftos_decimals(time, decs))
+#define SET_JUMP_HELD(s) ((s).flags &= ~FL_JUMPRELEASED)
+#define ANNOUNCER_CHECKMINUTE(minute) MACRO_BEGIN if(announcer_ ##minute ##min) { if(timeleft > minute * 60) announcer_ ##minute ##min = false; } else { if(timeleft < minute * 60 && timeleft > minute * 60 - 1) { announcer_ ##minute ##min = true; Local_Notification(MSG_ANNCE, ANNCE_REMAINING_MIN_ ##minute); } } MACRO_END
+#define particleeffectnum(e) _particleeffectnum(e.eent_eff_name)
+#define __BFLT16_MANT_DIG__ 8
+#define __ATOMIC_ACQ_REL 4
+#define WEP_CVAR_SEC(wepname,name) WEP_CVAR(wepname, secondary_ ##name)
+#define __UINT64_C(c) c ## UL
+#define P00_IS_EMPTY_CASE_1111 P00_IS_EMPTY_CASE_1111
+#define ReadVector() vec3(ReadFloat(), ReadFloat(), ReadFloat())
+#define VECTOR_VECTORS(forward_in,forward,right,up) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "VECTOR_VECTORS", #forward_in); _vectorvectors_hidden(forward_in); GET_V_GLOBALS(forward, right, up); CLEAR_V_GLOBALS(); MACRO_END
+#define FIXED_MAKE_VECTORS MAKE_VECTORS
+#define _REGISTER_IMPULSE(id,alias,n) REGISTER(IMPULSES, id, m_id, new_pure(Impulse)) { this.impulse = n; IMPULSE_ALIAS(alias, "impulse " #n); }
+#define NOTIF_HIT_MAX(count,funcname) MACRO_BEGIN if(sel_num == count) { backtrace(sprintf("%s: Hit maximum arguments!\n", funcname)); break; } MACRO_END
+#define __FLT32X_MAX_EXP__ 1024
+#define LAMBDA(...) { __VA_ARGS__; }
+#define MSLE_CLEAN_Long(x) 
+#define __ARM_SIZEOF_WCHAR_T 4
+#define __ATOMIC_ACQUIRE 2
+#define XPD(...) __VA_ARGS__
+#define setmodel(this,m) MACRO_BEGIN Model _setmodel_model = (m); string _setmodel_cached = _setmodel_model.model_str_; _setmodel((this), _setmodel_cached ? _setmodel_cached : _setmodel_model.model_str()); MACRO_END
+#define __FLT_MIN__ 1.17549435082228750796873653722224568e-38F
+#define __GCC_IEC_559_COMPLEX 2
+#define FOREACH_ENTITY_CLASS_ORDERED(class,cond,body) _FOREACH_ENTITY_FIND_ORDERED(string, classname, class, cond, body)
+#define TR_CONFIG_BEGIN(class) 
+#define __UINT_LEAST8_TYPE__ unsigned char
+#define CSQCMODEL_EF_RESPAWNGHOST EF_SELECTABLE
+#define repr_cvar_float(x) (ftos(x))
+#define __BFLT16_DENORM_MIN__ 9.18354961579912115600575419704879436e-41BF16
+#define backtrace(msg) MACRO_BEGIN int dev = autocvar_developer; bool war = autocvar_prvm_backtraceforwarnings; cvar_set("developer", "1"); cvar_set("prvm_backtraceforwarnings", "1"); print("\n--- CUT HERE ---\n", msg); _backtrace(); print("\n--- CUT UNTIL HERE ---\n"); cvar_set("developer", ftos(dev)); cvar_set("prvm_backtraceforwarnings", ftos(war)); MACRO_END
+#define error(...) (__self = (NULL), builtin_error(__VA_ARGS__))
+#define PHYS_INPUT_BUTTON_DODGE(s) PHYS_INPUT_BUTTON_BUTTON11(s)
+#define __INTMAX_C(c) c ## L
+#define PING_WORST autocvar_hud_panel_scoreboard_ping_worst
+#define pointparticles(effect,org,vel,howmany) __pointparticles(particleeffectnum(effect), org, vel, howmany)
+#define count_days_decs(time,decs) sprintf(CTX(_("CI_DEC^%s days")), ftos_decimals(time, decs))
+#define PHYS_INPUT_BUTTON_CROUCH(s) PHYS_INPUT_BUTTON_BUTTON5(s)
+#define EV_HUD_Draw_overlay(i,o) o(vector, MUTATOR_ARGV_0_vector) o(float, MUTATOR_ARGV_1_float)
+#define MSLE_CLEAN_Short(x) 
+#define PRECACHE(func) _STATIC_INIT(func ##_3, __static_init_3)
+#define __WINT_MAX__ 0xffffffffU
+#define MAP_10(f,it,...) f(it) MAP_9(f, __VA_ARGS__)
+#define MAP_11(f,it,...) f(it) MAP_10(f, __VA_ARGS__)
+#define MAP_12(f,it,...) f(it) MAP_11(f, __VA_ARGS__)
+#define MAP_14(f,it,...) f(it) MAP_13(f, __VA_ARGS__)
+#define MAP_15(f,it,...) f(it) MAP_14(f, __VA_ARGS__)
+#define MAP_18(f,it,...) f(it) MAP_17(f, __VA_ARGS__)
+#define MAP_19(f,it,...) f(it) MAP_18(f, __VA_ARGS__)
+#define MAP_20(f,it,...) f(it) MAP_19(f, __VA_ARGS__)
+#define prandom_debug() 
+#define GAMEPLAYFIX_SLIDEMOVEPROJECTILES(s) STAT(GAMEPLAYFIX_SLIDEMOVEPROJECTILES)
+#define __BFLT16_MIN_10_EXP__ (-37)
+#define PHYS_AMMO_FUEL(s) STAT(FUEL, s)
+#define startsWith(haystack,needle) (strstrofs(haystack, needle, 0) == 0)
+#define __PTRDIFF_TYPE__ long int
+#define GROUNDENTITY_TYPE float
+#define __SIZE_MAX__ 0xffffffffffffffffUL
+#define __WCHAR_MAX__ 0xffffffffU
+#define PHYS_MAXAIRSTRAFESPEED(s) STAT(MOVEVARS_MAXAIRSTRAFESPEED, s)
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_1 1
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_2 1
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4 1
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_8 1
+#define FOREACH_ENTITY_FLAGS_UNORDERED(fld,match,body) _FOREACH_ENTITY_FIND_UNORDERED(, flags, fld, match, true, body)
+#define __GCC_ATOMIC_CHAR_LOCK_FREE 2
+#define ZCTX(s) strzone(CTX(s))
+#define MSG_ANNCE_NOTIF_(teamnum,name,cvarname,defaultvalue,sound,channel,volume,position,queuetime) REGISTER(Notifications, name, m_id, new_pure(msg_annce_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(cvarname), MSG_ANNCE, strtoupper(#name), teamnum); Create_Notification_Entity_Annce(this, ACVNN(cvarname), strtoupper(#name), channel, sound, volume, position, queuetime); }
+#define __GCC_IEC_559 2
+#define __FLT_EVAL_METHOD__ 0
+#define METHOD_REFERENCE(cname,name) cname ##_ ##name
+#define PHYS_INPUT_BUTTON_MASK(s) ( (BIT(0) * PHYS_INPUT_BUTTON_ATCK(s)) | (BIT(1) * PHYS_INPUT_BUTTON_JUMP(s)) | (BIT(2) * PHYS_INPUT_BUTTON_ATCK2(s)) | (BIT(3) * PHYS_INPUT_BUTTON_ZOOM(s)) | (BIT(4) * PHYS_INPUT_BUTTON_CROUCH(s)) | (BIT(5) * PHYS_INPUT_BUTTON_HOOK(s)) | (BIT(6) * PHYS_INPUT_BUTTON_USE(s)) | (BIT(7) * PHYS_INPUT_BUTTON_BACKWARD(s)) | (BIT(8) * PHYS_INPUT_BUTTON_FORWARD(s)) | (BIT(9) * PHYS_INPUT_BUTTON_LEFT(s)) | (BIT(10) * PHYS_INPUT_BUTTON_RIGHT(s)) )
+#define DAMAGETEXT_PRECISION_MULTIPLIER 128
+#define HUD_Panel_GetPadding() MACRO_BEGIN if (panel_bg_padding_str == "") { panel_bg_padding = autocvar_hud_panel_bg_padding; } else { panel_bg_padding = stof(panel_bg_padding_str); } panel_bg_padding = min(min(panel_size.x, panel_size.y)/2 - 5, panel_bg_padding); MACRO_END
+#define __FLT64_DECIMAL_DIG__ 17
+#define PHYS_INPUT_BUTTON_BACKWARD(s) (PHYS_INPUT_MOVEVALUES(s).x < 0)
+#define NAME_TEAM_4 CTX(_("TEAM^Pink"))
+#define __GCC_ATOMIC_CHAR32_T_LOCK_FREE 2
+#define __WCHAR_MIN__ 0U
+#define MUTEX_LOCK(this) MACRO_BEGIN if (this) LOG_SEVEREF("Loop mutex held by %s", this); this = __FUNC__; MACRO_END
+#define QM_TAG_SUBMENU "S"
+#define IL_TEST_BUILD() s = il_test_build(il_test, ent1, ent2, ent3, ent4, ent5)
+#define PING_HIGH autocvar_hud_panel_scoreboard_ping_high
+#define __FINITE_MATH_ONLY__ 0
+#define InfoMessage(s) MACRO_BEGIN pos = InfoMessages_drawstring(s, pos, mySize, ((img_curr_group >= 0) ? panel_fg_alpha * img_fade[img_curr_group] : panel_fg_alpha), fontsize); img_curr_group = -1; MACRO_END
+#define MSG_CHOICE_NOTIF(name,defaultvalue,challow,chtype,optiona,optionb) NOTIF_ADD_AUTOCVAR(CHOICE_ ##name, defaultvalue) NOTIF_ADD_AUTOCVAR(CHOICE_ ##name ##_ALLOWED, challow) MSG_CHOICE_NOTIF_(0, CHOICE_ ##name, CHOICE_ ##name, defaultvalue, challow, chtype, optiona, optionb)
+#define MUTATOR_REMOVE(name) Mutator_Remove(MUTATOR_ ##name)
+#define REGISTRY_HASH(id) Registry_hash_ ##id
+#define PHYS_WALLJUMP_FORCE(s) STAT(WALLJUMP_FORCE, s)
+#define __FLT64_HAS_INFINITY__ 1
+#define OVERLOAD__(F,...) P99_IF_EMPTY(__VA_ARGS__)(P99_PASTE2(F, _00)())(P99_PASTE3(F, _, P00_NARG(__VA_ARGS__))(__VA_ARGS__))
+#define NAME_NEUTRAL _("Neutral")
+#define MURDER_FRAG_FREEZE2 BOLD(_("^K3%sYou scored against ^BG%s"))
+#define LL_EMPTY(ll) (ll.ll_head == NULL)
+#define QCC_SUPPORT_ERASEABLE 
+#define PHYS_WALLJUMP(s) STAT(WALLJUMP, s)
+#define __DBL_DENORM_MIN__ ((double)4.94065645841246544176568792868221372e-324L)
+#define __DEC64_MAX_EXP__ 385
+#define __FLT128_MANT_DIG__ 113
+#define teamscores_flags(i) _teamscores_flags[i]
+#define __INT8_C(c) c
+#define P00_CLAUSE1(...) __VA_ARGS__ P00_IGNORE
+#define P00_CLAUSE2(...) P00_IDENT
+#define __FLT16_HAS_INFINITY__ 1
+#define REGISTRY_BEGIN_(id) Register ##id ##_First()
+#define __FLT64_MANT_DIG__ 53
+#define _LOG_HELP(s) MACRO_BEGIN string __s = s; print("^7", __s, (str2chr(__s, strlen(__s) - 1) != '\n') ? "\n" : ""); MACRO_END
+#define IL_PEEK(this) (this.il_tail)
+#define HUD_Write_Cvar(cvar) HUD_Write(strcat("seta ", cvar, " \"", cvar_string(cvar), "\"\n"))
+#define __SHRT_MAX__ 0x7fff
+#define __LDBL_MAX__ 1.18973149535723176508575932662800702e+4932L
+#define __ARM_FEATURE_IDIV 1
+#define LOG_WARN(...) _LOG_WARN(strcat1n(__VA_ARGS__))
+#define reinterpret_cast(T,it) _unsafe_cast_ ##T(0, it)
+#define CSQC_UpdateView _CSQC_UpdateView
+#define __FLT64X_MAX_10_EXP__ 4932
+#define __LDBL_IS_IEC_60559__ 1
+#define new(class) _new(class, false)
+#define FOREACH_ENTITY_STRING_UNORDERED(fld,match,body) _FOREACH_ENTITY_FIND_UNORDERED(, string, fld, match, true, body)
+#define ITEM_KEY_BIT(n) ( bitshift(1, n) )
+#define REPLICATE_INIT(type,name) type name
+#define spawn() __spawn("entity", __FILE__ ":" STR(__LINE__), false)
+#define __FLT128_DENORM_MIN__ 6.47517511943802511092443895822764655e-4966F128
+#define IDENTITY(it) it
+#define TAG_VIEWLOC_NAME tag_networkviewloc
+#define ALIAS(var) [[alias(var)]]
+#define __BFLT16_DECIMAL_DIG__ 4
+#define STAT(...) EVAL_STAT(OVERLOAD(STAT, __VA_ARGS__))
+#define PHYS_INPUT_BUTTON_BUTTON13(s) boolean(input_buttons & BIT(15))
+#define REGISTER_MUTATOR(id,dependence) bool MUTATORFUNC_ ##id ##_hooks(int mode) { return = false; } bool MUTATORFUNC_ ##id(int mode) { return = false; bool ret = MUTATORFUNC_ ##id ##_hooks(mode); if (ret) return ret; } bool MUTATOR_ ##id ##_check() { return dependence; } REGISTER(Mutators, MUTATOR, id, m_id, NEW(Mutator, #id, MUTATORFUNC_ ##id)) { this.mutatorcheck = MUTATOR_ ##id ##_check; } ACCUMULATE bool MUTATORFUNC_ ##id(int mode)
+#define FOREACH_MINIGAME_ENTITY(entityvar) entityvar=NULL; while( (entityvar = findentity(entityvar,owner,active_minigame)) )
+#define FOREACH_ARRAY(arr,start,end,cond,body) MACRO_BEGIN for (int _i = start; _i < end; ++_i) { const noref int i = _i; ITER_CONST noref entity it = arr[i]; if (cond) { LAMBDA(body) } } MACRO_END
+#define Write_string(to,f) WriteString(to, f)
+#define __FLT_EVAL_METHOD_TS_18661_3__ 0
+#define HUD_ShiftX(f) (f + hud_shift.x + hud_shift.z * (f - hud_scale_center.x))
+#define HUD_ShiftY(f) (f + hud_shift.y + hud_shift.z * (f - hud_scale_center.y))
+#define settouch(e,f) SELFWRAP_SET(touch, e, f)
+#define __AARCH64_CMODEL_SMALL__ 1
+#define PHYS_WARSOWBUNNY_ACCEL(s) STAT(MOVEVARS_WARSOWBUNNY_ACCEL, s)
+#define __LDBL_MAX_EXP__ 16384
+#define Promise_new() Promise_new_(new_pure(Promise))
+#define __WINT_MIN__ 0U
+#define cross(a,b) ((a) >< (b))
+#define __linux__ 1
+#define PHYS_FROZEN(s) STAT(FROZEN, s)
+#define strid(s) stof(sprintf("%i", s))
+#define __FLT128_MIN_10_EXP__ (-4931)
+#define __FLT32X_IS_IEC_60559__ 1
+#define getentity DO_NOT_USE_GLOBALS
+#define NAME_TEAM_1 CTX(_("TEAM^Red"))
+#define NAME_TEAM_2 CTX(_("TEAM^Blue"))
+#define NAME_TEAM_3 CTX(_("TEAM^Yellow"))
+#define ammo_flags currentammo
+#define Team_FullName(teamid) strcat(Team_ColorName(teamid), " ", NAME_TEAM, "^7")
+#define EV_AnnouncerOption(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define REPLICATE_float(fld,var,func) REPLICATE_7(fld, float, var, func, (fld != cvar(var)), { fld = cvar(var); }, )
+#define EIGHT_VARS_TO_VARARGS_VARLIST VARITEM(1, 0, s1) VARITEM(2, 0, XPD(s1, s2)) VARITEM(3, 0, XPD(s1, s2, s3)) VARITEM(4, 0, XPD(s1, s2, s3, s4)) VARITEM(0, 1, f1) VARITEM(1, 1, XPD(s1, f1)) VARITEM(2, 1, XPD(s1, s2, f1)) VARITEM(3, 1, XPD(s1, s2, s3, f1)) VARITEM(4, 1, XPD(s1, s2, s3, s4, f1)) VARITEM(0, 2, XPD(f1, f2)) VARITEM(1, 2, XPD(s1, f1, f2)) VARITEM(2, 2, XPD(s1, s2, f1, f2)) VARITEM(3, 2, XPD(s1, s2, s3, f1, f2)) VARITEM(4, 2, XPD(s1, s2, s3, s4, f1, f2)) VARITEM(0, 3, XPD(f1, f2, f3)) VARITEM(1, 3, XPD(s1, f1, f2, f3)) VARITEM(2, 3, XPD(s1, s2, f1, f2, f3)) VARITEM(3, 3, XPD(s1, s2, s3, f1, f2, f3)) VARITEM(4, 3, XPD(s1, s2, s3, s4, f1, f2, f3)) VARITEM(0, 4, XPD(f1, f2, f3, f4)) VARITEM(1, 4, XPD(s1, f1, f2, f3, f4)) VARITEM(2, 4, XPD(s1, s2, f1, f2, f3, f4)) VARITEM(3, 4, XPD(s1, s2, s3, f1, f2, f3, f4)) VARITEM(4, 4, XPD(s1, s2, s3, s4, f1, f2, f3, f4))
+#define SELFWRAP_SET(T,e,f) (_selftemp = (e), _selftemp.__ ##T = ((f) ? T ##_self : func_null), _selftemp.self ##T = (f))
+#define PHYS_FRICTION_SLICK(s) STAT(MOVEVARS_FRICTION_SLICK, s)
+#define HUD_WEAPONS_GET_FULL_LAYOUT() MACRO_BEGIN int nHidden = 0; FOREACH(Weapons, it != WEP_Null, { if (weapons_stat & WepSet_FromWeapon(it)) continue; if (it.spawnflags & (WEP_FLAG_HIDDEN | WEP_FLAG_MUTATORBLOCKED | WEP_FLAG_SPECIALATTACK)) nHidden += 1; }); vector table_size = HUD_GetTableSize_BestItemAR((REGISTRY_COUNT(Weapons) - 1) - nHidden, panel_size, aspect); columns = table_size.x; rows = table_size.y; weapon_size.x = panel_size.x / columns; weapon_size.y = panel_size.y / rows; MACRO_END
+#define GAMEPLAYFIX_EASIERWATERJUMP(s) STAT(GAMEPLAYFIX_EASIERWATERJUMP)
+#define __GCC_ATOMIC_POINTER_LOCK_FREE 2
+#define count_years(time) count_fill(time, _("CI_ZER^%d years"), _("CI_FIR^%d year"), _("CI_SEC^%d years"), _("CI_THI^%d years"), _("CI_MUL^%d years"))
+#define SORT_SWAP(a,b) b.sort_prev = a.sort_prev; a.sort_next = b.sort_next; if (b.sort_next) b.sort_next.sort_prev = a; if (a.sort_prev) a.sort_prev.sort_next = b; a.sort_prev = b; b.sort_next = a
+#define updateanim(...) anim_update(__VA_ARGS__)
+#define drawcolorcodedstring(position,text,scale,alpha,flag) drawcolorcodedstring_builtin(HUD_Shift(position), text, scale, alpha, flag)
+#define __INT8_MAX__ 0x7f
+#define _FOREACH_ENTITY_FIND_UNORDERED(id,T,fld,match,cond,body) MACRO_BEGIN MUTEX_LOCK(_FOREACH_ENTITY_FIND_ ##T ##_ ##id ##mutex); entity _foundchain_first = _findchain ##T ##_tofield(fld, match, _FOREACH_ENTITY_FIND_ ##T ##_next ##id); FOREACH_LIST(_foundchain, _FOREACH_ENTITY_FIND_ ##T ##_next ##id, cond, body); MUTEX_UNLOCK(_FOREACH_ENTITY_FIND_ ##T ##_ ##id ##mutex); MACRO_END
+#define REGISTER_WAYPOINT(id,text,icon,color,blink) REGISTER_WAYPOINT_(id, NEW(Waypoint, #id, text, icon, color, blink))
+#define lowpass(value,frac,ref_store,ret) ret = ref_store = ref_store * (1 - frac) + (value) * frac;
+#define PHYS_JUMPSPEEDCAP_MAX autocvar_cl_jumpspeedcap_max
+#define WEAPONS_ALL_C 
+#define ASSERT_LESS(name,var,const) noref int name[(const - var + 1)];
+#define REGISTRY_GET(id,i) id ##_from(i)
+#define ANNCE_INSTANT -1
+#define entcs_receiver_2(i,v) AL_sete(_entcs, i, v)
+#define __GCC_ATOMIC_WCHAR_T_LOCK_FREE 2
+#define CAT(a,b) _CAT(a, b)
+#define EV_CSQC_ConsoleCommand(i,o) i(string, MUTATOR_ARGV_0_string) i(int, MUTATOR_ARGV_1_int) i(string, MUTATOR_ARGV_2_string)
+#define MEAN_DECLARE(prefix,m) float prefix ##_mean = m; .float prefix ##_count, prefix ##_accumulator
+#define EMPTY() 
+#define _STRUCT_PARAM_END(x,id,type) type x ##_ ##id
+#define SET_ONSLICK(s) ((s).flags |= FL_ONSLICK)
+#define __FLT64X_EPSILON__ 1.92592994438723585305597794258492732e-34F64x
+#define W_UPDATE_BOTH(class,fld,T,wepname) W_UPDATE_PRI(class, fld, T, wepname) W_UPDATE_SEC(class, fld, T, wepname)
+#define __STDC_HOSTED__ 1
+#define MINIGAME_SIMPLELINKED_ENTITIES MSLE(minigame_board_piece,FIELD(MINIG_SF_CREATE,Byte,team) FIELD(MINIG_SF_UPDATE, Short, minigame_flags) FIELD(MINIG_SF_UPDATE, Vector2D,origin)) MSLE(pong_paddle,FIELD(MINIG_SF_CREATE,Byte,team) FIELD(MINIG_SF_CREATE,Float,pong_length) FIELD(MINIG_SF_UPDATE,Vector2D,origin)) MSLE(pong_ball,FIELD(MINIG_SF_CREATE,Float,pong_length) FIELD(PONG_SF_BALLTEAM,Byte,team) FIELD(MINIG_SF_UPDATE, Vector2D, velocity) FIELD(MINIG_SF_UPDATE, Vector2D, origin)) MSLE(pong_ai, FIELD(MINIG_SF_CREATE,Byte,team) FIELD(PONG_SF_PLAYERSCORE, Long, pong_score))
+#define REPLICATE_int(fld,var,func) REPLICATE_7(fld, int, var, func, (fld != cvar(var)), { fld = cvar(var); }, )
+#define MURDER_TYPEFRAG2 BOLD(_("^K1%sYou scored against ^BG%s^K1 while they were typing"))
+#define PHYS_WARSOWBUNNY_TOPSPEED(s) STAT(MOVEVARS_WARSOWBUNNY_TOPSPEED, s)
+#define PHYS_VIEWHEIGHT(s) STAT(VIEWHEIGHT, s)
+#define BITCLR_ASSIGN(a,b) ((a) = (a) - ((a) & (b)))
+#define STATIC_ATTRIB(cname,name,type,val) type cname ##_ ##name; _INIT_STATIC(cname) { noref bool strzone; cname ##_ ##name = val; }
+#define __DBL_DIG__ 15
+#define STRING_ITERATOR_SAVE(this) this ##_i
+#define YAW(v) ((v).y)
+#define _TRANSMUTE(cname,this,...) OVERLOAD_(spawn ##cname, this P99_IF_EMPTY(__VA_ARGS__)()(, __VA_ARGS__))
+#define DEGLOB_LOGGING 1
+#define UNSET_ONSLICK(s) ((s).flags &= ~FL_ONSLICK)
+#define LOG_FATAL(...) _LOG_FATAL(strcat1n(__VA_ARGS__))
+#define HEXDIGIT_TO_DEC(d) ((HEXDIGIT_TO_DEC_RAW(d) | 0x10) - 0x10)
+#define __SHRT_WIDTH__ 16
+#define _STR(it) #it
+#define mmssth(tm,compact) clockedtime_tostring(tm, true, compact)
+#define BIT(n) (1 << (n))
+#define __FLT32_IS_IEC_60559__ 1
+#define __LDBL_MIN__ 3.36210314311209350626267781732175260e-4932L
+#define ENUMCLASS_END(id) };
+#define TR_PROPS_COMMON(P,class,prefix) P(class, prefix, aim_firetolerance_dist, float) P(class, prefix, aim_maxpitch, float) P(class, prefix, aim_maxrot, float) P(class, prefix, aim_speed, float) P(class, prefix, ammo_max, float) P(class, prefix, ammo_recharge, float) P(class, prefix, health, float) P(class, prefix, respawntime, float) P(class, prefix, shot_dmg, float) P(class, prefix, shot_force, float) P(class, prefix, shot_radius, float) P(class, prefix, shot_refire, float) P(class, prefix, shot_speed, float) P(class, prefix, shot_spread, float) P(class, prefix, shot_volly, float) P(class, prefix, shot_volly_refire, float) P(class, prefix, target_range, float) P(class, prefix, target_range_min, float) P(class, prefix, target_range_optimal, float) P(class, prefix, target_select_anglebias, float) P(class, prefix, target_select_missilebias, float) P(class, prefix, target_select_playerbias, float) P(class, prefix, target_select_rangebias, float) P(class, prefix, target_select_samebias, float) P(class, prefix, track_accel_pitch, float) P(class, prefix, track_accel_rot, float) P(class, prefix, track_blendrate, float) P(class, prefix, track_type, float)
+#define VEH_LAST (REGISTRY_COUNT(Vehicles) - 1)
+#define TUBA_STARTNOTE(i,n) _Sound_fixpath(W_Sound(strcat("tuba", (i ? ftos(i) : ""), "_loopnote", ftos(n))))
+#define _SELFWRAP_GET(T,e) (RVALUE, (e).__ ##T)
+#define REGISTER_GAMETYPE(NAME,inst) REGISTER(Gametypes, MAPINFO_TYPE, NAME, m_id, inst)
+#define drawcharacter(position,character,scale,rgb,alpha,flag) drawcharacter_builtin(HUD_Shift(position), text, scale, rgb, alpha, flag)
+#define WriteRegistered(r,to,it) Write_byte(to, it.m_id)
+#define repr_cvar_string(x) (x)
+#define PHYS_INPUT_BUTTON_RIGHT(s) (PHYS_INPUT_MOVEVALUES(s).y > 0)
+#define REPLICATE_bool(fld,var,func) REPLICATE_7(fld, bool, var, func, (fld != cvar(var)), { fld = cvar(var); }, )
+#define setcefc(e,f) SELFWRAP_SET(customizeentityforclient, e, f)
+#define PHYS_AIRSPEEDLIMIT_NONQW(s) STAT(MOVEVARS_AIRSPEEDLIMIT_NONQW, s)
+#define SAME_TEAM(a,b) (teamplay ? (a.team == b.team) : (a == b))
+#define strhasword(s,w) (strstrofs(strcat(" ", s, " "), strcat(" ", w, " "), 0) >= 0)
+#define FIX_FRAMETIME(f,ft) MACRO_BEGIN if(IS_DEAD_FRAME(this.f) && this.ft != 0 && this.death_time != 0) this.ft = this.death_time; MACRO_END
+#define EVAL_LL_CLEAR(...) __VA_ARGS__
+#define getstat_float(id) getstatf(id)
+#define __gnu_linux__ 1
+#define db_remove(db,key) db_put(db, key, "")
+#define GET_TAG_INFO(ent,tagindex,forward,right,up,origin) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "GET_TAG_INFO", #ent, #tagindex); origin = _gettaginfo_hidden(ent, tagindex); GET_V_GLOBALS(forward, right, up); CLEAR_V_GLOBALS(); MACRO_END
+#define LL_CLEAR_2(this,dtor) MACRO_BEGIN LinkedList _ll = this; assert(_ll); while (_ll.ll_tail) { entity it = LL_POP(_ll); if (!it) continue; dtor delete(it); } MACRO_END
+#define SND_ONS_GENERATOR_ALARM SND_KH_ALARM
+#define MURDER_FRAG_FIRE2 BOLD(_("^K3%sYou scored against ^BG%s"))
+#define HUD_Panel_GetColor() MACRO_BEGIN if ((teamplay) && panel_bg_color_team > 0) { if (autocvar__hud_configure && myteam == NUM_SPECTATOR) panel_bg_color = '1 0 0' * panel_bg_color_team; else panel_bg_color = myteamcolors * panel_bg_color_team; } else if (autocvar_hud_configure_teamcolorforced && autocvar__hud_configure && panel_bg_color_team > 0) { panel_bg_color = '1 0 0' * panel_bg_color_team; } else { if (panel_bg_color_str == "") { panel_bg_color = autocvar_hud_panel_bg_color; } else { if (panel_bg_color_str == "shirt") { panel_bg_color = colormapPaletteColor(floor(entcs_GetClientColors(current_player) / 16), 0); } else if (panel_bg_color_str == "pants") { panel_bg_color = colormapPaletteColor(entcs_GetClientColors(current_player) % 16, 1); } else { panel_bg_color = stov(panel_bg_color_str); } } } MACRO_END
+#define __FLT16_MIN_EXP__ (-13)
+#define __ARM_FEATURE_FMA 1
+#define _W_NET(class,fld,T,wepname) { if (++n == i) this.wepvar_ ##fld = Read_ ##T(); }
+#define EFFECT(istrail,name,realname) REGISTER(Effects, EFFECT, name, m_id, Create_Effect_Entity(realname, istrail));
+#define __FLT64X_MANT_DIG__ 113
+#define EV_PM_Physics(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) i(float, MUTATOR_ARGV_2_float)
+#define vec2(...) EVAL(OVERLOAD(vec2, __VA_ARGS__))
+#define __BFLT16_DIG__ 2
+#define _LOG(f,level,s) MACRO_BEGIN if (autocvar_developer > 0) f(strcat1n(_LOG_HEADER(level), "\n")); f(strcat1n("^7", s, "\n")); MACRO_END
+#define __pie__ 2
+#define SUCCEED() (TEST_ok = true)
+#define IS_ONSLICK(s) boolean((s).flags & FL_ONSLICK)
+#define _REGISTER_REGISTRY(id,str) ACCUMULATE_FUNCTION(__static_init_1, Register ##id) CLASS(id ##Registry, Object) ATTRIB(id ##Registry, m_name, string, str); ATTRIB(id ##Registry, REGISTRY_NEXT, entity, id ##_first); METHOD(id ##Registry, m_reload, void()); ENDCLASS(id ##Registry) REGISTER(Registries, REGISTRY, id, m_id, NEW(id ##Registry)); METHOD(id ##Registry, m_reload, void()) { id ##_state = 0; Register ##id(); }
+#define __FLT_HAS_DENORM__ 1
+#define __SIZEOF_LONG_DOUBLE__ 16
+#define _LOG_HEADER(level) "^9[::^7"PROGNAME"^9::"level"^9] ", __SOURCELOC__
+#define MUTEX_UNLOCK(this) MACRO_BEGIN this = string_null; MACRO_END
+#define REGISTER_GLOBALSOUND(id,str) REGISTER(GlobalSounds, GS, id, m_id, new_pure(GlobalSound)) { this.m_globalsoundstr = str; }
+#define EV_BuildMutatorsPrettyString(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define CSQC_Init _CSQC_Init
+#define _INIT_STATIC(cname) ACCUMULATE void spawn ##cname ##_static(cname this)
+#define MUTATOR_HOOK(cb,func,order) MACRO_BEGIN MUTATOR_ONADD { if (!CallbackChain_Add(HOOK_ ##cb, CB_ ##func, order)) { _mutPrintFail(#cb, #func); return true; } } MUTATOR_ONROLLBACK_OR_REMOVE { CallbackChain_Remove(HOOK_ ##cb, CB_ ##func); } MACRO_END
+#define KILL_SPREE_LIST SPREE_ITEM(3, 03, _("TRIPLE FRAG! "), _("%s^K1 made a TRIPLE FRAG! %s^BG"), _("%s^K1 made a TRIPLE SCORE! %s^BG")) SPREE_ITEM(5, 05, _("RAGE! "), _("%s^K1 unlocked RAGE! %s^BG"), _("%s^K1 made FIVE SCORES IN A ROW! %s^BG")) SPREE_ITEM(10, 10, _("MASSACRE! "), _("%s^K1 started a MASSACRE! %s^BG"), _("%s^K1 made TEN SCORES IN A ROW! %s^BG")) SPREE_ITEM(15, 15, _("MAYHEM! "), _("%s^K1 executed MAYHEM! %s^BG"), _("%s^K1 made FIFTEEN SCORES IN A ROW! %s^BG")) SPREE_ITEM(20, 20, _("BERSERKER! "), _("%s^K1 is a BERSERKER! %s^BG"), _("%s^K1 made TWENTY SCORES IN A ROW! %s^BG")) SPREE_ITEM(25, 25, _("CARNAGE! "), _("%s^K1 inflicts CARNAGE! %s^BG"), _("%s^K1 made TWENTY FIVE SCORES IN A ROW! %s^BG")) SPREE_ITEM(30, 30, _("ARMAGEDDON! "), _("%s^K1 unleashes ARMAGEDDON! %s^BG"), _("%s^K1 made THIRTY SCORES IN A ROW! %s^BG"))
+#define PHYS_AIRSTRAFEACCELERATE(s) STAT(MOVEVARS_AIRSTRAFEACCELERATE, s)
+#define REGISTER_MONSTER(id,inst) REGISTER(Monsters, MON, id, monsterid, inst)
+#define P00_IS_EMPTY_CASE_0000 P00_IS_EMPTY_CASE_0000
+#define P00_IS_EMPTY_CASE_0001 ,
+#define serialize_float(stream,this) MACRO_BEGIN this = ReadCoord(); MACRO_END
+#define OVERLOAD_(F,...) P99_IF_EMPTY(__VA_ARGS__)(P99_PASTE2(F, _00)())(P99_PASTE3(F, _, P00_NARG(__VA_ARGS__))(__VA_ARGS__))
+#define LOG_INFO(...) _LOG_INFO(strcat1n(__VA_ARGS__))
+#define new_pure(class) _new(class, true)
+#define NOTIF_ADD_AUTOCVAR(name,defaultvalue) float autocvar_notification_ ##name = defaultvalue;
+#define REGISTRY_COUNT(id) id ##_COUNT
+#define repr_cvar_vector(x) (sprintf("%v", x))
+#define __BFLT16_IS_IEC_60559__ 0
+#define P00_IS_EMPTY_CASE_0010 P00_IS_EMPTY_CASE_0010
+#define P00_IS_EMPTY_CASE_0011 P00_IS_EMPTY_CASE_0011
+#define __GCC_ATOMIC_INT_LOCK_FREE 2
+#define MACRO_END }else voidfunc()
+#define SET_FIELD_COUNT(field,first,count) if (!field) { field = (first + count); ++count; }
+#define PHYS_INPUT_BUTTON_CHAT(s) PHYS_INPUT_BUTTON_BUTTON_CHAT(s)
+#define __FLT16_MAX_10_EXP__ 4
+#define MUTATOR_ONREMOVE if (mode == MUTATOR_REMOVING)
+#define __DBL_MAX__ ((double)1.79769313486231570814527423731704357e+308L)
+#define _MUTATOR_HANDLE_PREPARE(type,id) id = in_ ##id;
+#define PHYS_WALLJUMP_VELOCITY_Z_FACTOR(s) STAT(WALLJUMP_VELOCITY_Z_FACTOR, s)
+#define MAX_SCORE 64
+#define __DBL_HAS_INFINITY__ 1
+#define EV_TagIndex_Update(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define FAIL(msg) _TEST_ASSERT(ADD_FAILURE(msg))
+#define setpredraw(e,f) SELFWRAP_SET(predraw, e, f)
+#define CASE(class,id) class ##_ ##id,
+#define __HAVE_SPECULATION_SAFE_VALUE 1
+#define shotorg_adjust shotorg_adjust_values
+#define ENUMCLASS(id) USING(id, int); enum { CASE(id, Null)
+#define MURDER_FRAGGED_FIRE2 BOLD(_("^K1%sYou were scored against by ^BG%s"))
+#define REGISTER_BUFF(id,inst) REGISTER(StatusEffect, BUFF_ ##id, m_id, inst)
+#define __DEC32_MIN_EXP__ (-94)
+#define MODEL(name,path) string MDL_ ##name ##_get() { return path; } REGISTER(Models, MDL, name, m_id, NEW(Model, MDL_ ##name ##_get))
+#define EV_DamageInfo(i,o) i(entity, MUTATOR_ARGV_0_entity) i(int, MUTATOR_ARGV_1_int) i(vector, MUTATOR_ARGV_2_vector)
+#define __FLT32X_HAS_DENORM__ 1
+#define __INT_FAST16_TYPE__ long int
+#define MSG_CHOICE_NOTIF_(teamnum,name,cvarname,defaultvalue,challow,chtype,optiona,optionb) REGISTER(Notifications, name, m_id, new_pure(msg_choice_notification)) { this.nent_choice_idx = nent_choice_count; if (!teamnum || teamnum == NUM_TEAM_4) nent_choice_count++; Create_Notification_Entity (this, defaultvalue, ACVNN(cvarname), MSG_CHOICE, strtoupper(#name), teamnum); Create_Notification_Entity_Choice(this, ACVNN(cvarname), strtoupper(#name), challow, autocvar_notification_ ##cvarname ##_ALLOWED, chtype, optiona, optionb); }
+#define gettouch(e) SELFWRAP_GET(touch, e)
+#define QM_TAG_PLCOMMAND "P"
+#define M_PI 3.14159265358979323846
+#define PHYS_PL_MIN(s) STAT(PL_MIN, s)
+#define teamscores(i) _teamscores[i]
+#define RandomSelection_AddEnt(e,weight,priority) RandomSelection_Add(e, 0, string_null, '0 0 0', weight, priority)
+#define REGISTRY_RESERVE(registry,fld,id,suffix) MACRO_BEGIN entity e = new_pure(registry_reserved); e.registered_id = #id "/" #suffix; REGISTRY_PUSH(registry, fld, e); MACRO_END
+#define __FLT128_HAS_INFINITY__ 1
+#define __DEC128_MAX__ 9.999999999999999999999999999999999E6144DL
+#define EVAL2(...) EVAL3(EVAL3(EVAL3(__VA_ARGS__)))
+#define SPAWNFUNC_ITEM(name,item) 
+#define IS_DECREASING(x) ( !((x) & SFL_LOWER_IS_BETTER) )
+#define COLOR_MED autocvar_hud_panel_scoreboard_ping_medium_color
+#define __FLT32_MAX__ 3.40282346638528859811704183484516925e+38F32
+#define IS_INCREASING(x) ( (x) & SFL_LOWER_IS_BETTER )
+#define __DEC128_EPSILON__ 1E-33DL
+#define FOREACH_ENTITY_ORDERED(cond,body) MACRO_BEGIN int _i = 0; for (entity _it = NULL; (_it = nextent(_it)); ++_i) { const noref int i = _i; ITER_CONST noref entity it = _it; if (cond) LAMBDA(body) } MACRO_END
+#define EVENT(T,args) .bool evt_ ##T ##_listener; .void args evt_ ##T
+#define MSG_INFO_NOTIF_(teamnum,name,cvarname,defaultvalue,strnum,flnum,args,hudargs,icon,normal,gentle) REGISTER(Notifications, name, m_id, new_pure(msg_info_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(cvarname), MSG_INFO, strtoupper(#name), teamnum); Create_Notification_Entity_InfoCenter(this, ACVNN(cvarname), strtoupper(#name), strnum, flnum, args, hudargs, icon, CPID_Null, "", normal, gentle); }
+#define ENABLE_DEBUGTRACE 0
+#define getstat_int(id) getstati(id, 0, 24)
+#define REGISTER_SP(id) REGISTER(Scores, SP, id, m_id, new_pure(PlayerScoreField))
+#define CLASS_1(cname) CLASS_2(cname, )
+#define SPA_LIGHTMAP_COLOR 6
+#define __FLT32_HAS_QUIET_NAN__ 1
+#define __SIZEOF_SIZE_T__ 8
+#define PHYS_MULTIJUMP_COUNT(s) STAT(MULTIJUMP_COUNT, s)
+#define entcs_is_self(e) ((e).sv_entnum == player_localentnum - 1)
+#define RPFLOAT(a) (a=rint(a/PFLOAT)*PFLOAT)
+#define __DEC128_MANT_DIG__ 34
+#define FOREACH_LIST(list,next,cond,body) MACRO_BEGIN int _i = 0; for (entity _it = list ##_first, _next = NULL; _it; (_it = _next, ++_i)) { const noref int i = _i; ITER_CONST noref entity it = _it; _next = _it.next; if (cond) { LAMBDA(body) } } MACRO_END
+#define _STRUCT_PARAM_(x,id,type) type x ##_ ##id,
+#define Promise_catch(this,handler,userdata) Promise_catch_(this, Promise_new(), handler, userdata)
+#define W_UPDATE(class,wepname,fld,T,m) W_UPDATE_ ##m(class, fld, T, wepname)
+#define __FLT64X_MIN_EXP__ (-16381)
+#define STRING_ITERATOR(this,s,i) string this ##_s = s; int this ##_i = i
+#define minigame_hud_panelarea(pos,mySize,panelID) pos = stov(cvar_string(strcat("hud_panel_", HUD_PANEL(panelID).panel_name, "_pos"))); mySize = stov(cvar_string(strcat("hud_panel_", HUD_PANEL(panelID).panel_name, "_size"))); pos ##_x *= vid_conwidth; pos ##_y *= vid_conheight; mySize ##_x *= vid_conwidth; mySize ##_y *= vid_conheight;
+#define _LOG_WARN(s) _LOG(print, "^3WARNING", s)
+#define G_SHOOTFROMFIXEDORIGIN autocvar_cl_shootfromfixedorigin
+#define Team_IndexToColoredFullName(index) Team_ColoredFullName(Team_IndexToTeam(index))
+#define self (RVALUE, this)
+#define SELFWRAP(T,R,oldargs,args,forward) .R oldargs T; noref .R oldargs __ ##T = T; .R args self ##T; R T ##_self oldargs { ENGINE_EVENT(); return this.self ##T forward; }
+#define __FLT32_MAX_EXP__ 128
+#define setthink(e,f) SELFWRAP_SET(think, e, f)
+#define __GCC_HAVE_DWARF2_CFI_ASM 1
+#define LOG_TRACE(...) _LOG_TRACE(strcat1n(__VA_ARGS__))
+#define __ARM_FP16_FORMAT_IEEE 1
+#define CONSOLE_COMMANDS_MOVEMENT() CONSOLE_COMMAND("+forward", { ++camera_direction.x; }) CONSOLE_COMMAND("-forward", { --camera_direction.x; }) CONSOLE_COMMAND("+back", { --camera_direction.x; }) CONSOLE_COMMAND("-back", { ++camera_direction.x; }) CONSOLE_COMMAND("+moveup", { ++camera_direction.z; }) CONSOLE_COMMAND("-moveup", { --camera_direction.z; }) CONSOLE_COMMAND("+movedown", { --camera_direction.z; }) CONSOLE_COMMAND("-movedown", { ++camera_direction.z; }) CONSOLE_COMMAND("+moveright", { --camera_direction.y; }) CONSOLE_COMMAND("-moveright", { ++camera_direction.y; }) CONSOLE_COMMAND("+moveleft", { ++camera_direction.y; }) CONSOLE_COMMAND("-moveleft", { --camera_direction.y; }) CONSOLE_COMMAND("+roll_right", { ++camera_roll; }) CONSOLE_COMMAND("-roll_right", { --camera_roll; }) CONSOLE_COMMAND("+roll_left", { --camera_roll; }) CONSOLE_COMMAND("-roll_left", { ++camera_roll; })
+#define PHYS_INPUT_BUTTON_DRAG(s) PHYS_INPUT_BUTTON_BUTTON8(s)
+#define DEC_TO_HEXDIGIT(d) (substring(HEXDIGITS_MINSET, (d), 1))
+#define mmsst(tm,compact) clockedtime_tostring(tm, false, compact)
+#define _MUTATOR_HOOKABLE(id,params) CallbackChain HOOK_ ##id; bool __Mutator_Send_ ##id(int params(_MUTATOR_HANDLE_PARAMS, _MUTATOR_HANDLE_NOP)) { params(_MUTATOR_HANDLE_PUSHTMP, _MUTATOR_HANDLE_NOP) params(_MUTATOR_HANDLE_PREPARE, _MUTATOR_HANDLE_NOP) bool ret = CallbackChain_Call(HOOK_ ##id); params(_MUTATOR_HANDLE_NOP, _MUTATOR_HANDLE_PUSHOUT) params(_MUTATOR_HANDLE_POPTMP, _MUTATOR_HANDLE_NOP) params(_MUTATOR_HANDLE_NOP, _MUTATOR_HANDLE_POPOUT) return ret; } ACCUMULATE void RegisterHooks() { HOOK_ ##id = NEW(CallbackChain, #id); }
+#define g_assault IS_GAMETYPE(ASSAULT)
+#define ENDCLASS(cname) INIT(cname) { return this; }
+#define SND(id) Sound_fixpath(SND_ ##id)
+#define PHYS_INPUT_BUTTON_BUTTON11(s) boolean(input_buttons & BIT(13))
+#define MAX_TEAMSCORE 2
+#define EV_Skeleton_CheckBones(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define delete_fn builtin_remove
+#define lowpass2(value,frac,ref_store,ref_out) MACRO_BEGIN lowpass(value.x, frac, ref_store.x, ref_out.x); lowpass(value.y, frac, ref_store.y, ref_out.y); MACRO_END
+#define lowpass3(value,frac,ref_store,ref_out) MACRO_BEGIN lowpass(value.x, frac, ref_store.x, ref_out.x); lowpass(value.y, frac, ref_store.y, ref_out.y); lowpass(value.z, frac, ref_store.z, ref_out.z); MACRO_END
+#define PHYS_INVEHICLE(s) (boolean(hud != HUD_NORMAL))
+#define DEATH_WEAPONOF(t) (DEATH_ISSPECIAL(t) ? WEP_Null : REGISTRY_GET(Weapons, (t) & DEATH_WEAPONMASK))
+#define highpass_limited(value,frac,limit,ref_store,ret) MACRO_BEGIN float __f = 0; lowpass_limited(value, frac, limit, ref_store, __f); ret = (value) - __f; MACRO_END
+#define BOLD(translatable_msg) strcat(BOLD_OPERATOR, translatable_msg)
+#define MSG_CENTER_NOTIF(name,defaultvalue,strnum,flnum,args,cpid,durcnt,normal,gentle) NOTIF_ADD_AUTOCVAR(CENTER_ ##name, defaultvalue) MSG_CENTER_NOTIF_(0, CENTER_ ##name, CENTER_ ##name, defaultvalue, strnum, flnum, args, cpid, durcnt, normal, gentle)
+#define REGISTRY_PUSH(registry,fld,it) MACRO_BEGIN it.fld = registry ##_COUNT; _R_SET(_ ##registry, registry ##_COUNT, it); ++registry ##_COUNT; if (!registry ##_first) registry ##_first = it; if (registry ##_last) registry ##_last.REGISTRY_NEXT = it; registry ##_last = it; MACRO_END
+#define WITHSELF(value,block) block
+#define PHYS_INPUT_BUTTON_HOOK(s) PHYS_INPUT_BUTTON_BUTTON6(s)
+#define __FLT64_DENORM_MIN__ 4.94065645841246544176568792868221372e-324F64
+#define __DBL_MIN__ ((double)2.22507385850720138309023271733240406e-308L)
+#define REGISTER_RESOURCE(id,inst) REGISTER(Resources, RES, id, m_id, inst)
+#define g_ca IS_GAMETYPE(CA)
+#define __PIE__ 2
+#define __INT_FAST8_MAX__ 0x7f
+#define P00_NARG(...) P00_ARG(__VA_ARGS__, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, )
+#define SPA_LIGHTMAP0_TEXCOORDS 5
+#define SET_FIRST_OR_LAST(input,first,count) if (!input) { input = (first + count); }
+#define entcs_receiver(...) EVAL_entcs_receiver(OVERLOAD(entcs_receiver, __VA_ARGS__))
+#define __FLT64X_NORM_MAX__ 1.18973149535723176508575932662800702e+4932F64x
+#define GAMEPLAYFIX_UNSTICKPLAYERS(s) STAT(GAMEPLAYFIX_UNSTICKPLAYERS)
+#define HUD_Panel_GetFgAlpha() MACRO_BEGIN panel_fg_alpha = autocvar_hud_panel_fg_alpha; if (autocvar__hud_configure && !panel_enabled) panel_fg_alpha = 0.25; MACRO_END
+#define PHYS_DOUBLEJUMP(s) STAT(DOUBLEJUMP, s)
+#define W_UPDATE_PRI(class,fld,T,wepname) _W_UPDATE(class, primary_ ##fld, T, wepname)
+#define PHYS_MULTIJUMP_DODGING(s) STAT(MULTIJUMP_DODGING, s)
+#define W_PROPS(L,class,prefix) L(W_PROP_BEGIN, W_PROP, W_PROP_END, class, prefix) L(W_CONFIG_BEGIN, W_CONFIG, W_CONFIG_END, class, prefix) L(W_UPDATE_BEGIN, W_UPDATE, W_UPDATE_END, class, prefix) L(W_NET_BEGIN, W_NET, W_NET_END, class, prefix)
+#define __PTRDIFF_MAX__ 0x7fffffffffffffffL
+#define GAMEPLAYFIX_DELAYPROJECTILES(s) STAT(GAMEPLAYFIX_DELAYPROJECTILES)
+#define FOREACH_ENTITY_FLOAT_ORDERED(fld,match,body) _FOREACH_ENTITY_FIND_ORDERED(float, fld, match, true, body)
+#define REPLICATE(...) EVAL_REPLICATE(OVERLOAD(REPLICATE, __VA_ARGS__))
+#define ROLL(v) ((v).z)
+#define W_PROP_BEGIN(class) 
+#define TEST(suite,test) void _TEST_ ##suite ##_ ##test(); ACCUMULATE int TEST_RunAll_accumulated(int f) { if (!TEST_Run(#suite "_" #test)) ++f; return = f; } void _TEST_ ##suite ##_ ##test()
+#define HM_NEW(this) (this = db_create())
+#define __aarch64__ 1
+#define FOREACH(list,cond,body) FOREACH_LIST(list, enemy, cond, body)
+#define EV_DrawGrapplingHook(i,o) i(entity, MUTATOR_ARGV_0_entity) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string) i(vector, MUTATOR_ARGV_2_vector) o(vector, MUTATOR_ARGV_2_vector) i(float, MUTATOR_ARGV_3_float)
+#define _LOG_SEVERE(s) _LOG(backtrace, "^1SEVERE", s)
+#define __FLT64_MIN_10_EXP__ (-307)
+#define WEP_IMPULSE_END bound(WEP_IMPULSE_BEGIN, WEP_IMPULSE_BEGIN + (REGISTRY_COUNT(Weapons) - 1) - 1, 253)
+#define __ARM_FP16_ARGS 1
+#define GAMEPLAYFIX_STEPMULTIPLETIMES(s) STAT(GAMEPLAYFIX_STEPMULTIPLETIMES)
+#define W_UPDATE_NONE(class,fld,T,wepname) _W_UPDATE(class, fld, T, wepname)
+#define WEP_CVAR_BOTH(wepname,isprimary,name) ((isprimary) ? WEP_CVAR_PRI(wepname, name) : WEP_CVAR_SEC(wepname, name))
+#define AL_NEW(this,n,default,T) MACRO_BEGIN ArrayList _al = this = new_pure(ArrayList); _al.al_buf = buf_create(); for (int i = 0, _n = _al.al_len = n; i < _n; ++i) { const _AL_type__ ##T() it = default; AL_set ##T(this, i, it); } MACRO_END
+#define __FLT64X_DECIMAL_DIG__ 36
+#define __DEC128_MIN__ 1E-6143DL
+#define count_hours(time) count_fill(time, _("CI_ZER^%d hours"), _("CI_FIR^%d hour"), _("CI_SEC^%d hours"), _("CI_THI^%d hours"), _("CI_MUL^%d hours"))
+#define __DBL_HAS_DENORM__ 1
+#define __GXX_ABI_VERSION 1018
+#define __FLT32_MIN__ 1.17549435082228750796873653722224568e-38F32
+#define __UINT8_TYPE__ unsigned char
+#define __NO_INLINE__ 1
+#define PHYS_JETPACK_MAXSPEED_UP(s) STAT(JETPACK_MAXSPEED_UP, s)
+#define __FLT64X_IS_IEC_60559__ 1
+#define LOG_WARNF(...) _LOG_WARN(sprintf(__VA_ARGS__))
+#define PHYS_JUMPSTEP(s) STAT(MOVEVARS_JUMPSTEP)
+#define etof(e) num_for_edict(e)
+#define REPLICATE_SIMPLE(field,cvarname) MACRO_BEGIN float thecvar = cvar(cvarname); if(field != thecvar) { ReplicateVars_Send(cvarname); field = thecvar; } MACRO_END
+#define __FLT32X_MAX__ 1.79769313486231570814527423731704357e+308F32x
+#define repr_cvar_bool(x) ((x) ? "1" : "0")
+#define getSendEntity(e) SELFWRAP_GET(SendEntity, e)
+#define PHYS_AIRACCEL_SIDEWAYS_FRICTION(s) STAT(MOVEVARS_AIRACCEL_SIDEWAYS_FRICTION, s)
+#define _backtrace() builtin_remove(NULL)
+#define IS_PLAYER(s) ((s).isplayermodel & ISPLAYER_PLAYER)
+#define PHYS_INPUT_FRAMETIME serverdeltatime
+#define W_UPDATE_END() }
+#define WepSet_FromWeapon(it) ((it).m_wepset)
+#define __FLT_MIN_10_EXP__ (-37)
+#define __SOURCELOC__ (sprintf("^7%s^9(^9%s^7:^9%s^7)", __FUNC__, __FILE__, STR(__LINE__)))
+#define W_CONFIG(class,wepname,fld,T,m) W_CONFIG_ ##m(class, fld, T, wepname)
+#define movetogoal(e,...) (__self = (e), builtin_movetogoal(__VA_ARGS__))
+#define REGISTRY_END_(id) Register ##id ##_Done()
+#define stob(s) stof(s)
+#define __LDBL_DECIMAL_DIG__ 36
+#define stoi(s) stof(s)
+#define getblocked(e) SELFWRAP_GET(blocked, e)
+#define ENTCS_PROP_RESOURCE(id,ispublic,checkprop,setprop,decfactor,svsend,clreceive) void id ##_receive(entity ent) { LAMBDA(clreceive); } REGISTER(EntCSProps, ENTCS_PROP, id, m_id, new_pure(entcs_prop)) { this.m_public = ispublic; this.m_receive = id ##_receive; }
+#define PHYS_INPUT_BUTTON_ZOOM(s) PHYS_INPUT_BUTTON_BUTTON4(s)
+#define PHYS_WALLFRICTION(s) STAT(MOVEVARS_WALLFRICTION)
+#define __FLOAT_WORD_ORDER__ __ORDER_LITTLE_ENDIAN__
+#define CONSTANT_SPEED_DECAY 
+#define PHYS_HEALTH(s) STAT(HEALTH, s)
+#define PHYS_AIRCONTROL_BACKWARDS(s) STAT(MOVEVARS_AIRCONTROL_BACKWARDS, s)
+#define HUD_Panel_UpdatePosSize_ForMenu() MACRO_BEGIN vector new_size = panel_size; float max_panel_width = 0.52 * vid_conwidth; if(panel_size.x > max_panel_width) { new_size.x = max_panel_width; new_size.y = panel_size.y * (new_size.x / panel_size.x); } vector new_pos = vec2(panel_bg_border + 0.5 * max_panel_width, 0.5 * vid_conheight) - 0.5 * new_size; panel_pos = (1 - autocvar__menu_alpha) * panel_pos + (autocvar__menu_alpha) * new_pos; panel_size = (1 - autocvar__menu_alpha) * panel_size + (autocvar__menu_alpha) * new_size; MACRO_END
+#define FOREACH_ENTITY_RADIUS_ORDERED(org,dist,cond,body) MACRO_BEGIN entity _rev_first = NULL; _FOREACH_ENTITY_FIND_UNORDERED(tmp, radius, org, dist, cond, (it._FOREACH_ENTITY_FIND_radius_nexttmp = _rev_first, _rev_first = it)); MUTEX_LOCK(_FOREACH_ENTITY_FIND_radius_tmpmutex); FOREACH_LIST(_rev, _FOREACH_ENTITY_FIND_radius_nexttmp, true, body); MUTEX_UNLOCK(_FOREACH_ENTITY_FIND_radius_tmpmutex); MACRO_END
+#define g_tdm IS_GAMETYPE(TEAM_DEATHMATCH)
+#define ACVNN(name) autocvar_notification_ ##name
+#define REGISTRY_DEPENDS(id,dep) void Register ##dep(); void REGISTRY_DEPENDS_(id) { Register ##dep(); }
+#define P00_IS_EMPTY_CASE_0110 P00_IS_EMPTY_CASE_0110
+#define MURDER_FRAGGED_FREEZE2 BOLD(_("^K1%sYou were scored against by ^BG%s"))
+#define IL_EACH(this,cond,body) MACRO_BEGIN IntrusiveList _il = this; assert(_il); .entity il_next = _il.il_nextfld; noref int i = 0; entity il_loop_item_save = this.il_loop_item; this.il_loop_item = NULL; for (entity _next, _it = _il.il_head; _it; (_it = _next, ++i)) { const noref entity it = _it; this.il_loop_item = it; _next = it.(il_next); if (cond) { LAMBDA(body) } if (this.il_loop_item != it) _next = this.il_loop_item; else _next = it.(il_next); } this.il_loop_item = il_loop_item_save; MACRO_END
+#define P00_IS_EMPTY_CASE_0111 P00_IS_EMPTY_CASE_0111
+#define PHYS_INPUT_BUTTON_ZOOMSCRIPT(s) PHYS_INPUT_BUTTON_BUTTON9(s)
+#define REGISTER_ITEM(id,class) REGISTER(Items, ITEM, id, m_id, NEW(class))
+#define ERASEABLE [[eraseable]]
+#define PHYS_INPUT_BUTTON_BUTTON2(s) boolean(input_buttons & BIT(1))
+#define PHYS_INPUT_BUTTON_BUTTON4(s) boolean(input_buttons & BIT(3))
+#define PHYS_INPUT_BUTTON_BUTTON6(s) boolean(input_buttons & BIT(5))
+#define __FLT128_DIG__ 33
+#define PHYS_INPUT_BUTTON_BUTTON9(s) boolean(input_buttons & BIT(11))
+#define delete(this) MACRO_BEGIN entity _this = (this); void(entity) _dtor = _this.dtor; ONREMOVE(this); if (_dtor) _dtor(_this); else delete_fn(_this); MACRO_END
+#define MULTITEAM_CENTER(prefix,defaultvalue,strnum,flnum,args,cpid,durcnt,normal,gentle,type) NOTIF_ADD_AUTOCVAR(CENTER_ ##prefix, defaultvalue) MSG_CENTER_NOTIF_TEAM(NUM_TEAM_1, prefix ##_RED, prefix, defaultvalue, strnum, flnum, args, cpid, durcnt, TCR(normal, type, 1), TCR(gentle, type, 1)) MSG_CENTER_NOTIF_TEAM(NUM_TEAM_2, prefix ##_BLUE, prefix, defaultvalue, strnum, flnum, args, cpid, durcnt, TCR(normal, type, 2), TCR(gentle, type, 2)) MSG_CENTER_NOTIF_TEAM(NUM_TEAM_3, prefix ##_YELLOW, prefix, defaultvalue, strnum, flnum, args, cpid, durcnt, TCR(normal, type, 3), TCR(gentle, type, 3)) MSG_CENTER_NOTIF_TEAM(NUM_TEAM_4, prefix ##_PINK, prefix, defaultvalue, strnum, flnum, args, cpid, durcnt, TCR(normal, type, 4), TCR(gentle, type, 4))
+#define __SCHAR_WIDTH__ 8
+#define Write_int(to,f) WriteInt24_t(to, f)
+#define colormapPaletteColor(c,isPants) colormapPaletteColor_(c, isPants, time)
+#define __FLT32_MAX_10_EXP__ 38
+#define TCR(input,type,team) strreplace("^TC", COL_TEAM_ ##team, strreplace("^TT", strtoupper(type ##_TEAM_ ##team), input))
+#define ANNCE_LENGTH 0
+#define entityclass(...) EVAL_entityclass(OVERLOAD_(entityclass, __VA_ARGS__))
+#define __INT_FAST32_TYPE__ long int
+#define _LOG_TRACE(s) _LOG(dprint, "^6TRACE", s)
+#define REGISTER_5(registry,ns,id,fld,inst) REGISTER_4(registry, ns ##_ ##id, fld, inst)
+#define __BFLT16_EPSILON__ 7.81250000000000000000000000000000000e-3BF16
+#define ALPHA m_alpha
+#define g_stat_ROCKETS getstati(STAT_ROCKETS)
+#define W_PROP_PRI(class,fld,T,wepname) _W_PROP(class, primary_ ##fld, T, wepname)
+#define REGISTER_WEAPON_2(id,inst) REGISTER(Weapons, WEP, id, m_id, inst)
+#define REGISTER_WEAPON_3(id,sname,inst) REGISTER_WEAPON_2(id, inst); [[alias("WEP_" #id)]] Weapon _wep_ ##sname
+#define draw_beginBoldFont() drawfont = FONT_USER + 2
+#define P00_IS_EMPTY_CASE_0100 P00_IS_EMPTY_CASE_0100
+#define P00_IS_EMPTY_CASE_0101 P00_IS_EMPTY_CASE_0101
+#define aim DO_NOT_USE_GLOBALS
+#define FLAG_TEAM_1 CTX(_("FLAG^Red"))
+#define FLAG_TEAM_2 CTX(_("FLAG^Blue"))
+#define FLAG_TEAM_3 CTX(_("FLAG^Yellow"))
+#define FLAG_TEAM_4 CTX(_("FLAG^Pink"))
+#define _R_DEL(r) AL_DELETE(r)
+#define __FLT64X_DIG__ 33
+#define __INT8_TYPE__ signed char
+#define RandomSelection_AddFloat(f,weight,priority) RandomSelection_Add(NULL, f, string_null, '0 0 0', weight, priority)
+#define TR_CONFIG_END() 
+#define __ELF__ 1
+#define __GCC_ASM_FLAG_OUTPUTS__ 1
+#define __DEC32_SUBNORMAL_MIN__ 0.000001E-95DF
+#define PHYS_CL_TRACK_CANJUMP(s) STAT(MOVEVARS_CL_TRACK_CANJUMP, s)
+#define count_seconds(time) count_fill(time, _("CI_ZER^%d seconds"), _("CI_FIR^%d second"), _("CI_SEC^%d seconds"), _("CI_THI^%d seconds"), _("CI_MUL^%d seconds"))
+#define _strid(s) ITOF(reinterpret_cast(int, s))
+#define __FLT_RADIX__ 2
+#define __INT_LEAST16_TYPE__ short int
+#define getthink(e) SELFWRAP_GET(think, e)
+#define W_CONFIG_PRI(class,fld,T,wepname) _W_CONFIG(class, primary_ ##fld, T, wepname)
+#define __ARM_PCS_AAPCS64 1
+#define ASSERT_EQ(expected,actual) _TEST_ASSERT(EXPECT_EQ(expected, actual))
+#define CSQC_InputEvent _CSQC_InputEvent
+#define MURDER_TYPEFRAGGED BOLD(_("^K1%sYou were typefragged by ^BG%s"))
+#define STRUCT_DECLARE(id,s) s(_STRUCT_DECLARE, id)
+#define _MUTATOR_HANDLE_NOP(type,id) 
+#define PHYS_AIRCONTROL(s) STAT(MOVEVARS_AIRCONTROL, s)
+#define __SIG_ATOMIC_MAX__ 0x7fffffff
+#define ASSERT_GE(val1,val2) _TEST_ASSERT(EXPECT_GE(val1, val2))
+#define DEFER(id) id EMPTY()
+#define ASSERT_GT(val1,val2) _TEST_ASSERT(EXPECT_GT(val1, val2))
+#define CTX_CACHE 1
+#define BUFF_SPAWNFUNC_Q3COMPAT(o,r) 
+#define CLEAR_V_GLOBALS() MACRO_BEGIN if (autocvar_debug_deglobalization_clear) { v_forward = VEC_NAN; v_right = VEC_NAN; v_up = VEC_NAN } MACRO_END
+#define MULTITEAM_MULTI(prefix,defaultvalue,anncepre,infopre,centerpre) MSG_MULTI_NOTIF(prefix ##_RED, defaultvalue, anncepre ##_RED, infopre ##_RED, centerpre ##_RED) MSG_MULTI_NOTIF(prefix ##_BLUE, defaultvalue, anncepre ##_BLUE, infopre ##_BLUE, centerpre ##_BLUE) MSG_MULTI_NOTIF(prefix ##_YELLOW, defaultvalue, anncepre ##YELLOW, infopre ##YELLOW, centerpre ##YELLOW) MSG_MULTI_NOTIF(prefix ##_PINK, defaultvalue, anncepre ##PINK, infopre ##PINK, centerpre ##PINK)
+#define ReadInt72_t() vec3(ReadInt24_t(), ReadInt24_t(), ReadInt24_t())
+#define __SIZEOF_PTRDIFF_T__ 8
+#define EV_ForcePlayercolors_Skip(i,o) i(entity, MUTATOR_ARGV_0_entity) i(bool, MUTATOR_ARGV_1_bool)
+#define ITOF(i) ((i) / INTEGER_ONE)
+#define serialize(T,stream,...) MACRO_BEGIN noref Stream _stream = stream; serialize_ ##T(_stream, __VA_ARGS__); MACRO_END
+#define P00_IF_CLAUSE(EXP) P00__IF_CLAUSE(EXP, P00_CLAUSE1, P00_CLAUSE2, ~)
+#define EV_Ent_Projectile(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define objerror_safe(e) 
+#define RACE_RECORD "/race100record/"
+#define MUTATOR_HOOKFUNCTION(...) EVAL_MUTATOR_HOOKFUNCTION(OVERLOAD(MUTATOR_HOOKFUNCTION, __VA_ARGS__))
+#define IS_JUMP_HELD(s) (!((s).flags & FL_JUMPRELEASED))
+#define __FLT32X_MANT_DIG__ 53
+#define WITH(type,name,value,block) MACRO_BEGIN type __with_save = (name); name = (value); LAMBDA(block) name = __with_save; MACRO_END
+#define Net_Accept(classname) MACRO_BEGIN if (!this) this = new(classname); MACRO_END
+#define ASSERT_LE(val1,val2) _TEST_ASSERT(EXPECT_LE(val1, val2))
+#define ASSERT_LT(val1,val2) _TEST_ASSERT(EXPECT_LT(val1, val2))
+#define LOG_DEBUG(...) _LOG_DEBUG(strcat1n(__VA_ARGS__))
+#define __LDBL_DIG__ 33
+#define ReadSByte() (_ReadSByte = ReadByte(), (_ReadSByte & BIT(7) ? -128 : 0) + (_ReadSByte & BITS(7)))
+#define __FLT16_IS_IEC_60559__ 1
+#define __FLT16_MAX_EXP__ 16
+#define EVAL_REPLICATE(...) __VA_ARGS__
+#define ASSERT_NE(val1,val2) _TEST_ASSERT(EXPECT_NE(val1, val2))
+#define CMD_Write(s) fputs(fh, s)
+#define IL_EMPTY(this) (this.il_head == NULL)
+#define EV_TagIndex_Apply(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __GCC_CONSTRUCTIVE_SIZE 64
+#define __UINT_FAST32_MAX__ 0xffffffffffffffffUL
+#define entityclass_2(name,base) USING(name, entity)
+#define __UINT_LEAST64_TYPE__ long unsigned int
+#define DEATH_ISVEHICLE(t) (DEATH_ISSPECIAL(t) && (REGISTRY_GET(Deathtypes, t - DT_FIRST)).death_msgextra == "vehicle")
+#define STR(it) _STR(it)
+#define __FLT_HAS_QUIET_NAN__ 1
+#define REPLICATE_string(fld,var,func) REPLICATE_7(fld, float, var, func, (fld != cvar_string(var)), { strcpy(fld, cvar_string(var)); }, { strfree(fld); })
+#define GAMEPLAYFIX_DOWNTRACEONGROUND(s) STAT(GAMEPLAYFIX_DOWNTRACEONGROUND)
+#define PHYS_JUMPSPEEDCAP_DISABLE_ONRAMPS(s) STAT(MOVEVARS_JUMPSPEEDCAP_DISABLE_ONRAMPS)
+#define GAMEPLAYFIX_NOAIRBORNCORPSE(s) STAT(GAMEPLAYFIX_NOAIRBORNCORPSE)
+#define __FLT64X_HAS_DENORM__ 1
+#define P00_IS_EMPTY_CASE_1000 P00_IS_EMPTY_CASE_1000
+#define P00_IS_EMPTY_CASE_1001 P00_IS_EMPTY_CASE_1001
+#define __FLT_HAS_INFINITY__ 1
+#define __ARM_FEATURE_UNALIGNED 1
+#define _FOREACH_ENTITY_FIND_ORDERED(T,fld,match,cond,body) MACRO_BEGIN int _i = 0; for (entity _it = NULL; (_it = _find ##T(_it, fld, match)); ++_i) { const noref int i = _i; ITER_CONST noref entity it = _it; if (cond) LAMBDA(body) } MACRO_END
+#define P00_IS_EMPTY_CASE_1010 P00_IS_EMPTY_CASE_1010
+#define P00_IS_EMPTY_CASE_1011 P00_IS_EMPTY_CASE_1011
+#define shutdownhooks() CALL_ACCUMULATED_FUNCTION( __shutdown)
+#define ACCUMULATE [[accumulate]]
+#define __INT_FAST32_WIDTH__ 64
+#define NULL (RVALUE, world)
+#define PHYS_SLICK_APPLYGRAVITY(s) STAT(SLICK_APPLYGRAVITY)
+#define __CHAR16_TYPE__ short unsigned int
+#define ReadAngleVector() vec3(ReadAngle(), ReadAngle(), ReadAngle())
+#define IS_NOT_A_CLIENT(s) (!(s).isplayermodel && (s) != csqcplayer)
+#define __DBL_NORM_MAX__ ((double)1.79769313486231570814527423731704357e+308L)
+#define __SIZE_WIDTH__ 64
+#define EVAL_MUTATOR_HOOKFUNCTION(...) __VA_ARGS__
+#define __FLT16_NORM_MAX__ 6.55040000000000000000000000000000000e+4F16
+#define MSG_ANNCE_NOTIF_TEAM(teamnum,name,cvarname,defaultvalue,sound,channel,volume,position,queuetime) MSG_ANNCE_NOTIF_(teamnum, ANNCE_ ##name, ANNCE_ ##cvarname, defaultvalue, sound, channel, volume, position, queuetime)
+#define __UINT_LEAST32_MAX__ 0xffffffffU
+#define __GCC_ATOMIC_LONG_LOCK_FREE 2
+#define LOG_SEVEREF(...) _LOG_SEVERE(sprintf(__VA_ARGS__))
+#define GENERATOR_TEAM_1 CTX(_("GENERATOR^Red"))
+#define GENERATOR_TEAM_2 CTX(_("GENERATOR^Blue"))
+#define GENERATOR_TEAM_3 CTX(_("GENERATOR^Yellow"))
+#define GENERATOR_TEAM_4 CTX(_("GENERATOR^Pink"))
+#define EVAL_ATTRIB(...) __VA_ARGS__
+#define __ARM_FEATURE_CLZ 1
+#define __INT_LEAST8_TYPE__ signed char
+#define _REGISTER_HUD_PANEL(id,draw_func,export_func,configflags,showflags) void draw_func(); void export_func(int fh); REGISTER(hud_panels, HUD_PANEL, id, m_id, new_pure(hud_panel)) { this.panel_id = this.m_id; this.panel_draw = draw_func; this.panel_export = export_func; this.panel_name = strzone(strtolower(#id)); this.panel_configflags = configflags; this.panel_showflags = showflags; }
+#define __FLT16_MAX__ 6.55040000000000000000000000000000000e+4F16
+#define vec2_1(v) (_vec2 = (v), _vec2.z = 0, _vec2)
+#define checkclient(e,...) (__self = (e), builtin_checkclient(__VA_ARGS__))
+#define SPAWN_PURE 0
+#define TELEPORT_FLAGS_WARPZONE 0
+#define _R_SET(r,i,e) AL_sete(r, i, e)
+#define __DEC32_MAX_EXP__ 97
+#define W_CONFIG_BOTH(class,fld,T,wepname) W_CONFIG_PRI(class, fld, T, wepname) W_CONFIG_SEC(class, fld, T, wepname)
+#define __SIZEOF_POINTER__ 8
+#define EV_DrawInfoMessages(i,o) i(vector, MUTATOR_ARGV_0_vector) o(vector, MUTATOR_ARGV_0_vector) i(vector, MUTATOR_ARGV_1_vector) i(int, MUTATOR_ARGV_2_int) o(int, MUTATOR_ARGV_2_int)
+#define BUFF_SPAWNFUNC(e,b,t) 
+#define LOG_TRACEF(...) _LOG_TRACE(sprintf(__VA_ARGS__))
+#define W_NET(class,wepname,fld,T,m) W_NET_ ##m(class, fld, T, wepname)
+#define __FLT64_HAS_QUIET_NAN__ 1
+#define skel_mul_bone DO_NOT_USE_GLOBALS
+#define WAS_ONSLICK(s) boolean((s).lastflags & FL_ONSLICK)
+#define PHYS_FRICTION(s) STAT(MOVEVARS_FRICTION, s)
+#define EVAL_entcs_receiver(...) __VA_ARGS__
+#define MULTIICON_INFO_(name,defaultvalue,strnum,flnum,args,hudargs,iconargs,icon,normal,gentle) NOTIF_ADD_AUTOCVAR(name, defaultvalue) REGISTER(Notifications, name, m_id, new_pure(msg_info_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(name), MSG_INFO, strtoupper(#name), 0); Create_Notification_Entity_InfoCenter(this, ACVNN(name), strtoupper(#name), strnum, flnum, args, hudargs, icon, CPID_Null, "", normal, gentle); this.nent_iconargs = iconargs; }
+#define count_seconds_decs(time,decs) sprintf(CTX(_("CI_DEC^%s seconds")), ftos_decimals(time, decs))
+#define SPA_R_AXIS 3
+#define pow(a,b) ((a) ** (b))
+#define LAZY(id) __lazy_ ##id
+#define BITSET_ASSIGN(a,b) ((a) |= (b))
+#define REGISTRY_DEFINE_GET(id,null) entity id ##_from(int i) { if (i >= 0 && i < id ##_COUNT) { entity e = _R_GET(_ ##id, i); if (e) return e; } return null; }
+#define AUTOCVAR(...) _AUTOCVAR(false, __VA_ARGS__)
+#define __LDBL_MANT_DIG__ 113
+#define _LOG_FATAL(s) _LOG(error, "^1FATAL", s)
+#define STATIC_INIT_EARLY(func) _STATIC_INIT(func ##_0, __static_init_0)
+#define pointinsidebox(point,bmins,bmaxs) boxinsidebox(point, point, bmins, bmaxs)
+#define EV_GetModelParams(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string)
+#define subscribe(listener,T,fn) MACRO_BEGIN listener.evt_ ##T = (fn); listener.evt_ ##T ##_listener = true; IL_PUSH(g_events, listener); MACRO_END
+#define __SIG_ATOMIC_MIN__ (-__SIG_ATOMIC_MAX__ - 1)
+#define P99_MAX_NUMBER 16
+#define WEPENT_NETPROPS(PROP) PROP(false, sv_entnum, WEPENT_SET_NORMAL, {}, {}) PROP(false, m_switchweapon, WEPENT_SET_NORMAL, { WriteByte(chan, this.m_switchweapon.m_id); }, { (viewmodels[this.m_wepent_slot]).switchweapon = REGISTRY_GET(Weapons, ReadByte()); }) PROP(false, m_switchingweapon, WEPENT_SET_NORMAL, { WriteByte(chan, this.m_switchingweapon.m_id); }, { (viewmodels[this.m_wepent_slot]).switchingweapon = REGISTRY_GET(Weapons, ReadByte()); }) PROP(false, m_weapon, WEPENT_SET_NORMAL, { WriteByte(chan, this.m_weapon.m_id); }, { (viewmodels[this.m_wepent_slot]).activeweapon = REGISTRY_GET(Weapons, ReadByte()); }) PROP(false, m_alpha, WEPENT_SET_NORMAL, { WriteByte(chan, rint(bound(-1, 254 * this.m_alpha, 254) - -1)); }, { (viewmodels[this.m_wepent_slot]).m_alpha = (ReadByte() + -1) / 254; }) PROP(false, vortex_charge, WEPENT_SET_NORMAL, { WriteByte(chan, this.vortex_charge * 255); }, { (viewmodels[this.m_wepent_slot]).vortex_charge = ReadByte() / 255; }) PROP(false, oknex_charge, WEPENT_SET_NORMAL, { WriteByte(chan, this.oknex_charge * 16); }, { (viewmodels[this.m_wepent_slot]).oknex_charge = ReadByte() / 16; }) PROP(false, m_gunalign, WEPENT_SET_NORMAL, { WriteByte(chan, this.m_gunalign); }, { (viewmodels[this.m_wepent_slot]).m_gunalign = ReadByte(); }) PROP(false, porto_v_angle_held, WEPENT_SET_NORMAL, { WriteByte(chan, this.porto_v_angle_held); if(this.porto_v_angle_held) { WriteAngleVector2D(chan, this.owner.porto_v_angle); } }, { (viewmodels[this.m_wepent_slot]).angles_held_status = ReadByte(); if((viewmodels[this.m_wepent_slot]).angles_held_status) { (viewmodels[this.m_wepent_slot]).angles_held = ReadAngleVector2D(); } else { (viewmodels[this.m_wepent_slot]).angles_held = '0 0 0'; } }) PROP(false, tuba_instrument, WEPENT_SET_NORMAL, { WriteByte(chan, this.tuba_instrument); }, { (viewmodels[this.m_wepent_slot]).tuba_instrument = ReadByte(); }) PROP(false, hagar_load, WEPENT_SET_NORMAL, { WriteByte(chan, this.hagar_load); }, { (viewmodels[this.m_wepent_slot]).hagar_load = ReadByte(); }) PROP(false, minelayer_mines, WEPENT_SET_NORMAL, { WriteByte(chan, this.minelayer_mines); }, { (viewmodels[this.m_wepent_slot]).minelayer_mines = ReadByte(); }) PROP(false, arc_heat_percent, WEPENT_SET_NORMAL, { WriteByte(chan, this.arc_heat_percent * 255); }, { (viewmodels[this.m_wepent_slot]).arc_heat_percent = ReadByte() / 255; }) PROP(false, vortex_chargepool_ammo, WEPENT_SET_NORMAL, { WriteByte(chan, this.vortex_chargepool_ammo * 16); }, { (viewmodels[this.m_wepent_slot]).vortex_chargepool_ammo = ReadByte() / 16; }) PROP(false, oknex_chargepool_ammo, WEPENT_SET_NORMAL, { WriteByte(chan, this.oknex_chargepool_ammo * 16); }, { (viewmodels[this.m_wepent_slot]).oknex_chargepool_ammo = ReadByte() / 16; }) PROP(false, clip_load, WEPENT_SET_NORMAL, { WriteShort(chan, this.clip_load); }, { (viewmodels[this.m_wepent_slot]).clip_load = ReadShort(); }) PROP(false, clip_size, WEPENT_SET_NORMAL, { WriteShort(chan, this.clip_size); }, { (viewmodels[this.m_wepent_slot]).clip_size = ReadShort(); }) PROP(false, skin, WEPENT_SET_NORMAL, { WriteShort(chan, this.skin); }, { (viewmodels[this.m_wepent_slot]).m_skin = ReadShort(); })
+#define assert(expr,...) _assert(print_assertfailed_severe, expr, __VA_ARGS__)
+#define MURDER_TYPEFRAGGED2 BOLD(_("^K1%sYou were scored against by ^BG%s^K1 while typing"))
+#define drawfill(position,size,rgb,alpha,flag) drawfill_builtin(HUD_Shift(position), HUD_Scale(size), rgb, alpha, flag)
+#define getstat_vectori(id) vec3(getstat_int(id + 0), getstat_int(id + 1), getstat_int(id + 2))
+#define __UINT16_TYPE__ short unsigned int
+#define APP_TEAM_NUM(num,prefix) ((num == NUM_TEAM_1) ? prefix ##_RED : ((num == NUM_TEAM_2) ? prefix ##_BLUE : ((num == NUM_TEAM_3) ? prefix ##_YELLOW : prefix ##_PINK)))
+#define IL_LAST(this) (this.il_tail)
+#define HasFatalFailure() (TEST_fatal > 0)
+#define STATIC_ATTRIB_STRZONE(cname,name,type,val) type cname ##_ ##name; _INIT_STATIC(cname) { strcpy(cname ##_ ##name, val); }
+#define CSQCMODEL_EXTRAPROPERTIES CSQCMODEL_PROPERTY(BIT(0), int, ReadShort, WriteShort, colormap) CSQCMODEL_PROPERTY(BIT(1), int, ReadInt24_t, WriteInt24_t, effects) CSQCMODEL_PROPERTY(BIT(2), int, ReadByte, WriteByte, modelflags) CSQCMODEL_PROPERTY(BIT(2), int, ReadByte, WriteByte, skin) CSQCMODEL_PROPERTY(BIT(2), int, ReadByte, WriteByte, traileffect) CSQCMODEL_PROPERTY(BIT(3), int, ReadByte, WriteByte, move_movetype) CSQCMODEL_PROPERTY_SCALED(BIT(3), float, ReadByte, WriteByte, ALPHA, 254, -1, 254) CSQCMODEL_PROPERTY(BIT(3), float, ReadByte, WriteByte, solid) CSQCMODEL_PROPERTY(BIT(4), int, ReadByte, WriteByte, multijump_count) CSQCMODEL_PROPERTY(BIT(4), int, ReadByte, WriteByte, clipgroup) CSQCMODEL_PROPERTY(BIT(5), float, ReadApproxPastTime, WriteApproxPastTime, death_time) CSQCMODEL_IF(isplayer) CSQCMODEL_PROPERTY(BIT(6), GROUNDENTITY_TYPE, ReadShort, WriteEntity, GROUNDENTITY_NAME) CSQCMODEL_ENDIF CSQCMODEL_IF(!isplayer) CSQCMODEL_PROPERTY(BIT(7), TAG_ENTITY_TYPE, ReadShort, WriteEntity, TAG_ENTITY_NAME) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, glowmod_x, 254, -1, 254) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, glowmod_y, 254, -1, 254) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, glowmod_z, 254, -1, 254) CSQCMODEL_ENDIF CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, colormod_x, 16, 0, 255) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, colormod_y, 16, 0, 255) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, colormod_z, 16, 0, 255) CSQCMODEL_IF(isplayer) CSQCMODEL_PROPERTY(BIT(7), int, ReadByte, WriteByte, anim_state) CSQCMODEL_PROPERTY(BIT(7), float, ReadApproxPastTime, WriteApproxPastTime, anim_time) CSQCMODEL_IF(!islocalplayer) CSQCMODEL_PROPERTY(BIT(8), float, ReadChar, WriteChar, anim_lower_action) CSQCMODEL_PROPERTY(BIT(8), float, ReadApproxPastTime, WriteApproxPastTime, anim_lower_time) CSQCMODEL_ENDIF CSQCMODEL_PROPERTY(BIT(9), float, ReadChar, WriteChar, anim_upper_action) CSQCMODEL_PROPERTY(BIT(9), float, ReadApproxPastTime, WriteApproxPastTime, anim_upper_time) CSQCMODEL_ENDIF CSQCMODEL_PROPERTY(BIT(10), float, ReadAngle, WriteAngle, v_angle_x) CSQCMODEL_PROPERTY(BIT(11), TAG_VIEWLOC_TYPE, ReadShort, WriteEntity, TAG_VIEWLOC_NAME) CSQCMODEL_PROPERTY(BIT(12), float, ReadCoord, WriteCoord, scale) CSQCMODEL_PROPERTY(BIT(13), int, ReadInt24_t, WriteInt24_t, dphitcontentsmask)
+#define GAMEPLAYFIX_GRENADEBOUNCESLOPES(s) STAT(GAMEPLAYFIX_GRENADEBOUNCESLOPES)
+#define __UINTPTR_MAX__ 0xffffffffffffffffUL
+#define __INT_FAST64_WIDTH__ 64
+#define APPEND_TO_STRING(list,sep,add) ((list) = (((list) != "") ? strcat(list, sep, add) : (add)))
+#define g_stat_CELLS getstati(STAT_CELLS)
+#define power2of(e) (2 ** e)
+#define P00_IS_0_EQ_0(...) ,
+#define count_years_decs(time,decs) sprintf(CTX(_("CI_DEC^%s years")), ftos_decimals(time, decs))
+#define drawpic_aspect(pos,pic,mySize,color,theAlpha,drawflag) MACRO_BEGIN _drawpic_imgsize = draw_getimagesize(pic); if(_drawpic_imgsize != '0 0 0') { _drawpic_imgaspect = _drawpic_imgsize.x/_drawpic_imgsize.y; _drawpic_sz = mySize; if(_drawpic_sz.x/_drawpic_sz.y > _drawpic_imgaspect) { _drawpic_oldsz = _drawpic_sz.x; _drawpic_sz.x = _drawpic_sz.y * _drawpic_imgaspect; if(_drawpic_sz.x) drawpic(pos + eX * 0.5 * (_drawpic_oldsz - _drawpic_sz.x), pic, _drawpic_sz, color, theAlpha, drawflag); } else { _drawpic_oldsz = _drawpic_sz.y; _drawpic_sz.y = _drawpic_sz.x / _drawpic_imgaspect; if(_drawpic_sz.y) drawpic(pos + eY * 0.5 * (_drawpic_oldsz - _drawpic_sz.y), pic, _drawpic_sz, color, theAlpha, drawflag); } } MACRO_END
+#define __GCC_ATOMIC_SHORT_LOCK_FREE 2
+#define __GCC_ATOMIC_TEST_AND_SET_TRUEVAL 1
+#define CROSSHAIR_DRAW(sz,wcross_name,wcross_alpha) CROSSHAIR_DO_BLUR(CROSSHAIR_DRAW_SINGLE,sz,wcross_name,wcross_alpha)
+#define __FLT_DIG__ 6
+#define PHYS_INPUT_BUTTON_LEFT(s) (PHYS_INPUT_MOVEVALUES(s).y < 0)
+#define __FLT_NORM_MAX__ 3.40282346638528859811704183484516925e+38F
+#define LEGACY_IMPULSE_ID(alias,id) LEGACY_IMPULSE(alias, id, sprintf("impulse %d", IMP_ ##alias.impulse))
+#define __FLT_DECIMAL_DIG__ 9
+#define __FLT32_HAS_INFINITY__ 1
+#define EV_IsFlying(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __FLT64X_MAX_EXP__ 16384
+#define __UINT_FAST64_TYPE__ long unsigned int
+#define devdemand(...) MACRO_BEGIN if (autocvar_developer > 0) demand(__VA_ARGS__); MACRO_END
+#define GETTIME_REALTIME 1
+#define __BFLT16_MIN_EXP__ (-125)
+#define __INT_MAX__ 0x7fffffff
+#define PING_MED autocvar_hud_panel_scoreboard_ping_medium
+#define XONOTIC 1
+#define IS_HEXDIGIT(d) (strstrofs(HEXDIGITS_MINSET, (d), 0) >= 0)
+#define EV_BuildGameplayTipsString(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define normal_or_gentle(normal,gentle) ((GENTLE && (gentle != "")) ? gentle : normal)
+#define EV_ForcePlayermodels_Skip(i,o) i(entity, MUTATOR_ARGV_0_entity) i(bool, MUTATOR_ARGV_1_bool)
+#define MACRO_BEGIN if(1){
+#define __INT64_TYPE__ long int
+#define REGISTER_MINIGAME(name,nicename) REGISTER(Minigames, MINIGAME_ ##name, m_id, new_pure(minigame_descriptor)); void name ##_hud_board(vector, vector); void name ##_hud_status(vector, vector); int name ##_client_event(entity, string, ...); REGISTER_INIT(MINIGAME_ ##name) { this.netname = strzone(strtolower(#name)); this.message = nicename; this.minigame_hud_board = name ##_hud_board; this.minigame_hud_status = name ##_hud_status; this.minigame_event = name ##_client_event; } REGISTER_INIT(MINIGAME_ ##name)
+#define IS_ONGROUND(s) boolean((s).flags & FL_ONGROUND)
+#define GENERIC_COMMAND(id,description,menubased) CLASS(genericcommand_ ##id, Command) ATTRIB(genericcommand_ ##id, m_name, string, #id); ATTRIB(genericcommand_ ##id, m_description, string, description); ATTRIB(genericcommand_ ##id, m_menubased, bool, menubased); ENDCLASS(genericcommand_ ##id) REGISTER(GENERIC_COMMANDS, CMD_G, id, m_id, NEW(genericcommand_ ##id)); METHOD(genericcommand_ ##id, m_invokecmd, void(genericcommand_ ##id this, int request, entity caller, int arguments, string command))
+#define PHYS_CS(s) (s)
+#define _MUTATOR_IS_ENABLED(this) this.mutatorcheck()
+#define __GCC_ATOMIC_CHAR16_T_LOCK_FREE 2
+#define MURDER_FRAG BOLD(_("^K3%sYou fragged ^BG%s"))
+#define __FP_FAST_FMAF32 1
+#define __WINT_TYPE__ unsigned int
+#define EVAL_CLASS(...) __VA_ARGS__
+#define __FLT32_NORM_MAX__ 3.40282346638528859811704183484516925e+38F32
+#define dprint2(msg) MACRO_BEGIN if (autocvar_developer > 1) dprint(msg); MACRO_END
+#define SHUTDOWN(func) _STATIC_INIT(func ##_shutdown, __shutdown)
+#define __GCC_ATOMIC_BOOL_LOCK_FREE 2
+#define P99_PASTE2(_1,_2) P99_CAT2(_1, _2)
+#define P99_PASTE4(_1,_2,_3,_4) P99_PASTE2(P99_PASTE3(_1, _2, _3), _4)
+#define P99_PASTE5(_1,_2,_3,_4,_5) P99_PASTE2(P99_PASTE4(_1, _2, _3, _4), _5)
+#define CSQCPLAYER_FORCE_UPDATES 4
+#define __FLT64_MAX__ 1.79769313486231570814527423731704357e+308F64
+#define LL_CLEAR(...) EVAL_LL_CLEAR(OVERLOAD(LL_CLEAR, __VA_ARGS__))
+#define ARRAY_INDEX(T,arr,idx) (reinterpret_cast(T ##_fld, reinterpret_cast(int, arr[0]) + FTOI(idx)))
+#define __FP_FAST_FMAF64 1
+#define TELEPORT_FLAGS_TELEPORTER (TELEPORT_FLAG_SOUND | TELEPORT_FLAG_PARTICLES | TELEPORT_FLAG_TDEATH)
+#define CONSOLE_COMMANDS_NORMAL() CONSOLE_COMMAND("+showaccuracy", { }) CONSOLE_COMMAND("-showaccuracy", { })
+#define CTS_RECORD "/cts100record/"
+#define __SIZEOF_INT128__ 16
+#define CL(f,...) f(__VA_ARGS__)
+#define __LDBL_MAX_10_EXP__ 4932
+#define getcommandkey(cmd_name,command) _getcommandkey(cmd_name, command, false)
+#define __DBL_EPSILON__ ((double)2.22044604925031308084726333618164062e-16L)
+#define move_out_of_solid(e) WarpZoneLib_MoveOutOfSolid(e)
+#define W_UPDATE_BEGIN(class) METHOD(class, wr_update, void(class this)) { noref entity b = this.baseline; if (!b) { b = this.baseline = new_pure(baseline); b.baseline_target = this; }
+#define MURDER_FRAG2 BOLD(_("^K3%sYou scored against ^BG%s"))
+#define PHYS_MAXSPEED(s) STAT(MOVEVARS_MAXSPEED, s)
+#define P00__IF_CLAUSE(A,B,C,...) C
+#define NAME_TEAM _("Team")
+#define __INT_LEAST32_TYPE__ int
+#define P00_ISEMPTY(_1,_2,_3,_4) P99_HAS_COMMA(P99_PASTE5(P00_IS_EMPTY_CASE_, _1, _2, _3, _4))
+#define REGISTER_NET_S2C(id) REGISTER_NET_TEMP(id)
+#define MSLE_CLEAN_Char(x) 
+#define __SIZEOF_WCHAR_T__ 4
+#define __INT_FAST8_WIDTH__ 8
+#define PHYS_JETPACK_ACCEL_SIDE(s) STAT(JETPACK_ACCEL_SIDE, s)
+#define PHYS_WALLJUMP_DELAY(s) STAT(WALLJUMP_DELAY, s)
+#define __ATOMIC_RELEASE 3
+#define PROGNAME "CSQC"
+#define entityclass_1(name) entityclass_2(name, Object)
+#define gettaginfo(ent,tagindex) ( deglob_log(DEGLOB_ORIGINAL, "gettaginfo", __FILE__, __LINE__, __FUNC__, #ent ", " #tagindex), _gettaginfo_hidden(ent, tagindex) )
+#define IF(cond,f,...) cond(f, __VA_ARGS__)
+#define FOREACH_CHAR(s,cond,body) MACRO_BEGIN STRING_ITERATOR(iter, s, 0); int _it; while ((_it = STRING_ITERATOR_GET(iter)) > 0) { const noref int it = _it; if (cond) { LAMBDA(body) } } MACRO_END
+#define WEP_LAST (REGISTRY_COUNT(Weapons) - 1)
+#define BITXOR_ASSIGN(a,b) ((a) = ((a) | (b)) - ((a) & (b)))
+#define __INT_FAST8_TYPE__ signed char
+#define objerror(this,msg) MACRO_BEGIN LOG_WARN("======OBJECT ERROR======"); entity _e = (this); eprint(_e); objerror_safe(_e); delete(_e); LOG_WARNF("%s OBJECT ERROR in %s:\n%s\nTip: read above for entity information", PROGNAME, __FUNC__, msg); MACRO_END
+#define PHYS_ACCELERATE(s) STAT(MOVEVARS_ACCELERATE, s)
+#define COLOR_BEST autocvar_hud_panel_scoreboard_ping_best_color
+#define get_turretinfo(i) REGISTRY_GET(Turrets, i)
+#define __LDBL_HAS_INFINITY__ 1
+#define NET_GUARD(id) bool Net_Handle_ ##id ##_guard(entity this, entity sender, bool isNew) { bool valid = false; serialize_marker(to, valid); if (!valid) LOG_FATALF("Last message not fully parsed: %s", _net_prevmsgstr); _net_prevmsgstr = #id; return Net_Handle_ ##id(this, sender, isNew); }
+#define W_NET_BEGIN(class) METHOD(class, wr_net, void(class this, int i)) { int n = 0;
+#define endsWith(this,suffix) (_endsWith_suffix = suffix, substring(this, -strlen(_endsWith_suffix), -1) == _endsWith_suffix)
+#define __FP_FAST_FMAF32x 1
+#define __FLT16_HAS_DENORM__ 1
+#define __STDC_UTF_32__ 1
+#define SPAWNFUNC_WEAPON(name,weapon) 
+#define use use1
+#define ENABLE_EFFECTINFO 0
+#define yinvert(v) (_yinvert = (v), _yinvert.y = 1 - _yinvert.y, _yinvert)
+#define setblocked(e,f) SELFWRAP_SET(blocked, e, f)
+#define DAMAGETEXT_SHORT_LIMIT 256
+#define LL_DELETE_1(this) LL_DELETE_2(this, LAMBDA())
+#define LL_DELETE_2(this,dtor) MACRO_BEGIN LL_CLEAR_2(this, dtor); delete(this); this = NULL; MACRO_END
+#define __GCC_DESTRUCTIVE_SIZE 256
+#define _CAT(a,b) a ## b
+#define CSQCPLAYER_HOOK_POSTCAMERASETUP() viewloc_SetViewLocation()
+#define PHYS_AIRACCEL_QW(s) STAT(MOVEVARS_AIRACCEL_QW, s)
+#define LOG_INFOF(...) _LOG_INFO(sprintf(__VA_ARGS__))
+#define SV(f,...) 
+#define hud_panel_itemstime_hidebig autocvar_hud_panel_itemstime_hidebig
+#define TC(T,sym) MACRO_BEGIN MACRO_END
+#define __INTMAX_MAX__ 0x7fffffffffffffffL
+#define EV_Skeleton_CheckModel(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define MUTATOR_CALLHOOK(id,...) _MUTATOR_CALLHOOK(id, __VA_ARGS__)
+#define USE_PRANDOM 
+#define LL_DELETE(...) EVAL_LL_DELETE(OVERLOAD(LL_DELETE, __VA_ARGS__))
+#define __LONG_WIDTH__ 64
+#define REGISTER_STATUSEFFECT(id,inst) REGISTER(StatusEffect, STATUSEFFECT, id, m_id, inst)
+#define SELFWRAP_GET(T,e) (RVALUE, (e).self ##T)
+#define MAPINFO_SETTEMP_ACL_SYSTEM "-g_mapinfo_* -rcon_* -_* -g_ban* +*"
+#define __CHAR32_TYPE__ unsigned int
+#define PING_BEST autocvar_hud_panel_scoreboard_ping_best
+#define W_UPDATE_SEC(class,fld,T,wepname) _W_UPDATE(class, secondary_ ##fld, T, wepname)
+#define HM_gets(this,k) db_get(this, k)
+#define CALL_ACCUMULATED_FUNCTION(func) func()
+#define static_init() CALL_ACCUMULATED_FUNCTION(__static_init_1)
+#define EV_EditProjectile(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define W_PROP_END() 
+#define highpass2(value,frac,ref_store,ref_out) MACRO_BEGIN highpass(value.x, frac, ref_store.x, ref_out.x); highpass(value.y, frac, ref_store.y, ref_out.y); MACRO_END
+#define __STDC_IEC_559_COMPLEX__ 1
+#define make_pure(e) (e).pure_data = true; (e).solid = SOLID_NOT;
+#define P99_IF_EMPTY(...) P99_IF_EQ(1, P99_IS_EMPTY(__VA_ARGS__))
+#define EV_Ent_Update(i,o) i(entity, MUTATOR_ARGV_0_entity) i(bool, MUTATOR_ARGV_1_bool)
+#define _MUTATOR_HANDLE_POPTMP(type,id) id = tmp_ ##id;
+#define EV_BuildMutatorsString(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define SPA_T_AXIS 2
+#define __FLT64_MIN__ 2.22507385850720138309023271733240406e-308F64
+#define __FLT_DENORM_MIN__ 1.40129846432481707092372958328991613e-45F
+#define _LOG_INFO(s) MACRO_BEGIN if (autocvar_developer > 1) dprint(strcat1n(_LOG_HEADER("^5INFO"), "\n")); string __s = s; print("^7", __s); if (str2chr(__s, strlen(__s) - 1) != '\n') { print("\n"); } MACRO_END
+#define _MUTATOR_HANDLE_PUSHTMP(type,id) TC(type, id); type tmp_ ##id = id;
+#define __INTMAX_TYPE__ long int
+#define __SIZEOF_FLOAT__ 4
+#define PHYS_INPUT_BUTTON_PRYDON(s) PHYS_INPUT_BUTTON_BUTTON_PRYDON(s)
+#define droptofloor(e,...) (__self = (e), builtin_droptofloor(__VA_ARGS__))
+#define __DEC128_MAX_EXP__ 6145
+#define SYSTEM_UPDATE(sys) MACRO_BEGIN static float t = 0; float dt = autocvar_xon_sys_ ##sys ##_dt; float minfps = autocvar_xon_sys_ ##sys ##_minfps; static float accumulator = 0; float a = 0; if (dt) { accumulator += min(frametime, 1 / (minfps)); } else { accumulator += frametime; dt = accumulator; a = 1; } while (accumulator >= dt) { time = t; FOREACH_COMPONENT(sys, sys_ ##sys ##_update(it, dt)); t += dt; accumulator -= dt; } if (!a) a = accumulator / dt; FOREACH_COMPONENT(sys, com_ ##sys ##_interpolate(it, a)); MACRO_END
+#define LL_NEW() NEW(LinkedList)
+#define PHYS_INPUT_BUTTON_ATCK(s) PHYS_INPUT_BUTTON_BUTTON1(s)
+#define __ATOMIC_CONSUME 1
+#define HUD_Panel_GetBgAlpha() MACRO_BEGIN if (panel_bg_alpha_str == "") { panel_bg_alpha_str = ftos(autocvar_hud_panel_bg_alpha); } panel_bg_alpha = stof(panel_bg_alpha_str); if (autocvar__hud_configure) { if (!panel_enabled) panel_bg_alpha = 0.25; else if (hud_configure_menu_open == 2 && panel == highlightedPanel) panel_bg_alpha = (1 - autocvar__menu_alpha) * max(cvar("hud_configure_bg_minalpha"), panel_bg_alpha) + autocvar__menu_alpha * panel_bg_alpha; else panel_bg_alpha = max(cvar("hud_configure_bg_minalpha"), panel_bg_alpha); } MACRO_END
+#define __GNUC_MINOR__ 3
+#define REGISTER_INIT(id) ACCUMULATE void Register_ ##id ##_init(entity this)
+#define __DEC32_MANT_DIG__ 7
+#define __FLT32X_DENORM_MIN__ 4.94065645841246544176568792868221372e-324F32x
+#define EVAL_entityclass(...) __VA_ARGS__
+#define setSendEntity(e,f) SELFWRAP_SET(SendEntity, e, f)
+#define P00_IS_EMPTY_CASE_1100 P00_IS_EMPTY_CASE_1100
+#define P00_IS_EMPTY_CASE_1101 P00_IS_EMPTY_CASE_1101
+#define REGISTER_NET_TEMP(id) NET_HANDLE(id, bool); NET_GUARD(id); REGISTER(TempEntities, NET, id, m_id, new_pure(net_temp_packet)) { this.netname = #id; this.m_read = Net_Handle_ ##id ##_guard; }
+#define P00_IS_EMPTY_CASE_1110 P00_IS_EMPTY_CASE_1110
+#define PHYS_NOSTEP(s) STAT(NOSTEP)
+#define PHYS_INPUT_ANGLES(s) input_angles
+#define MUTATOR_IS_ENABLED(this) _MUTATOR_IS_ENABLED(MUTATOR_ ##this)
+#define g_nexball IS_GAMETYPE(NEXBALL)
+#define COMPONENT(com) void com_ ##com ##_interpolate(entity it, float a); .bool com_ ##com
+#define FOREACH_ENTITY_FLOAT(fld,match,body) ORDERED(FOREACH_ENTITY_FLOAT)(fld, match, body)
+#define PHYS_INPUT_MOVEVALUES(s) input_movevalues
+#define skel_get_boneabs(skel,bonenum) ( deglob_log(DEGLOB_ORIGINAL, "skel_get_boneabs", __FILE__, __LINE__, __FUNC__, #skel ", " #bonenum), _skel_get_boneabs_hidden(skel, bonenum) )
+#define COMPAT_NO_MOD_IS_XONOTIC 
+#define GetProgramCommandPrefix() "cl_cmd"
+#define entcs_IsSpectating(i) boolean(entcs_GetSpecState(i))
+#define __ATOMIC_SEQ_CST 5
+#define itos(i) ftos(i)
+#define classfield(name) 
+#define REGISTRY_BEGIN(id) ACCUMULATE void REGISTRY_BEGIN_(id) { noref void() f = Register ##id; } void REGISTRY_BEGIN_(id)
+#define W_CONFIG_NONE(class,fld,T,wepname) _W_CONFIG(class, fld, T, wepname)
+#define __UINT32_TYPE__ unsigned int
+#define __FLT32X_MIN_10_EXP__ (-307)
+#define INIT(cname) ACCUMULATE cname spawn ##cname ##_1(cname this)
+#define getentityvec DO_NOT_USE_GLOBALS
+#define MUTATOR_HOOKFUNCTION_2(mut,cb) MUTATOR_HOOKFUNCTION_3(mut, cb, CBC_ORDER_ANY)
+#define BOLD_OPERATOR "^BOLD"
+#define __FLT128_EPSILON__ 1.92592994438723585305597794258492732e-34F128
+#define P99_IF_EQ(A,B) P00_IF_CLAUSE(P99_PASTE4(P00_IS_, A, _EQ_, B)())
+#define __SIZEOF_LONG_LONG__ 8
+#define __FLT32X_MIN__ 2.22507385850720138309023271733240406e-308F32x
+#define __UINT_FAST16_MAX__ 0xffffffffffffffffUL
+#define STRING_ITERATOR_NEXT(this) MACRO_BEGIN ++this ##_i; MACRO_END
+#define static_init_early() CALL_ACCUMULATED_FUNCTION(__static_init_0)
+#define EV_PlayerJump(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) o(float, MUTATOR_ARGV_1_float) i(bool, MUTATOR_ARGV_2_bool) o(bool, MUTATOR_ARGV_2_bool)
+#define REGISTER_VEHICLE(id,inst) REGISTER(Vehicles, VEH, id, vehicleid, inst)
+#define VERBOSE_MURDER(type) strcat(MURDER_ ##type, "^BG%s")
+#define TELEPORT_KEEP_SPEED BIT(1)
+#define g_stat_SHELLS getstati(STAT_SHELLS)
+#define PITCH(v) ((v).x)
+#define TIME_DECODE(n) ((n) / TIME_FACTOR)
+#define getstat_vector(id) vec3(getstat_float(id + 0), getstat_float(id + 1), getstat_float(id + 2))

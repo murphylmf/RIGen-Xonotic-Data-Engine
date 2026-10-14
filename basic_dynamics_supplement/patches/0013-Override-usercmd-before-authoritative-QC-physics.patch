@@ -1,0 +1,46 @@
+From e5a9691435b70efbb92d90629c363919d35ccafa Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:58:00 +0800
+Subject: [PATCH 13/36] Override usercmd before authoritative QC physics
+
+---
+ source/qcsrc/common/physics/player.qc | 4 ++++
+ source/qcsrc/server/capture.qc        | 3 +--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/source/qcsrc/common/physics/player.qc b/source/qcsrc/common/physics/player.qc
+index e7f88b2..776b87b 100644
+--- a/source/qcsrc/common/physics/player.qc
++++ b/source/qcsrc/common/physics/player.qc
+@@ -12,6 +12,7 @@ REPLICATE(cvar_cl_movement_track_canjump, bool, "cl_movement_track_canjump");
+ #ifdef SVQC
+ #include <common/mapobjects/defs.qh>
+ #include <common/mapobjects/trigger/viewloc.qh>
++#include <server/capture.qh>
+ #include <server/client.qh>
+ 
+ // client side physics
+@@ -839,6 +840,9 @@ void CSQC_ClientMovement_PlayerMove_Frame(entity this)
+ 	// needs to be called before physics are run!
+ 	if(IS_REAL_CLIENT(this))
+ 		PM_UpdateButtons(this, CS(this));
++	// Replace the network-arrival-timed values before the authoritative
++	// physics calculation, not afterwards in PlayerPreThink.
++	Capture_ApplyAuthoritativeAction(this);
+ #endif
+ 
+ 	sys_phys_update(this, PHYS_INPUT_TIMELENGTH);
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index b04dc3b..be5ddd4 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -197,8 +197,7 @@ bool Capture_TryReset()
+ 	// IS_PLAYER becomes true slightly before the join path finishes restoring
+ 	// normal walk physics. Starting the episode in that window makes the
+ 	// number of gravity ticks depend on connection timing.
+-	if(capture_player.move_movetype != MOVETYPE_WALK
+-		|| capture_player.movetype != MOVETYPE_WALK)
++	if(capture_player.move_movetype != MOVETYPE_WALK)
+ 		return false;
+ 
+ 	cvar_set("bot_nofire", "1");

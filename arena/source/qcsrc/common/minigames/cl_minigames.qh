@@ -1,0 +1,120 @@
+#pragma once
+
+#include "cl_minigames_hud.qh"
+
+                                                   
+                                                  
+#define minigame_hud_fitsqare(pos, mySize) \
+	if ( mySize##_x > mySize##_y ) \
+	{ \
+		pos##_x += (mySize##_x-mySize##_y)/2; \
+		mySize##_x = mySize##_y; \
+	} \
+	else \
+	{ \
+		pos##_y += (mySize##_y-mySize##_x)/2; \
+		mySize##_x = mySize##_x; \
+	} \
+	if(panel_bg_padding) \
+	{ \
+		pos += '1 1 0' * panel_bg_padding; \
+		mySize -= '2 2 0' * panel_bg_padding; \
+	}
+
+                                   
+                                                  
+#define minigame_hud_panelarea(pos, mySize, panelID) \
+	pos = stov(cvar_string(strcat("hud_panel_", HUD_PANEL(panelID).panel_name, "_pos"))); \
+	mySize = stov(cvar_string(strcat("hud_panel_", HUD_PANEL(panelID).panel_name, "_size"))); \
+	pos##_x *= vid_conwidth; pos##_y *= vid_conheight; \
+	mySize##_x *= vid_conwidth; mySize##_y *= vid_conheight;
+
+                                            
+void minigame_hud_simpleboard(vector pos, vector mySize, string board_texture);
+
+                                                                   
+vector minigame_hud_normalize(vector v, vector pos, vector mySize);
+
+                                                                        
+vector minigame_hud_denormalize(vector v, vector pos, vector mySize);
+
+                                                                  
+vector minigame_hud_denormalize_size(vector v, vector pos, vector mySize);
+
+                                              
+bool minigame_hud_mouse_in(vector pos, vector sz);
+
+                                                      
+                                     
+                                                                         
+vector minigame_drawstring_wrapped( float maxwidth, vector pos, string text,
+	vector fontsize, vector color, float theAlpha, int drawflags, float align );
+
+                                                                
+                                     
+                                                                         
+vector minigame_drawcolorcodedstring_wrapped( float maxwidth, vector pos,
+	string text, vector fontsize, float theAlpha, int drawflags, float align );
+
+                                                         
+void minigame_drawstring_trunc(float maxwidth, vector pos, string text,
+	vector fontsize, vector color, float theAlpha, int drawflags );
+
+                                                                   
+void minigame_drawcolorcodedstring_trunc(float maxwidth, vector pos, string text,
+	vector fontsize, float theAlpha, int drawflags );
+
+                                                                           
+void minigame_drawpic_centered( vector pos, string texture, vector sz,
+	vector color, float thealpha, int drawflags );
+
+                                      
+string minigame_texture(string name);
+
+                                                            
+.void(vector pos, vector size) minigame_hud_board;
+                                                             
+.void(vector pos, vector size) minigame_hud_status;
+                                                                       
+.float minigame_playerslot;
+
+                                       
+void deactivate_minigame();
+
+                                    
+entity active_minigame;
+                                           
+entity minigame_self;
+
+                             
+#define minigame_cmd(...) minigame_cmd_workaround(0,__VA_ARGS__)
+void minigame_cmd_workaround(float dummy, string...cmdargc);
+
+                                                    
+                                                                 
+void minigame_prompt();
+
+
+#define FOREACH_MINIGAME_ENTITY(entityvar) \
+	entityvar=NULL; \
+	while( (entityvar = findentity(entityvar,owner,active_minigame)) )
+
+
+REGISTRY(Minigames, BITS(4))
+REGISTER_REGISTRY(Minigames)
+REGISTRY_CHECK(Minigames)
+
+REGISTRY_DEFINE_GET(Minigames, NULL)
+#define REGISTER_MINIGAME(name,nicename) \
+    REGISTER(Minigames, MINIGAME_##name, m_id, new_pure(minigame_descriptor)); \
+    void name##_hud_board(vector, vector); \
+    void name##_hud_status(vector, vector); \
+    int name##_client_event(entity, string, ...); \
+    REGISTER_INIT(MINIGAME_##name) { \
+        this.netname = strzone(strtolower(#name)); \
+        this.message = nicename; \
+        this.minigame_hud_board = name##_hud_board; \
+		this.minigame_hud_status = name##_hud_status; \
+		this.minigame_event = name##_client_event; \
+    } \
+    REGISTER_INIT(MINIGAME_##name)

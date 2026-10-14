@@ -1,0 +1,24 @@
+#pragma once
+
+#include "racer_weapon.qh"
+
+CLASS(Racer, Vehicle)
+                 ATTRIB(Racer, spawnflags, int, VHF_DMGSHAKE | VHF_DMGROLL);
+                 ATTRIB(Racer, m_mins, vector, '-120 -120 -40' * 0.5);
+                 ATTRIB(Racer, m_maxs, vector, '120 120 40' * 0.5);
+                 ATTRIB(Racer, view_ofs, vector, '0 0 50');
+                 ATTRIB(Racer, height, float, 200);
+#ifdef GAMEQC
+              ATTRIB(Racer, mdl, string, "models/vehicles/wakizashi.dpm");
+              ATTRIB(Racer, model, string, "models/vehicles/wakizashi.dpm");
+                 ATTRIB(Racer, head_model, string, "null");
+                 ATTRIB(Racer, hud_model, string, "models/vehicles/wakizashi_cockpit.dpm");
+                 ATTRIB(Racer, tag_head, string, "");
+                 ATTRIB(Racer, tag_hud, string, "");
+                 ATTRIB(Racer, tag_view, string, "tag_viewport");
+#endif
+                 ATTRIB(Racer, netname, string, "racer");
+                 ATTRIB(Racer, vehicle_name, string, _("Racer"));
+                 ATTRIB(Racer, m_icon, string, "vehicle_racer");
+ENDCLASS(Racer)
+REGISTER_VEHICLE(RACER, NEW(Racer));

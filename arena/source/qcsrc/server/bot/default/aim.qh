@@ -1,0 +1,47 @@
+#pragma once
+  
+                     
+   
+
+entity tracetossent;
+entity tracetossfaketarget;
+vector findtrajectory_velocity;
+
+vector shotorg;
+vector shotdir;
+
+.bool bot_aimdir_executed;
+.float bot_badaimtime;
+.float bot_aimthinktime;
+.float bot_prevaimtime;
+.float bot_firetimer;
+.float bot_aimlatency;
+.float duel_mutual_fov_last_dot;
+.float duel_mutual_fov_next_block_log;
+.float duel_mutual_fov_next_allow_log;
+.float duel_fire_visibility_next_log;
+
+.vector bot_mouseaim;
+.vector bot_badaimoffset;
+.vector bot_1st_order_aimfilter;
+.vector bot_2nd_order_aimfilter;
+.vector bot_3th_order_aimfilter;
+.vector bot_4th_order_aimfilter;
+.vector bot_5th_order_aimfilter;
+.vector bot_olddesiredang;
+.vector duel_applied_turn_rate;
+.vector duel_final_turn_rate;
+
+
+  
+            
+   
+
+float bot_shouldattack(entity this, entity targ);
+bool bot_duel_mutual_fov_allows_fire(entity attacker, entity target);
+void bot_aimdir(entity this, vector v, float maxfiredeviation);
+bool bot_aim(entity this, .entity weaponentity, float shotspeed, float shotspeedupward, float maxshottime, bool applygravity, bool shot_accurate);
+void bot_aim_reset(entity this);
+float findtrajectorywithleading(vector org, vector m1, vector m2, entity targ, float shotspeed, float shotspeedupward, float maxtime, float shotdelay, entity ignore);
+
+vector bot_shotlead(vector targorigin, vector targvelocity, float shotspeed, float shotdelay);

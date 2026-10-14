@@ -1,0 +1,5 @@
+                                
+#ifdef SVQC
+    #include <common/mutators/mutator/instagib/sv_instagib.qc>
+#endif
+#include <common/mutators/mutator/instagib/items.qc>

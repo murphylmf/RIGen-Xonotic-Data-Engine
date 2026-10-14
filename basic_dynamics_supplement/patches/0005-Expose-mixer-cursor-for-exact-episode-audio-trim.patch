@@ -1,0 +1,104 @@
+From 19124a222df8a6f33d567b119190649f587af8b7 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:23:12 +0800
+Subject: [PATCH 05/36] Expose mixer cursor for exact episode audio trim
+
+---
+ source/darkplaces/capture_telemetry.c | 26 ++++++++------------------
+ source/darkplaces/capture_telemetry.h |  2 +-
+ source/darkplaces/cl_screen.c         |  4 +---
+ 3 files changed, 10 insertions(+), 22 deletions(-)
+
+diff --git a/source/darkplaces/capture_telemetry.c b/source/darkplaces/capture_telemetry.c
+index 26e6e46..159aa4b 100644
+--- a/source/darkplaces/capture_telemetry.c
++++ b/source/darkplaces/capture_telemetry.c
+@@ -226,7 +226,7 @@ static void Capture_OutputBegin_f(void)
+ 	Capture_CloseFile(&capture_frames_file);
+ 	Capture_CloseFile(&capture_audio_file);
+ 	capture_frames_file = Capture_OpenCSV("frames_engine.csv",
+-		"episode_id,frame_index,pts_seconds,expected_audio_cursor,"
++		"episode_id,frame_index,pts_seconds,expected_audio_cursor,mixer_audio_cursor_at_frame,"
+ 		"client_time,server_time_current,server_time_previous,server_tick,interpolation,"
+ 		"camera_x,camera_y,camera_z,forward_x,forward_y,forward_z,"
+ 		"left_x,left_y,left_z,up_x,up_y,up_z,frustum_x,frustum_y,nearclip,farclip,"
+@@ -384,11 +384,12 @@ void Capture_VideoFrame(void)
+ 	server_tick = (long long)floor(cl.mtime[0] * CAPTURE_TICKRATE + 0.5);
+ 	Matrix4x4_ToArrayDoubleGL(&r_refdef.view.matrix, matrix);
+ 	fprintf(capture_frames_file,
+-		"\"%s\",%d,%.9f,%lld,%.9f,%.9f,%.9f,%lld,%.9f,"
++		"\"%s\",%d,%.9f,%lld,%lld,%.9f,%.9f,%.9f,%lld,%.9f,"
+ 		"%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,"
+ 		"%.9f,%.9f,%.9f,%.9f,%.9f,%.9f,%.9f",
+ 		capture_episode_id, capture_output_frame, capture_output_frame / 64.0,
+-		(long long)capture_output_frame * 750, cl.time, cl.mtime[0], cl.mtime[1],
++		(long long)capture_output_frame * 750, capture_audio_cursor,
++		cl.time, cl.mtime[0], cl.mtime[1],
+ 		server_tick, interpolation,
+ 		r_refdef.view.origin[0], r_refdef.view.origin[1], r_refdef.view.origin[2],
+ 		r_refdef.view.forward[0], r_refdef.view.forward[1], r_refdef.view.forward[2],
+@@ -416,24 +417,14 @@ void Capture_VideoFrame(void)
+ 	}
+ }
+ 
+-size_t Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t length)
++void Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t length)
+ {
+ 	int pending_index;
+ 	long long base_cursor;
+-	long long target_samples;
+ 
+-	if (!capture_enable.integer || capture_mode.integer != 1)
+-		return length;
+-	if (!capture_output_active || !capture_audio_file || capture_output_frame == 0)
+-		return 0;
+-	target_samples = (long long)capture_expected_frames.integer * 750;
+-	if (target_samples > 0)
+-	{
+-		if (capture_audio_cursor >= target_samples)
+-			return 0;
+-		if (capture_audio_cursor + (long long)length > target_samples)
+-			length = (size_t)(target_samples - capture_audio_cursor);
+-	}
++	if (!capture_enable.integer || capture_mode.integer != 1 ||
++		!capture_audio_file)
++		return;
+ 	base_cursor = capture_audio_cursor;
+ 	for (pending_index = 0; pending_index < CAPTURE_MAX_PENDING_SOUNDS; ++pending_index)
+ 	{
+@@ -471,7 +462,6 @@ size_t Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t le
+ 	}
+ 	capture_audio_cursor += (long long)length;
+ 	fflush(capture_audio_file);
+-	return length;
+ }
+ 
+ void Capture_SoundStart(int entnum, int entchannel, const char *sample_name,
+diff --git a/source/darkplaces/capture_telemetry.h b/source/darkplaces/capture_telemetry.h
+index f307187..34c7aa5 100644
+--- a/source/darkplaces/capture_telemetry.h
++++ b/source/darkplaces/capture_telemetry.h
+@@ -8,7 +8,7 @@ void Capture_Shutdown(void);
+ void Capture_ApplyUsercmd(usercmd_t *cmd);
+ void Capture_UsercmdSent(const usercmd_t *cmd);
+ void Capture_VideoFrame(void);
+-size_t Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t length);
++void Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t length);
+ void Capture_SoundStart(int entnum, int entchannel, const char *sample_name,
+ 	const vec3_t source_origin);
+ 
+diff --git a/source/darkplaces/cl_screen.c b/source/darkplaces/cl_screen.c
+index e88b6aa..5ababdc 100644
+--- a/source/darkplaces/cl_screen.c
++++ b/source/darkplaces/cl_screen.c
+@@ -1770,9 +1770,7 @@ static void SCR_CaptureVideo_VideoFrame(int newframestepframenum)
+ 
+ void SCR_CaptureVideo_SoundFrame(const portable_sampleframe_t *paintbuffer, size_t length)
+ {
+-	length = Capture_AudioSamples(paintbuffer, length);
+-	if (!length)
+-		return;
++	Capture_AudioSamples(paintbuffer, length);
+ 	cls.capturevideo.soundsampleframe += (int)length;
+ 	cls.capturevideo.soundframe(paintbuffer, length);
+ }

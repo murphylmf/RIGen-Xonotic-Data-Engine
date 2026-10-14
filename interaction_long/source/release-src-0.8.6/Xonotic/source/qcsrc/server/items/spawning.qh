@@ -1,0 +1,100 @@
+#pragma once
+
+         
+                                                                          
+                                              
+
+bool startitem_failed;
+
+                                                                             
+                                                   
+                                                                                
+          
+entity Item_FindDefinition(string class_name);
+
+                                                                                
+                                                        
+                                                                                   
+          
+entity Item_DefinitionFromInternalName(string item_name);
+
+                                                                                
+          
+                                                   
+                                                                                
+              
+bool Item_IsAllowed(string class_name);
+
+                                                                                
+          
+                                                   
+                                                                                
+              
+bool Item_IsDefinitionAllowed(entity definition);
+
+                              
+                                                 
+                                             
+                                                                           
+                                                 
+                                            
+entity Item_Create(string class_name, vector position, bool no_align);
+
+                                                        
+                                           
+                                            
+                      
+                                                                                
+                   
+void Item_Initialize(entity item, string class_name);
+
+                               
+                                                 
+                                             
+                                    
+                                                                               
+                                            
+entity Item_CreateLoot(string class_name, vector position, vector vel,
+	float time_to_live);
+
+                                     
+                                                 
+                                             
+                                    
+                                                                               
+                                             
+                                                                                
+                   
+bool Item_InitializeLoot(entity item, string class_name, vector position,
+	vector vel, float time_to_live);
+
+                                            
+                                  
+                                                      
+bool Item_IsLoot(entity item);
+
+                                     
+                                       
+                                         
+                      
+void Item_SetLoot(entity item, bool loot);
+
+                                                                             
+           
+                                  
+                                                                          
+                          
+bool Item_ShouldKeepPosition(entity item);
+
+                                                                              
+                                                         
+                                  
+                                                          
+bool Item_IsExpiring(entity item);
+
+                                                                           
+                                                             
+                                       
+                                                 
+                      
+void Item_SetExpiring(entity item, bool expiring);

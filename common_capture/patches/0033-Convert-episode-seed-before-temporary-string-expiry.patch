@@ -1,0 +1,69 @@
+From 9180f078e4ac919600f9758f272ac96e1aa7f160 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 01:13:05 +0800
+Subject: [PATCH 33/36] Convert episode seed before temporary string expiry
+
+---
+ source/qcsrc/server/capture.qc | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index ee3b1fa..07412a3 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -19,7 +19,7 @@ bool capture_server_tick_logged;
+ entity capture_player;
+ entity capture_enemy;
+ float capture_weapon_random_seed;
+-string capture_episode_seed_text;
++float capture_episode_seed;
+ 
+ #define CAPTURE_ACTION_COUNT 384
+ float capture_action_forward[CAPTURE_ACTION_COUNT];
+@@ -165,17 +165,16 @@ bool Capture_LoadEpisodeSeed()
+ 			autocvar_capture_server_seed_file);
+ 		return false;
+ 	}
+-	string line = strzone(fgets(fh));
++	string line = fgets(fh);
++	capture_episode_seed = stof(line);
++	capture_weapon_random_seed = crc16(false, line);
+ 	fclose(fh);
+-	if(line == "")
++	if(capture_episode_seed <= 0)
+ 	{
+-		LOG_WARN("capture: episode seed file is empty ",
++		LOG_WARN("capture: episode seed file is empty or invalid ",
+ 			autocvar_capture_server_seed_file);
+-		strunzone(line);
+ 		return false;
+ 	}
+-	capture_episode_seed_text = line;
+-	capture_weapon_random_seed = crc16(false, capture_episode_seed_text);
+ 	return true;
+ }
+ 
+@@ -329,12 +328,12 @@ bool Capture_TryReset()
+ 	string reset_row = sprintf(
+ 		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
+ 		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
+-		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",\"seed\":\"%s\","
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",\"seed\":\"%.0f\","
+ 		"\"weapon_rng_seed\":%.6f,",
+ 		autocvar_capture_episode_id, time, GetMapname(),
+ 		etof(capture_player), etof(capture_enemy),
+ 		autocvar_capture_weapon, autocvar_capture_enemy_model,
+-		capture_episode_seed_text, capture_weapon_random_seed);
++		capture_episode_seed, capture_weapon_random_seed);
+ 	reset_row = strcat(reset_row, sprintf(
+ 		"\"anchor\":{\"id\":\"%s\",\"player_clear\":%d,\"enemy_clear\":%d,"
+ 		"\"player_ground\":%d,\"enemy_ground\":%d,"
+@@ -346,8 +345,6 @@ bool Capture_TryReset()
+ 		"\"enemy_ground_distance\":%.6f,\"los_fraction\":%.9f}}",
+ 		enemy_ground_distance, anchor_los_fraction));
+ 	Capture_Log(reset_row);
+-	strunzone(capture_episode_seed_text);
+-	capture_episode_seed_text = string_null;
+ 	stuffcmd(capture_player,
+ 		sprintf("\ncapture_episode_reset \"%s\"\n", autocvar_capture_episode_id));
+ 	return true;

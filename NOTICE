@@ -1,0 +1,7 @@
+RIGen Xonotic dataset construction code
+
+RIGen-authored scripts, configuration templates, patches, and documentation are distributed under the terms in LICENSE.md.
+
+The source snapshots include material derived from Xonotic 0.8.6, DarkPlaces, and gmqcc. Those components retain their upstream licenses and notices. The relevant upstream license texts are included under common_capture/licenses/ and in the source snapshots.
+
+Upstream Xonotic project: https://github.com/xonotic/xonotic

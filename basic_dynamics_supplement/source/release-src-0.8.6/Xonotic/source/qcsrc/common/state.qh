@@ -1,0 +1,54 @@
+#pragma once
+
+   
+                                                            
+                                                   
+                                                              
+   
+CLASS(PlayerState, Object)
+	ATTRIB(PlayerState, m_client, entity);
+	CONSTRUCTOR(PlayerState, entity client)
+	{
+		CONSTRUCT(PlayerState);
+		this.m_client = client;
+	}
+ENDCLASS(PlayerState)
+
+.PlayerState _ps;
+#define PS(this) ((this)._ps)
+
+                       
+void PlayerState_attach(entity this);
+void PlayerState_detach(entity this);
+
+   
+                                                            
+                                                   
+                              
+   
+CLASS(ClientState, Object)
+	ATTRIB(ClientState, m_client, entity);
+	CONSTRUCTOR(ClientState, entity client)
+	{
+		CONSTRUCT(ClientState);
+		this.m_client = client;
+	}
+	METHOD(PlayerState, ps_push, void(PlayerState this, entity cl))
+	{
+		TC(PlayerState, this);
+	}
+ENDCLASS(ClientState)
+
+.ClientState _cs;
+
+#if NDEBUG
+	#define CS(this) (this._cs)
+#else
+	ClientState CS(Client this) { TC(Client, this); assert(this._cs); return this._cs; }
+#endif
+
+                                                                                                               
+#define CS_CVAR(this) (this)
+
+void ClientState_attach(entity this);
+void ClientState_detach(entity this);

@@ -1,0 +1,53 @@
+  
+                                   
+  
+                                                                               
+                                                                           
+                                                                             
+                                                                              
+                                                                             
+                                                           
+  
+                                                                             
+                                                      
+  
+                                                                             
+                                                                           
+                                                                              
+                                                                         
+                                                                          
+                                                                               
+                   
+   
+#pragma once
+
+float autocvar_cl_lerpexcess;              
+
+.int iflags;
+const int IFLAG_VELOCITY = BIT(0);
+const int IFLAG_ANGLES = BIT(1);
+const int IFLAG_AUTOANGLES = BIT(2);
+const int IFLAG_VALID = BIT(3);
+const int IFLAG_PREVALID = BIT(4);
+const int IFLAG_TELEPORTED = BIT(5);
+const int IFLAG_AUTOVELOCITY = BIT(6);
+const int IFLAG_V_ANGLE = BIT(7);
+const int IFLAG_V_ANGLE_X = BIT(8);
+const int IFLAG_ORIGIN = BIT(9);
+const int IFLAG_INTERNALMASK = IFLAG_VALID | IFLAG_PREVALID;
+
+                                                                  
+                                                    
+                                                                      
+
+                                            
+void InterpolateOrigin_Undo(entity this);
+
+                                             
+void InterpolateOrigin_Note(entity this);
+
+                                                                          
+void InterpolateOrigin_Reset(entity this);
+
+                           
+void InterpolateOrigin_Do(entity this);

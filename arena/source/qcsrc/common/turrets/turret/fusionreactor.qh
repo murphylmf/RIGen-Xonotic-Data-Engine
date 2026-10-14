@@ -1,0 +1,21 @@
+#pragma once
+
+CLASS(FusionReactor, Turret)
+                 ATTRIB(FusionReactor, spawnflags, int, TUR_FLAG_SUPPORT | TUR_FLAG_AMMOSOURCE);
+                 ATTRIB(FusionReactor, m_mins, vector, '-34 -34 0');
+                 ATTRIB(FusionReactor, m_maxs, vector, '34 34 90');
+                 ATTRIB(FusionReactor, mdl, string, "base.md3");
+                 ATTRIB_STRZONE(FusionReactor, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(FusionReactor, head_model, string, strcat("models/turrets/", "reactor.md3"));
+                 ATTRIB(FusionReactor, netname, string, "fusreac");
+                 ATTRIB(FusionReactor, turret_name, string, _("Fusion Reactor"));
+ENDCLASS(FusionReactor)
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+	END()
+	TR_PROPS(X, FusionReactor, fusreac)
+#undef X
+
+REGISTER_TURRET(FUSIONREACTOR, NEW(FusionReactor));

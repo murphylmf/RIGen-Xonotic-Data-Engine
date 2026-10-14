@@ -1,0 +1,29 @@
+#pragma once
+
+#include "raptor_weapons.qh"
+
+CLASS(Raptor, Vehicle)
+                 ATTRIB(Raptor, spawnflags, int, VHF_DMGSHAKE | VHF_DMGROLL);
+                 ATTRIB(Raptor, m_mins, vector, '-80 -80 0');
+                 ATTRIB(Raptor, m_maxs, vector, '80 80 70');
+                 ATTRIB(Raptor, view_ofs, vector, '0 0 160');
+                 ATTRIB(Raptor, height, float, 200);
+#ifdef GAMEQC
+              ATTRIB(Raptor, mdl, string, "models/vehicles/raptor.dpm");
+              ATTRIB(Raptor, model, string, "models/vehicles/raptor.dpm");
+                 ATTRIB(Raptor, head_model, string, "");
+                 ATTRIB(Raptor, hud_model, string, "models/vehicles/raptor_cockpit.dpm");
+                 ATTRIB(Raptor, tag_head, string, "");
+                 ATTRIB(Raptor, tag_hud, string, "tag_hud");
+                 ATTRIB(Raptor, tag_view, string, "tag_camera");
+#endif
+                 ATTRIB(Raptor, netname, string, "raptor");
+                 ATTRIB(Raptor, vehicle_name, string, _("Raptor"));
+                 ATTRIB(Raptor, m_icon, string, "vehicle_raptor");
+ENDCLASS(Raptor)
+REGISTER_VEHICLE(RAPTOR, NEW(Raptor));
+
+const int RSM_FIRST = 1;
+const int RSM_BOMB = 1;
+const int RSM_FLARE = 2;
+const int RSM_LAST = 2;

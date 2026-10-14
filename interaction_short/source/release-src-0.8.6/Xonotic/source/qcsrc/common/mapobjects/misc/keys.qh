@@ -1,0 +1,26 @@
+#pragma once
+
+   
+                              
+   
+#define ITEM_KEY_BIT(n)	( bitshift(1, n) )
+
+#define ITEM_KEY_MAX	24
+
+   
+                     
+   
+#ifdef SVQC
+string item_keys_names[ITEM_KEY_MAX];
+
+   
+                        
+                                                            
+   
+float item_keys_usekey(entity l, entity p);
+
+   
+                                                                                      
+   
+string item_keys_keylist(float keylist);
+#endif

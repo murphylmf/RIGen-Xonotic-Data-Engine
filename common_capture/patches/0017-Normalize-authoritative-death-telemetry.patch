@@ -1,0 +1,41 @@
+From 192ec2390c8b2bee1aecc920fba2a85d18a062ad Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 19:21:36 +0800
+Subject: [PATCH 17/36] Normalize authoritative death telemetry
+
+---
+ source/qcsrc/server/capture.qc | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index ad41e4c..e5b8dbd 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -484,6 +484,14 @@ void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
+ {
+ 	if(!autocvar_capture_server_enable || !capture_server_started || capture_server_done)
+ 		return;
++	// The stock death path can apply a final environmental damage callback to
++	// an already dead body on the following frame. Keep canonical capture HP
++	// floored at zero and do not create a second damage/death chain.
++	if(pre_health < 1)
++	{
++		SetResourceExplicit(target, RES_HEALTH, 0);
++		return;
++	}
+ 	int parent = attacker ? attacker.capture_last_fire_event : 0;
+ 	if(inflictor && inflictor.capture_event_id)
+ 		parent = inflictor.capture_event_id;
+@@ -491,6 +499,12 @@ void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
+ 	int damage_event = Capture_NewEvent();
+ 	float post_health = GetResource(target, RES_HEALTH);
+ 	float post_armor = GetResource(target, RES_ARMOR);
++	if(post_health < 1)
++	{
++		SetResourceExplicit(target, RES_HEALTH, 0);
++		post_health = 0;
++		target.takedamage = DAMAGE_NO;
++	}
+ 	string row = sprintf(
+ 		"{\"kind\":\"event\",\"event\":\"impact\",\"event_id\":%d,\"parent_event_id\":%d,"
+ 		"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,",

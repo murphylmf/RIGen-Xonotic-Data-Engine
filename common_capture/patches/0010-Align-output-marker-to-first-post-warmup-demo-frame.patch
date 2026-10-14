@@ -1,0 +1,24 @@
+From 6810693209c21d194fdb3a041bc1f8d4d62a815b Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:50:32 +0800
+Subject: [PATCH 10/36] Align output marker to first post-warmup demo frame
+
+---
+ source/qcsrc/server/capture.qc | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index b902aca..fa11fe9 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -397,7 +397,9 @@ void Capture_ServerFrame()
+ 		capture_server_tick_logged = false;
+ 	}
+ 	Capture_MoveEnemy();
+-	if(capture_server_tick == 64)
++	// The stuffcmd is delivered after this server frame. Sending at tick 63
++	// makes the first captured demo frame authoritative tick 64.
++	if(capture_server_tick == 63)
+ 	{
+ 		Capture_Log(sprintf(
+ 			"{\"kind\":\"output_begin\",\"server_tick\":%d,\"server_time\":%.9f}",

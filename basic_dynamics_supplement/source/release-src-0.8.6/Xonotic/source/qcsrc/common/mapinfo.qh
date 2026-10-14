@@ -1,0 +1,219 @@
+#pragma once
+
+#include "util.qh"
+
+                                      
+string MapInfo_Map_bspname;
+string MapInfo_Map_title;
+string MapInfo_Map_titlestring;                                                                                  
+string MapInfo_Map_description;
+string MapInfo_Map_author;
+string MapInfo_Map_clientstuff;                                   
+string MapInfo_Map_fog;                                   
+int MapInfo_Map_supportedGametypes;
+int MapInfo_Map_supportedFeatures;
+int MapInfo_Map_flags;
+vector MapInfo_Map_mins;                                       
+vector MapInfo_Map_maxs;                                       
+
+const int GAMETYPE_FLAG_TEAMPLAY        = BIT(0);                  
+const int GAMETYPE_FLAG_USEPOINTS       = BIT(1);                                    
+const int GAMETYPE_FLAG_PREFERRED       = BIT(2);                                                   
+const int GAMETYPE_FLAG_PRIORITY        = BIT(3);                                                                                   
+const int GAMETYPE_FLAG_HIDELIMITS      = BIT(4);                                                                              
+const int GAMETYPE_FLAG_WEAPONARENA     = BIT(5);                                                                                                        
+const int GAMETYPE_FLAG_1V1             = BIT(6);                
+
+int MAPINFO_TYPE_ALL;
+.int m_flags;
+
+CLASS(Gametype, Object)
+    ATTRIB(Gametype, m_id, int, 0);
+                       
+    ATTRIB(Gametype, items, int, 0);
+                                                     
+    ATTRIB(Gametype, netname, string);
+                               
+    ATTRIB(Gametype, mdl, string);
+                              
+    ATTRIB(Gametype, message, string);
+                                               
+    ATTRIB(Gametype, team, bool, false);
+                                                
+    ATTRIB(Gametype, frags, bool, true);
+                                                                        
+    ATTRIB(Gametype, m_hidelimits, bool, false);
+                                                           
+    ATTRIB(Gametype, m_weaponarena, bool, false);
+                        
+    ATTRIB(Gametype, m_1v1, bool, false);
+                             
+    ATTRIB(Gametype, model2, string);
+                                
+    ATTRIB(Gametype, gametype_description, string);
+                                                  
+    ATTRIB(Gametype, m_priority, int, 0);
+#ifdef CSQC
+    ATTRIB(Gametype, m_modicons, void(vector pos, vector mySize));
+    ATTRIB(Gametype, m_modicons_reset, void());
+    ATTRIB(Gametype, m_modicons_export, void(int fh));
+#endif
+
+                                                             
+    ATTRIB(Gametype, m_legacydefaults, string, "");
+
+    ATTRIB(Gametype, m_mutators, string);
+    METHOD(Gametype, m_parse_mapinfo, bool(string k, string v))
+    {
+        return false;
+    }
+    METHOD(Gametype, m_generate_mapinfo, void(Gametype this, string v))
+    {
+        TC(Gametype, this);
+    }
+    METHOD(Gametype, m_isTwoBaseMode, bool())
+    {
+        return false;
+    }
+    METHOD(Gametype, m_isAlwaysSupported, bool(Gametype this, int spawnpoints, float diameter))
+    {
+        return false;
+    }
+    METHOD(Gametype, m_isForcedSupported, bool(Gametype this))
+    {
+        return false;
+    }
+    METHOD(Gametype, m_configuremenu, void(Gametype this, entity menu, void(entity me, string pLabel, float pMin, float pMax, float pStep, string pCvar, string tCvar, string pTooltip) returns))
+    {
+        TC(Gametype, this);
+        returns(menu, _("Frag limit:"),      5,  100,  5, "fraglimit_override",        string_null,                    _("The amount of frags needed before the match will end"));
+    }
+
+    METHOD(Gametype, describe, string(Gametype this))
+    {
+        TC(Gametype, this);
+        return this.gametype_description;
+    }
+
+    METHOD(Gametype, display, void(Gametype this, void(string name, string icon) returns))
+    {
+        TC(Gametype, this);
+        returns(this.message, strcat("gametype_", this.mdl));
+    }
+
+    METHOD(Gametype, gametype_init, void(Gametype this, string hname, string sname, string g_name, int gflags, string mutators, string defaults, string gdescription))
+    {
+        this.netname = g_name;
+        this.mdl = sname;
+        this.message = hname;
+        this.team = (gflags & GAMETYPE_FLAG_TEAMPLAY);
+        this.m_mutators = cons(sname, mutators);
+        this.model2 = defaults;
+        this.gametype_description = gdescription;
+        this.frags = (gflags & GAMETYPE_FLAG_USEPOINTS);
+        this.m_priority = ((gflags & GAMETYPE_FLAG_PREFERRED) ? 2 : ((gflags & GAMETYPE_FLAG_PRIORITY) ? 1 : 0));
+        this.m_hidelimits = (gflags & GAMETYPE_FLAG_HIDELIMITS);
+        this.m_weaponarena = (gflags & GAMETYPE_FLAG_WEAPONARENA);
+        this.m_1v1 = (gflags & GAMETYPE_FLAG_1V1);
+
+                              
+        MAPINFO_TYPE_ALL |= this.items = this.m_flags = (MAPINFO_TYPE_ALL + 1);
+    }
+ENDCLASS(Gametype)
+
+REGISTRY(Gametypes, 32)
+REGISTER_REGISTRY(Gametypes)
+REGISTRY_SORT(Gametypes);
+REGISTRY_CHECK(Gametypes)
+
+REGISTRY_DEFINE_GET(Gametypes, NULL)
+STATIC_INIT(Gametypes_renumber) { FOREACH(Gametypes, true, it.m_id = i); }
+#define REGISTER_GAMETYPE(NAME, inst) REGISTER(Gametypes, MAPINFO_TYPE, NAME, m_id, inst)
+
+#ifndef CSQC
+                                            
+#define IS_GAMETYPE(NAME) (MapInfo_LoadedGametype == MAPINFO_TYPE_##NAME)
+#endif
+
+const int MAPINFO_FEATURE_WEAPONS       = 1;                                      
+const int MAPINFO_FEATURE_VEHICLES      = 2;
+const int MAPINFO_FEATURE_TURRETS       = 4;
+const int MAPINFO_FEATURE_MONSTERS      = 8;
+
+const int MAPINFO_FLAG_HIDDEN           = 1;                                                                  
+const int MAPINFO_FLAG_FORBIDDEN        = 2;                                                                      
+const int MAPINFO_FLAG_FRUSTRATING      = 4;                                                                
+const int MAPINFO_FLAG_NOAUTOMAPLIST    = 8;                                                                                                       
+
+float MapInfo_count;
+
+                                                                              
+                                                             
+void MapInfo_Enumerate();
+
+                                                            
+float MapInfo_progress;
+float MapInfo_FilterGametype(Gametype gametypeFlags, float features, float pFlagsRequired, float pFlagsForbidden, float pAbortOnGenerate);                                                                                                                    
+float _MapInfo_FilterGametype(int gametypeFlags, float features, float pFlagsRequired, float pFlagsForbidden, float pAbortOnGenerate);                                                                                                                    
+void MapInfo_FilterString(string sf);                                                                             
+int MapInfo_CurrentFeatures();                                                    
+Gametype MapInfo_CurrentGametype();                                         
+int MapInfo_ForbiddenFlags();                                      
+int MapInfo_RequiredFlags();                                      
+
+                                                              
+bool MapInfo_Get_ByID(int i);                              
+string MapInfo_BSPName_ByID(float i);
+
+                                                               
+int MapInfo_Get_ByName(string s, float allowGenerate, Gametype gametypeToSet);                                                                    
+
+                                  
+int map_minplayers;
+int map_maxplayers;
+bool MapReadSizes(string map);
+
+                                                                                                               
+string MapInfo_FindName_match;                                      
+float MapInfo_FindName_firstResult;                                                                                                
+float MapInfo_FindName(string s);
+string MapInfo_FixName(string s);
+
+             
+float MapInfo_CheckMap(string s);                                                                  
+void MapInfo_LoadMap(string s, float reinit);
+
+                                          
+string MapInfo_ListAllowedMaps(Gametype type, float pFlagsRequired, float pFlagsForbidden);
+                                            
+string MapInfo_ListAllAllowedMaps(float pFlagsRequired, float pFlagsForbidden);
+
+                                
+string _MapInfo_GetDefaultEx(Gametype t);
+float _MapInfo_GetTeamPlayBool(Gametype t);
+Gametype MapInfo_Type_FromString(string t, bool dowarn, bool is_q3compat);
+string MapInfo_Type_Description(Gametype t);
+string MapInfo_Type_ToString(Gametype t);
+string MapInfo_Type_ToText(Gametype t);
+void MapInfo_SwitchGameType(Gametype t);
+
+                                               
+void MapInfo_LoadMapSettings(string s);
+Gametype MapInfo_LoadedGametype;                                             
+
+void MapInfo_Cache_Destroy();                   
+void MapInfo_Cache_Create();                  
+void MapInfo_Cache_Invalidate();                                         
+
+bool _MapInfo_ParseArena(string arena_filename, int fh, string pFilename, Gametype pGametypeToSet, bool isdefi, bool isgenerator);
+
+string _MapInfo_FindArenaFile(string pFilename, string extension);
+
+void _MapInfo_Parse_Settemp(string pFilename, string acl, float type, string s, float recurse);
+
+void MapInfo_ClearTemps();                                                   
+
+void MapInfo_Shutdown();                                     
+
+#define MAPINFO_SETTEMP_ACL_USER cvar_string("g_mapinfo_settemp_acl")
+#define MAPINFO_SETTEMP_ACL_SYSTEM "-g_mapinfo_* -rcon_* -_* -g_ban* +*"

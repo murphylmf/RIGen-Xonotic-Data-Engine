@@ -1,0 +1,47 @@
+#pragma once
+
+                      
+
+                                                                                     
+.float frame;
+                                                           
+.float frame2;
+                                                           
+.float frame3;
+                                                             
+.float frame4;
+
+                                   
+.float lerpfrac;
+                                   
+.float lerpfrac3;
+                                   
+.float lerpfrac4;
+
+                                         
+.float frame1time;
+                                         
+.float frame2time;
+                                         
+.float frame3time;
+                                         
+.float frame4time;
+
+                    
+
+                         
+
+.int animstate_startframe;
+.int animstate_numframes;
+.float animstate_framerate;
+.float animstate_starttime;
+.float animstate_endtime;
+                        
+.bool animstate_looping;
+                                                
+.bool animstate_override;
+
+void anim_set(entity e, vector anim, bool looping, bool override, bool restart);
+#define setanim(...) anim_set(__VA_ARGS__)
+void anim_update(entity e);
+#define updateanim(...) anim_update(__VA_ARGS__)

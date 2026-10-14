@@ -1,0 +1,26 @@
+From ce89f5309b58f9754ec1dae6767b93bef2a01886 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:54:57 +0800
+Subject: [PATCH 12/36] Wait for completed player walk-state join before reset
+
+---
+ source/qcsrc/server/capture.qc | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index a3ba389..b04dc3b 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -194,6 +194,12 @@ bool Capture_TryReset()
+ 	});
+ 	if(!capture_player || !capture_enemy)
+ 		return false;
++	// IS_PLAYER becomes true slightly before the join path finishes restoring
++	// normal walk physics. Starting the episode in that window makes the
++	// number of gravity ticks depend on connection timing.
++	if(capture_player.move_movetype != MOVETYPE_WALK
++		|| capture_player.movetype != MOVETYPE_WALK)
++		return false;
+ 
+ 	cvar_set("bot_nofire", "1");
+ 	Capture_ResetActor(capture_player, autocvar_capture_player_origin, autocvar_capture_player_yaw);

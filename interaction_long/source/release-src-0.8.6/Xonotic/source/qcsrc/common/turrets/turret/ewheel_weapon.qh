@@ -1,0 +1,9 @@
+#pragma once
+
+CLASS(EWheelAttack, PortoLaunch)
+                ATTRIB(EWheelAttack, spawnflags, int, WEP_FLAG_HIDDEN | WEP_FLAG_SPECIALATTACK);
+                ATTRIB(EWheelAttack, impulse, int, 5);
+                ATTRIB(EWheelAttack, netname, string, "turret_ewheel");
+                ATTRIB(EWheelAttack, m_name, string, _("eWheel"));
+ENDCLASS(EWheelAttack)
+REGISTER_WEAPON(EWHEEL, NEW(EWheelAttack));

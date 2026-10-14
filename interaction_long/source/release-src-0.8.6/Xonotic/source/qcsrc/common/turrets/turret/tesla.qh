@@ -1,0 +1,24 @@
+#pragma once
+
+#include "tesla_weapon.qh"
+
+CLASS(TeslaCoil, Turret)
+                 ATTRIB(TeslaCoil, spawnflags, int, TUR_FLAG_HITSCAN | TUR_FLAG_PLAYER | TUR_FLAG_MISSILE);
+                 ATTRIB(TeslaCoil, m_mins, vector, '-60 -60 0');
+                 ATTRIB(TeslaCoil, m_maxs, vector, '60 60 128');
+                 ATTRIB(TeslaCoil, mdl, string, "tesla_base.md3");
+                 ATTRIB_STRZONE(TeslaCoil, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(TeslaCoil, head_model, string, strcat("models/turrets/", "tesla_head.md3"));
+                 ATTRIB(TeslaCoil, netname, string, "tesla");
+                 ATTRIB(TeslaCoil, turret_name, string, _("Tesla Coil"));
+    ATTRIB(TeslaCoil, m_weapon, Weapon, WEP_TESLA);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+	END()
+	TR_PROPS(X, TeslaCoil, tesla)
+#undef X
+
+ENDCLASS(TeslaCoil)
+REGISTER_TURRET(TESLA, NEW(TeslaCoil));

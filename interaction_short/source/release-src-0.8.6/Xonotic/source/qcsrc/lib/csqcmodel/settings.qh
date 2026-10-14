@@ -1,0 +1,25 @@
+#pragma once
+                                                              
+                                   
+
+                         
+                                                  
+
+                                                 
+#define CSQCMODEL_EXTRAPROPERTIES \
+	                                                                    \
+	                                                                      
+
+                               
+#define CSQCPLAYER_HOOK_POSTCAMERASETUP
+
+                                                                                  
+#define CSQCPLAYER_FORCE_UPDATES 4
+
+                   
+                       
+                       
+                            
+                              
+                              
+                                   

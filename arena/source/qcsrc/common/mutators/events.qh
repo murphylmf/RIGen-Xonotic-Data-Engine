@@ -1,0 +1,122 @@
+#pragma once
+
+#define EV_NO_ARGS(i, o)
+
+#pragma noref 1
+
+#define MUTATOR_TYPES(_, x) \
+    _(x, bool) \
+    _(x, int) \
+    _(x, entity) \
+    _(x, float) \
+    _(x, vector) \
+    _(x, string) \
+        
+
+                                                                  
+#define M_ARGV(x, type) MUTATOR_ARGV_##x##_##type
+#define MUTATOR_NEWGLOBAL(x, type) type MUTATOR_ARGV_##x##_##type;
+
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 0)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 1)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 2)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 3)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 4)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 5)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 6)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 7)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 8)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 9)
+MUTATOR_TYPES(MUTATOR_NEWGLOBAL, 10)
+
+#undef MUTATOR_TYPES
+#undef MUTATOR_NEWGLOBAL
+
+#pragma noref 0
+
+                                                     
+#define EV_BuildMutatorsString(i, o) \
+                          i(string, MUTATOR_ARGV_0_string) \
+                          o(string, MUTATOR_ARGV_0_string) \
+        
+MUTATOR_HOOKABLE(BuildMutatorsString, EV_BuildMutatorsString);
+
+                                                         
+#define EV_BuildMutatorsPrettyString(i, o) \
+                          i(string, MUTATOR_ARGV_0_string) \
+                          o(string, MUTATOR_ARGV_0_string) \
+        
+MUTATOR_HOOKABLE(BuildMutatorsPrettyString, EV_BuildMutatorsPrettyString);
+
+                                                                
+#define EV_BuildGameplayTipsString(i, o) \
+                          i(string, MUTATOR_ARGV_0_string) \
+                          o(string, MUTATOR_ARGV_0_string) \
+        
+MUTATOR_HOOKABLE(BuildGameplayTipsString, EV_BuildGameplayTipsString);
+
+#define EV_IsFlying(i, o) \
+	     i(entity, MUTATOR_ARGV_0_entity) \
+	    
+MUTATOR_HOOKABLE(IsFlying, EV_IsFlying);
+
+#define EV_WP_Format(i, o) \
+         i(entity, MUTATOR_ARGV_0_entity) \
+         i(string, MUTATOR_ARGV_1_string) \
+         o(vector, MUTATOR_ARGV_2_vector) \
+         o(string, MUTATOR_ARGV_3_string) \
+         o(string, MUTATOR_ARGV_4_string) \
+        
+MUTATOR_HOOKABLE(WP_Format, EV_WP_Format);
+
+   
+                                                                       
+                                                        
+   
+#define EV_PlayerPhysics(i, o) \
+                  i(entity, MUTATOR_ARGV_0_entity) \
+                  i(float, MUTATOR_ARGV_1_float) \
+        
+MUTATOR_HOOKABLE(PlayerPhysics, EV_PlayerPhysics);
+
+                                                
+#define EV_PlayerJump(i, o) \
+                       i(entity, MUTATOR_ARGV_0_entity) \
+                       i(float, MUTATOR_ARGV_1_float) \
+                       o(float, MUTATOR_ARGV_1_float) \
+                       i(bool, MUTATOR_ARGV_2_bool) \
+                       o(bool, MUTATOR_ARGV_2_bool) \
+        
+MUTATOR_HOOKABLE(PlayerJump, EV_PlayerJump);
+
+                                                                            
+#define EV_PM_Physics(i, o) \
+                        i(entity, MUTATOR_ARGV_0_entity) \
+                        i(float, MUTATOR_ARGV_1_float) \
+                        i(float, MUTATOR_ARGV_2_float) \
+        
+MUTATOR_HOOKABLE(PM_Physics, EV_PM_Physics);
+
+                                                                                 
+#define EV_WeaponSound(i, o) \
+                       i(string, MUTATOR_ARGV_0_string) \
+                       i(string, MUTATOR_ARGV_1_string) \
+                       o(string, MUTATOR_ARGV_1_string) \
+        
+MUTATOR_HOOKABLE(WeaponSound, EV_WeaponSound);
+
+                                                                              
+#define EV_WeaponModel(i, o) \
+                  i(string, MUTATOR_ARGV_0_string) \
+                  i(string, MUTATOR_ARGV_1_string) \
+                  o(string, MUTATOR_ARGV_1_string) \
+        
+MUTATOR_HOOKABLE(WeaponModel, EV_WeaponModel);
+
+                                                 
+#define EV_PlayerCanCrouch(i, o) \
+                       i(entity, MUTATOR_ARGV_0_entity) \
+                       i(bool, MUTATOR_ARGV_1_bool) \
+                       o(bool, MUTATOR_ARGV_1_bool) \
+        
+MUTATOR_HOOKABLE(PlayerCanCrouch, EV_PlayerCanCrouch);

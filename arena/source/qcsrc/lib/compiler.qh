@@ -1,0 +1,37 @@
+#pragma once
+
+#ifndef QCC_SUPPORT_ACCUMULATE
+	#ifdef GMQCC
+		#define QCC_SUPPORT_ACCUMULATE
+	#endif
+#endif
+
+#ifndef QCC_SUPPORT_NIL
+	#ifdef GMQCC
+		#define QCC_SUPPORT_NIL
+	#endif
+#endif
+
+#ifndef QCC_SUPPORT_ERASEABLE
+	#ifdef GMQCC
+		#define QCC_SUPPORT_ERASEABLE
+	#endif
+#endif
+
+#ifndef QCC_SUPPORT_ALIAS
+	#ifdef GMQCC
+		#define QCC_SUPPORT_ALIAS
+	#endif
+#endif
+
+#ifndef QCC_SUPPORT_POW
+    #ifdef GMQCC
+        #define QCC_SUPPORT_POW
+    #endif
+#endif
+
+#ifdef GMQCC
+    #define LABEL(id) :id
+#else
+    #define LABEL(id) id:
+#endif

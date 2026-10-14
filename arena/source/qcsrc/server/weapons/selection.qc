@@ -1,0 +1,359 @@
+#include "selection.qh"
+
+#include <common/constants.qh>
+#include <common/items/item.qh>
+#include <common/mapobjects/triggers.qh>
+#include <common/mutators/mutator/waypoints/waypointsprites.qh>
+#include <common/net_linked.qh>
+#include <common/replicate.qh>
+#include <common/state.qh>
+#include <common/util.qh>
+#include <common/weapons/_all.qh>
+#include <common/wepent.qh>
+#include <server/items/items.qh>
+#include <server/items/spawning.qh>
+#include <server/weapons/weaponsystem.qh>
+
+                         
+void Send_WeaponComplain(entity e, float wpn, float type)
+{
+	msg_entity = e;
+	WriteHeader(MSG_ONE, TE_CSQC_WEAPONCOMPLAIN);
+	WriteByte(MSG_ONE, wpn);
+	WriteByte(MSG_ONE, type);
+}
+
+void Weapon_whereis(Weapon this, entity cl)
+{
+	if (!autocvar_g_showweaponspawns) return;
+	IL_EACH(g_items, it.weapon == this.m_id && (!it.team || (it.ItemStatus & ITS_AVAILABLE)),
+	{
+		if (Item_IsLoot(it) && (autocvar_g_showweaponspawns < 2))
+		{
+			continue;
+		}
+		entity wp = WaypointSprite_Spawn(
+			WP_Weapon,
+			-2, 0,
+			NULL, it.origin + ('0 0 1' * it.maxs.z) * 1.2,
+			cl, 0,
+			NULL, enemy,
+			0,
+			RADARICON_NONE
+		);
+		wp.wp_extra = this.m_id;
+	});
+}
+
+bool client_hasweapon(entity this, Weapon wpn, .entity weaponentity, float andammo, bool complain)
+{
+	float f = 0;
+
+	if (time < CS(this).hasweapon_complain_spam)
+		complain = 0;
+
+	                                                        
+	if (this.offhand != OFFHAND_HOOK)
+	if (wpn == WEP_HOOK && !((STAT(WEAPONS, this) | weaponsInMap) & WepSet_FromWeapon(wpn)))
+	    complain = 0;
+
+	if (complain)
+		CS(this).hasweapon_complain_spam = time + 0.2;
+
+	if (wpn == WEP_Null)
+	{
+		if (complain)
+			sprint(this, "Invalid weapon\n");
+		return false;
+	}
+	if (autocvar_g_weaponswitch_debug == 2 && weaponslot(weaponentity) > 0 && !(wpn.spawnflags & WEP_FLAG_DUALWIELD) && !(PS(this).dual_weapons & wpn.m_wepset))
+		return false;                        
+	if (STAT(WEAPONS, this) & WepSet_FromWeapon(wpn))
+	{
+		if (andammo)
+		{
+			if(this.items & IT_UNLIMITED_AMMO)
+			{
+				f = 1;
+			}
+			else
+			{
+				f = wpn.wr_checkammo1(wpn, this, weaponentity) + wpn.wr_checkammo2(wpn, this, weaponentity);
+
+				                                                                                         
+				if(wpn == WEP_MINE_LAYER)
+					IL_EACH(g_mines, it.owner == this && it.weaponentity_fld == weaponentity,
+					{
+						f = 1;
+						break;                       
+					});
+			}
+			if (!f)
+			{
+				if (complain)
+				if(IS_REAL_CLIENT(this))
+				{
+					play2(this, SND(UNAVAILABLE));
+					Send_WeaponComplain (this, wpn.m_id, 0);
+				}
+				return false;
+			}
+		}
+		return true;
+	}
+	if (complain)
+	if(IS_REAL_CLIENT(this))
+	{
+		                  
+		                                                                  
+		if (weaponsInMap & WepSet_FromWeapon(wpn))
+		{
+			Send_WeaponComplain(this, wpn.m_id, 1);
+			if(autocvar_g_showweaponspawns < 3)
+				Weapon_whereis(wpn, this);
+			else
+			{
+				FOREACH(Weapons, it.impulse == wpn.impulse,
+				{
+					Weapon_whereis(it, this);
+				});
+			}
+		}
+		else
+		{
+			Send_WeaponComplain (this, wpn.m_id, 2);
+		}
+
+		play2(this, SND(UNAVAILABLE));
+	}
+	return false;
+}
+
+float W_GetCycleWeapon(entity this, string weaponorder, float dir, float imp, float complain, float skipmissing, .entity weaponentity)
+{
+	                                                               
+	                                      
+	float weaponwant, first_valid, prev_valid, switchtonext, switchtolast;
+	WepSet wepset = '0 0 0';
+	switchtonext = switchtolast = 0;
+	first_valid = prev_valid = 0;
+	float weaponcur;
+	entity wep;
+
+	if(skipmissing || this.(weaponentity).selectweapon == 0)
+		weaponcur = this.(weaponentity).m_switchweapon.m_id;
+	else
+		weaponcur = this.(weaponentity).selectweapon;
+
+	if(dir == 0)
+		switchtonext = 1;
+
+	int c = 0;
+
+	string rest = weaponorder;
+	while(rest != "")
+	{
+		weaponwant = stof(car(rest)); rest = cdr(rest);
+		wep = REGISTRY_GET(Weapons, weaponwant);
+		wepset = wep.m_wepset;
+		if(imp >= 0)
+		if(wep.impulse != imp)
+			continue;
+
+		bool have_other = false;
+		FOREACH(Weapons, it != WEP_Null, {
+			if(i != weaponwant)
+			if(it.impulse == imp || imp < 0)
+			if((STAT(WEAPONS, this) & (it.m_wepset)) || (weaponsInMap & (it.m_wepset)))
+				have_other = true;
+		});
+
+		                                                                     
+		if(!(STAT(WEAPONS, this) & wepset))
+		if(!(weaponsInMap & wepset))
+		if((wep.spawnflags & WEP_FLAG_MUTATORBLOCKED) || have_other)
+			continue;
+
+		++c;
+
+		if(!skipmissing || client_hasweapon(this, wep, weaponentity, true, false))
+		{
+			if(switchtonext)
+				return weaponwant;
+			if(!first_valid)
+				first_valid = weaponwant;
+			if(weaponwant == weaponcur)
+			{
+				if(dir >= 0)
+					switchtonext = 1;
+				else if(prev_valid)
+					return prev_valid;
+				else
+					switchtolast = 1;
+			}
+			prev_valid = weaponwant;
+		}
+	}
+	if(first_valid)
+	{
+		if(switchtolast)
+			return prev_valid;
+		else
+			return first_valid;
+	}
+	                                                                         
+	if(complain)
+	{
+		this.weaponcomplainindex += 1;
+		c = (this.weaponcomplainindex % c) + 1;
+		rest = weaponorder;
+		while(rest != "")
+		{
+			weaponwant = stof(car(rest)); rest = cdr(rest);
+			wep = REGISTRY_GET(Weapons, weaponwant);
+			wepset = wep.m_wepset;
+			if(imp >= 0)
+				if(wep.impulse != imp)
+					continue;
+
+			bool have_other = false;
+			FOREACH(Weapons, it != WEP_Null, {
+				if(i != weaponwant)
+				if(it.impulse == imp || imp < 0)
+				if((STAT(WEAPONS, this) & (it.m_wepset)) || (weaponsInMap & (it.m_wepset)))
+					have_other = true;
+			});
+
+			                                                                     
+			if(!(STAT(WEAPONS, this) & wepset))
+			if(!(weaponsInMap & wepset))
+			if((wep.spawnflags & WEP_FLAG_MUTATORBLOCKED) || have_other)
+				continue;
+
+			--c;
+			if(c == 0)
+			{
+				client_hasweapon(this, wep, weaponentity, true, true);
+				break;
+			}
+		}
+	}
+	return 0;
+}
+
+void W_SwitchWeapon_Force(Player this, Weapon wep, .entity weaponentity)
+{
+	TC(Weapon, wep);
+	entity w_ent = this.(weaponentity);
+	w_ent.cnt = w_ent.m_switchweapon.m_id;
+	w_ent.m_switchweapon = wep;
+	w_ent.selectweapon = wep.m_id;
+}
+
+                                                                           
+void W_SwitchToOtherWeapon(entity this, .entity weaponentity)
+{
+	                                                                                                                  
+	Weapon ww;
+	WepSet set = WepSet_FromWeapon(this.(weaponentity).m_weapon);
+	if (STAT(WEAPONS, this) & set)
+	{
+		STAT(WEAPONS, this) &= ~set;
+		ww = w_getbestweapon(this, weaponentity);
+		STAT(WEAPONS, this) |= set;
+	}
+	else
+	{
+		ww = w_getbestweapon(this, weaponentity);
+	}
+	if (ww == WEP_Null) return;
+	W_SwitchWeapon_Force(this, ww, weaponentity);
+}
+
+bool W_SwitchWeapon(entity this, Weapon w, .entity weaponentity)
+{
+	if(this.(weaponentity).m_switchweapon != w)
+	{
+		if(client_hasweapon(this, w, weaponentity, true, true))
+		{
+			W_SwitchWeapon_Force(this, w, weaponentity);
+			return true;
+		}
+		else
+		{
+			this.(weaponentity).selectweapon = w.m_id;                              
+			return false;
+		}
+	}
+	else if(!weaponLocked(this) && CS_CVAR(this).cvar_cl_weapon_switch_reload)
+	{
+		entity actor = this;
+		w.wr_reload(w, actor, weaponentity);
+	}
+
+	return true;                                                        
+}
+
+void W_SwitchWeapon_TryOthers(entity this, Weapon w, .entity weaponentity)
+{
+	if(!W_SwitchWeapon(this, w, weaponentity) && CS_CVAR(this).cvar_cl_weapon_switch_fallback_to_impulse)
+		W_NextWeaponOnImpulse(this, w.impulse, weaponentity);
+}
+
+void W_CycleWeapon(entity this, string weaponorder, float dir, .entity weaponentity)
+{
+	float w;
+	w = W_GetCycleWeapon(this, weaponorder, dir, -1, 1, true, weaponentity);
+	if(w > 0)
+		W_SwitchWeapon(this, REGISTRY_GET(Weapons, w), weaponentity);
+}
+
+void W_NextWeaponOnImpulse(entity this, float imp, .entity weaponentity)
+{
+	float w;
+	w = W_GetCycleWeapon(this, CS_CVAR(this).cvar_cl_weaponpriority, +1, imp, 1, (CS_CVAR(this).cvar_cl_weaponimpulsemode == 0), weaponentity);
+	if(w > 0)
+		W_SwitchWeapon(this, REGISTRY_GET(Weapons, w), weaponentity);
+}
+
+              
+void W_NextWeapon(entity this, int list, .entity weaponentity)
+{
+	if(list == 0)
+		W_CycleWeapon(this, weaponorder_byid, -1, weaponentity);
+	else if(list == 1)
+		W_CycleWeapon(this, CS_CVAR(this).weaponorder_byimpulse, -1, weaponentity);
+	else if(list == 2)
+		W_CycleWeapon(this, CS_CVAR(this).cvar_cl_weaponpriority, -1, weaponentity);
+}
+
+              
+void W_PreviousWeapon(entity this, float list, .entity weaponentity)
+{
+	if(list == 0)
+		W_CycleWeapon(this, weaponorder_byid, +1, weaponentity);
+	else if(list == 1)
+		W_CycleWeapon(this, CS_CVAR(this).weaponorder_byimpulse, +1, weaponentity);
+	else if(list == 2)
+		W_CycleWeapon(this, CS_CVAR(this).cvar_cl_weaponpriority, +1, weaponentity);
+}
+
+                                                                  
+void W_LastWeapon(entity this, .entity weaponentity)
+{
+	Weapon wep = REGISTRY_GET(Weapons, this.(weaponentity).cnt);
+	if (client_hasweapon(this, wep, weaponentity, true, false))
+		W_SwitchWeapon(this, wep, weaponentity);
+	else
+		W_SwitchToOtherWeapon(this, weaponentity);
+}
+
+                                                                                              
+REPLICATE_APPLYCHANGE("cl_weaponpriority",
+	for(int slot = 0; slot < MAX_WEAPONSLOTS; ++slot)
+	{
+		.entity weaponentity = weaponentities[slot];
+		if (this.(weaponentity) && (this.(weaponentity).m_weapon != WEP_Null || slot == 0))
+			this.(weaponentity).m_switchweapon = w_getbestweapon(this, weaponentity);
+	}
+);

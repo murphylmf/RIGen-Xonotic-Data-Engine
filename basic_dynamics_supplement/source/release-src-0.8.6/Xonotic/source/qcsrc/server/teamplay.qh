@@ -1,0 +1,341 @@
+#pragma once
+
+int autocvar_teamplay_mode;
+
+bool autocvar_g_changeteam_banned;
+bool autocvar_teamplay_lockonrestart;
+
+bool autocvar_g_balance_teams;
+bool autocvar_g_balance_teams_prevent_imbalance;
+
+string autocvar_g_forced_team_otherwise;
+
+bool lockteams;
+
+.int team_forced;                                                                                             
+
+                                                                               
+
+void Team_InitTeams();
+
+                                                             
+                                       
+                                                  
+entity Team_GetTeamFromIndex(int index);
+
+                                                                                
+          
+                                                           
+                                                                            
+entity Team_GetTeam(int team_num);
+
+                                                                               
+
+                                         
+                                    
+                              
+float Team_GetTeamScore(entity team_ent);
+
+                                      
+                                        
+                                  
+void Team_SetTeamScore(entity team_ent, float score);
+
+                                                         
+                                    
+                                              
+int Team_GetNumberOfAlivePlayers(entity team_ent);
+
+                                                      
+                                        
+                                               
+void Team_SetNumberOfAlivePlayers(entity team_ent, int number);
+
+                                   
+                                                                                                          
+int Team_GetWinnerAliveTeam();
+
+                                             
+                                  
+int Team_GetNumberOfAliveTeams();
+
+                                   
+                                                                                 
+                                                                                         
+int Team_GetWinnerTeam_WithOwnedItems(int min_owned_items);
+
+                                                       
+                                    
+                                            
+int Team_GetNumberOfOwnedItems(entity team_ent);
+
+                                                    
+                                        
+                                             
+void Team_SetNumberOfOwnedItems(entity team_ent, int number);
+
+                                                      
+                                           
+int Team_GetNumberOfTeamsWithOwnedItems();
+
+                                                                               
+
+void setcolor(entity this, int clr);
+
+                                                                    
+                                    
+                                                                    
+bool Entity_HasValidTeam(entity this);
+
+                                                      
+                                    
+                                     
+int Entity_GetTeamIndex(entity this);
+
+                                                       
+                                    
+                                                                                
+                
+entity Entity_GetTeam(entity this);
+
+void SetPlayerColors(entity player, float _color);
+
+                                                       
+                                           
+                                              
+                                                                
+bool Player_SetTeamIndex(entity player, int index);
+
+enum
+{
+	TEAM_CHANGE_AUTO = 2,                                           
+	TEAM_CHANGE_MANUAL = 3,                                              
+	TEAM_CHANGE_SPECTATOR = 4                                                   
+};
+
+                                       
+                                           
+                                                   
+                                                                       
+                                                                
+bool SetPlayerTeam(entity player, int team_index, int type);
+
+                                                              
+                                           
+                                                   
+void Player_SetTeamIndexChecked(entity player, int team_index);
+
+                                              
+                                         
+                                            
+                       
+                                             
+bool MoveToTeam(entity client, int team_index, int type);
+
+enum
+{
+	TEAM_FORCE_SPECTATOR = -1,                                         
+	TEAM_FORCE_DEFAULT = 0                           
+};
+
+                                                                         
+            
+                                      
+                                                                 
+bool Player_HasRealForcedTeam(entity player);
+
+                                                                    
+                                      
+                                     
+int Player_GetForcedTeamIndex(entity player);
+
+                                                                 
+                                           
+                                                   
+void Player_SetForcedTeamIndex(entity player, int team_index);
+
+                                                                                
+                                           
+void Player_DetermineForcedTeam(entity player);
+
+                                                                               
+
+                                                                          
+             
+                                           
+void TeamBalance_JoinBestTeam(entity player);
+
+                                                                       
+                                       
+                                                                        
+                                                                               
+                                                                               
+                                                                               
+entity TeamBalance_CheckAllowedTeams(entity for_whom);
+
+                                           
+                                                          
+                                                    
+void TeamBalance_Destroy(entity balance);
+
+                                                
+                                           
+                                     
+int TeamBalance_GetAllowedTeams(entity balance);
+
+                                                                            
+                                           
+                                       
+                                                                       
+              
+bool TeamBalance_IsTeamAllowed(entity balance, int index);
+
+                                                                           
+              
+                                               
+                                                                                
+                                                    
+                                                                              
+void TeamBalance_GetTeamCounts(entity balance, entity ignore);
+
+                                                                          
+                                           
+                                       
+                                                              
+                                                                        
+             
+int TeamBalance_GetNumberOfPlayers(entity balance, int index);
+
+                                                                             
+             
+                                           
+                                      
+                                
+                                                                          
+                                                                           
+                                    
+int TeamBalance_FindBestTeam(entity balance, entity player, bool ignore_player);
+
+                                                                        
+                                             
+                                           
+                                      
+                                                                  
+                                                                             
+                             
+                                                                        
+             
+int TeamBalance_FindBestTeams(entity balance, entity player, bool use_score);
+
+                                                   
+enum
+{
+	TEAMS_COMPARE_INVALID,                                    
+	TEAMS_COMPARE_LESS,                                             
+	TEAMS_COMPARE_EQUAL,                           
+	TEAMS_COMPARE_GREATER                                                 
+};
+
+                                                               
+                                           
+                                                    
+                                                     
+                                      
+                                                                  
+                                           
+                                                                        
+             
+int TeamBalance_CompareTeams(entity balance, int team_index_a, int team_index_b,
+	entity player, bool use_score);
+
+                                                                             
+void TeamBalance_AutoBalanceBots();
+
+                                                                               
+                               
+                                           
+                                                   
+                                                
+int TeamBalance_GetLargestTeamIndex(entity balance, int teams);
+
+                                                                            
+                    
+                                                                
+                                                                     
+                                                              
+                                                                           
+                               
+entity TeamBalance_GetPlayerForTeamSwitch(int source_team_index,
+	int destination_team_index, bool is_bot);
+
+                                                                               
+
+void LogTeamChange(float player_id, float team_number, int type);
+
+                                                   
+                                         
+void KillPlayerForTeamChange(entity player);
+
+                                                                            
+                                           
+                                       
+                                                                       
+              
+                                                       
+bool TeamBalance_IsTeamAllowedInternal(entity balance, int index);
+
+                                                              
+                                               
+                                       
+void TeamBalance_BanTeamsExcept(entity balance, int index);
+
+                                                                          
+          
+                                           
+                                       
+                                                                      
+entity TeamBalance_GetTeamFromIndex(entity balance, int index);
+
+                                                                              
+                                
+                                           
+                                                           
+                                                                                
+                   
+entity TeamBalance_GetTeam(entity balance, int team_num);
+
+                                               
+                                    
+                                                     
+bool TeamBalanceTeam_IsAllowed(entity team_ent);
+
+                                                                          
+                                    
+                                                              
+                                                                        
+             
+int TeamBalanceTeam_GetNumberOfPlayers(entity team_ent);
+
+                                                
+                                    
+                                     
+                                                                        
+             
+int TeamBalanceTeam_GetNumberOfBots(entity team_ent);
+
+                                                               
+                                 
+                                  
+                                      
+                                                                  
+                                           
+                                                                        
+             
+int TeamBalance_CompareTeamsInternal(entity team_a, entity team_index_b,
+	entity player, bool use_score);
+
+                                                                         
+                                                                             
+                                                            
+                                         
+void SV_ChangeTeam(entity player, int new_color);

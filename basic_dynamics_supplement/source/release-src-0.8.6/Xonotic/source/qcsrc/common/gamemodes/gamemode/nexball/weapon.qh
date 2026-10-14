@@ -1,0 +1,11 @@
+#pragma once
+
+#include <common/weapons/_all.qh>
+
+CLASS(BallStealer, PortoLaunch)
+                ATTRIB(BallStealer, spawnflags, int, WEP_TYPE_OTHER | WEP_FLAG_MUTATORBLOCKED | WEP_FLAG_NOTRUEAIM);
+                ATTRIB(BallStealer, impulse, int, 0);
+                ATTRIB(BallStealer, netname, string, "ballstealer");
+                ATTRIB(BallStealer, m_name, string, _("Ball Stealer"));
+ENDCLASS(BallStealer)
+REGISTER_WEAPON(NEXBALL, NEW(BallStealer));

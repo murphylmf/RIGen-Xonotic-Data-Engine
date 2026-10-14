@@ -1,0 +1,29 @@
+{
+  "runningman": {
+    "gametype": "dm",
+    "anchor_id": "runningman_collision_candidate_v8",
+    "player_origin": [-17.8, -277.3, 216.0],
+    "enemy_reference_origin": [-217.8, -277.3, 216.0],
+    "trajectory_scale": 0.75,
+    "environment_text": "Collision qualification candidate only.",
+    "prompt_provenance_sample_id": "stage1_preflight_runningman_near_wp0038_wp0041"
+  },
+  "solarium": {
+    "gametype": "dm",
+    "anchor_id": "solarium_collision_candidate_v8",
+    "player_origin": [-949.8, -184.9, -40.0],
+    "enemy_reference_origin": [-1149.8, -184.9, -40.0],
+    "trajectory_scale": 0.75,
+    "environment_text": "Collision qualification candidate only.",
+    "prompt_provenance_sample_id": "stage1_preflight_solarium_close_wp0036_wp0037"
+  },
+  "xoylent": {
+    "gametype": "dm",
+    "anchor_id": "xoylent_collision_candidate_v8",
+    "player_origin": [471.7, -744.5, 152.0],
+    "enemy_reference_origin": [271.7, -744.5, 152.0],
+    "trajectory_scale": 0.75,
+    "environment_text": "Collision qualification candidate only.",
+    "prompt_provenance_sample_id": "stage1_preflight_xoylent"
+  }
+}

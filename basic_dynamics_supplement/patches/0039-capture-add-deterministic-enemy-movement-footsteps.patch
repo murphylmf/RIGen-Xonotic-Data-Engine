@@ -1,0 +1,193 @@
+From 9a239fb3e911f4e9eb577d9f7d203c0026edafc1 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Mon, 27 Jul 2026 04:20:34 +0800
+Subject: [PATCH] capture: add deterministic enemy movement footsteps
+
+---
+ source/qcsrc/common/effects/qc/globalsound.qc | 18 +++++
+ source/qcsrc/common/effects/qc/globalsound.qh |  2 +
+ source/qcsrc/server/capture.qc                | 69 ++++++++++++++++++-
+ source/qcsrc/server/capture.qh                |  2 +
+ 4 files changed, 88 insertions(+), 3 deletions(-)
+
+diff --git a/source/qcsrc/common/effects/qc/globalsound.qc b/source/qcsrc/common/effects/qc/globalsound.qc
+index f5eaf11..b0d6a67 100644
+--- a/source/qcsrc/common/effects/qc/globalsound.qc
++++ b/source/qcsrc/common/effects/qc/globalsound.qc
+@@ -85,6 +85,24 @@
+ 			vector o = from.origin + 0.5 * (from.mins + from.maxs);
+ 			WriteVector(channel, o);
+ 		}
++
++		// Capture-controlled actors need the stock spatial player-sound path,
++		// but must not consume the global RNG merely to choose a sample
++		// variant. The caller supplies a stable value in [0, 1), while the
++		// normal global-sound registry, precache, networking and attenuation
++		// remain unchanged.
++		void GlobalSound_fixed_variant(entity this, entity gs, float variant_r,
++			int chan, float vol)
++		{
++			if(gs == NULL || this.classname == "body")
++				return;
++			float myscale = this.scale ? this.scale : 1;
++			float thepitch = (myscale == 1)
++				? 0 : GlobalSound_pitch(myscale * 100);
++			globalsound(MSG_ALL, this, gs,
++				bound(0, variant_r, 0.999999),
++				chan, vol, ATTEN_NORM, thepitch);
++		}
+ 	#endif
+ 
+ 	#ifdef CSQC
+diff --git a/source/qcsrc/common/effects/qc/globalsound.qh b/source/qcsrc/common/effects/qc/globalsound.qh
+index e244961..9ce20d5 100644
+--- a/source/qcsrc/common/effects/qc/globalsound.qh
++++ b/source/qcsrc/common/effects/qc/globalsound.qh
+@@ -138,6 +138,8 @@ float GlobalSound_pitch(float _pitch);
+ #ifdef SVQC
+ 
+ 	void _GlobalSound(entity this, entity gs, entity ps, string sample, float chan, float vol, float voicetype, bool fake);
++	void GlobalSound_fixed_variant(entity this, entity gs, float variant_r,
++		float chan, float vol);
+ 	#define GlobalSound(this, def, chan, vol, voicetype) _GlobalSound(this, def, NULL, string_null, chan, vol, voicetype, false)
+ 	#define GlobalSound_string(this, def, chan, vol, voicetype) _GlobalSound(this, NULL, NULL, def, chan, vol, voicetype, false)
+ 	#define PlayerSound(this, def, chan, vol, voicetype) _GlobalSound(this, NULL, def, string_null, chan, vol, voicetype, false)
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 9c4744c..b1949b8 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -1,6 +1,7 @@
+ #include "capture.qh"
+ 
+ #include <common/deathtypes/all.qh>
++#include <common/effects/qc/globalsound.qh>
+ #include <common/resources/sv_resources.qh>
+ #include <common/stats.qh>
+ #include <common/weapons/_all.qh>
+@@ -41,6 +42,9 @@ float capture_prev_player_health;
+ float capture_prev_player_armor;
+ float capture_prev_player_clip;
+ float capture_prev_player_reserve;
++vector capture_prev_enemy_step_origin;
++float capture_enemy_step_distance;
++int capture_enemy_step_index;
+ 
+ void Capture_Log(string text)
+ {
+@@ -316,6 +320,10 @@ bool Capture_TryReset()
+ 	entity weapon_entity = capture_player.(weaponentities[0]);
+ 	capture_prev_player_clip = weapon_entity.clip_load;
+ 	capture_prev_player_reserve = Capture_Reserve(capture_player, weapon_entity.m_weapon);
++	capture_prev_enemy_step_origin = autocvar_capture_enemy_present
++		? capture_enemy.origin : '0 0 0';
++	capture_enemy_step_distance = 0;
++	capture_enemy_step_index = 0;
+ 
+ 	vector anchor_mins = PL_MIN_CONST + '0.1 0.1 0.1';
+ 	vector anchor_maxs = PL_MAX_CONST - '0.1 0.1 0.1';
+@@ -376,24 +384,78 @@ bool Capture_TryReset()
+ 	Capture_Log(reset_row);
+ 	if(autocvar_capture_enemy_present)
+ 	{
+-		Capture_Log(sprintf(
++		string policy_row = sprintf(
+ 			"{\"kind\":\"enemy_policy\",\"episode_id\":\"%s\","
+ 			"\"policy\":\"%s\",\"policy_seed\":%d,\"motion_mode\":%d,"
+ 			"\"motion_start_tick\":%d,\"motion_distance\":%.6f,"
+ 			"\"reads_camera\":false,\"reads_crosshair\":false,"
+ 			"\"reads_live_player_state\":false,\"fires\":false,"
+-			"\"jumps\":false}",
++			"\"jumps\":false,",
+ 			autocvar_capture_episode_id, autocvar_capture_enemy_policy,
+ 			autocvar_capture_enemy_policy_seed,
+ 			autocvar_capture_enemy_motion,
+ 			autocvar_capture_enemy_motion_start_tick,
+-			autocvar_capture_enemy_motion_distance));
++			autocvar_capture_enemy_motion_distance);
++		policy_row = strcat(policy_row, sprintf(
++			"\"movement_audio\":\"native_surface_footsteps_v1\","
++			"\"movement_audio_enabled\":%d,\"step_stride\":%.6f}",
++			autocvar_capture_enemy_movement_audio,
++			autocvar_capture_enemy_step_stride));
++		Capture_Log(policy_row);
+ 	}
+ 	stuffcmd(capture_player,
+ 		sprintf("\ncapture_episode_reset \"%s\"\n", autocvar_capture_episode_id));
+ 	return true;
+ }
+ 
++void Capture_AdvanceEnemyFootsteps(vector target)
++{
++	float segment_distance = vlen(target - capture_prev_enemy_step_origin);
++	capture_prev_enemy_step_origin = target;
++	if(!autocvar_capture_enemy_movement_audio
++		|| autocvar_capture_enemy_motion == 0)
++		return;
++	float stride = max(8, autocvar_capture_enemy_step_stride);
++	capture_enemy_step_distance += segment_distance;
++	if(capture_enemy_step_distance < stride)
++		return;
++	capture_enemy_step_distance -= stride;
++
++	trace_dphitq3surfaceflags = 0;
++	tracebox(capture_enemy.origin, capture_enemy.mins, capture_enemy.maxs,
++		capture_enemy.origin - '0 0 1', MOVE_NOMONSTERS, capture_enemy);
++	if(trace_dphitq3surfaceflags & Q3SURFACEFLAG_NOSTEPS)
++		return;
++	bool metal = boolean(
++		trace_dphitq3surfaceflags & Q3SURFACEFLAG_METALSTEPS);
++	entity gs = (metal ? GS_STEP_METAL : GS_STEP);
++	int variant = (
++		autocvar_capture_enemy_policy_seed
++		+ capture_enemy_step_index * 5
++	) % 6;
++	float variant_r = (variant + 0.5) / 6;
++	string sample = GlobalSound_sample(gs.m_globalsoundstr, variant_r);
++	int event_id = Capture_NewEvent();
++	string row = sprintf(
++		"{\"kind\":\"event\",\"event\":\"enemy_footstep\","
++		"\"event_id\":%d,\"parent_event_id\":null,"
++		"\"server_tick\":%d,\"server_time\":%.9f,"
++		"\"source_entity\":%d,",
++		event_id, capture_server_tick, time, etof(capture_enemy));
++	row = strcat(row, sprintf(
++		"\"surface\":\"%s\",\"variant\":%d,\"sample\":\"%s\","
++		"\"stride\":%.6f,",
++		(metal ? "metal" : "standard"), variant + 1, sample, stride));
++	row = strcat(row, sprintf(
++		"\"position\":[%.6f,%.6f,%.6f]}",
++		capture_enemy.origin.x, capture_enemy.origin.y,
++		capture_enemy.origin.z));
++	Capture_Log(row);
++	GlobalSound_fixed_variant(
++		capture_enemy, gs, variant_r, CH_PLAYER, VOL_BASE);
++	++capture_enemy_step_index;
++}
++
+ void Capture_MoveEnemy()
+ {
+ 	if(!autocvar_capture_enemy_present)
+@@ -464,6 +526,7 @@ void Capture_MoveEnemy()
+ 	set_movetype(capture_enemy, MOVETYPE_NONE);
+ 	capture_enemy.velocity = commanded_velocity;
+ 	setorigin(capture_enemy, target);
++	Capture_AdvanceEnemyFootsteps(target);
+ 	capture_enemy.v_angle = '0 1 0' * autocvar_capture_enemy_yaw;
+ 	capture_enemy.angles = capture_enemy.v_angle;
+ 	capture_enemy.fixangle = true;
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 79f6895..698c390 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -17,6 +17,8 @@ float autocvar_capture_enemy_motion_distance;
+ int autocvar_capture_enemy_motion_start_tick;
+ string autocvar_capture_enemy_policy;
+ int autocvar_capture_enemy_policy_seed;
++bool autocvar_capture_enemy_movement_audio;
++float autocvar_capture_enemy_step_stride;
+ string autocvar_capture_enemy_model;
+ int autocvar_capture_enemy_skin;
+ int autocvar_capture_enemy_color;
+-- 
+2.43.0
+

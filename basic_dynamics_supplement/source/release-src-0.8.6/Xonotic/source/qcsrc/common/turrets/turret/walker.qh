@@ -1,0 +1,48 @@
+#pragma once
+
+                             
+
+#include "walker_weapon.qh"
+
+CLASS(WalkerTurret, Turret)
+                 ATTRIB(WalkerTurret, spawnflags, int, TUR_FLAG_PLAYER | TUR_FLAG_MOVE);
+                 ATTRIB(WalkerTurret, m_mins, vector, '-70 -70 0');
+                 ATTRIB(WalkerTurret, m_maxs, vector, '70 70 95');
+                 ATTRIB(WalkerTurret, mdl, string, "walker_body.md3");
+                 ATTRIB_STRZONE(WalkerTurret, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(WalkerTurret, head_model, string, strcat("models/turrets/", "walker_head_minigun.md3"));
+                 ATTRIB(WalkerTurret, netname, string, "walker");
+                 ATTRIB(WalkerTurret, turret_name, string, _("Walker Turret"));
+    ATTRIB(WalkerTurret, m_weapon, Weapon, WEP_WALKER);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+		P(class, prefix, melee_damage, float) \
+		P(class, prefix, melee_force, float) \
+		P(class, prefix, melee_range, float) \
+		P(class, prefix, rocket_damage, float) \
+		P(class, prefix, rocket_force, float) \
+		P(class, prefix, rocket_radius, float) \
+		P(class, prefix, rocket_range, float) \
+		P(class, prefix, rocket_range_min, float) \
+		P(class, prefix, rocket_refire, float) \
+		P(class, prefix, rocket_speed, float) \
+		P(class, prefix, rocket_turnrate, float) \
+		P(class, prefix, speed_jump, float) \
+		P(class, prefix, speed_roam, float) \
+		P(class, prefix, speed_run, float) \
+		P(class, prefix, speed_stop, float) \
+		P(class, prefix, speed_swim, float) \
+		P(class, prefix, speed_walk, float) \
+		P(class, prefix, turn, float) \
+		P(class, prefix, turn_run, float) \
+		P(class, prefix, turn_strafe, float) \
+		P(class, prefix, turn_swim, float) \
+		P(class, prefix, turn_walk, float) \
+	END()
+	TR_PROPS(X, WalkerTurret, walker)
+#undef X
+
+ENDCLASS(WalkerTurret)
+REGISTER_TURRET(WALKER, NEW(WalkerTurret));

@@ -1,0 +1,162 @@
+From 002374b49a0e448d8d98242fe3fc006e52d25b80 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:49:00 +0800
+Subject: [PATCH 09/36] Bracket capture telemetry around authoritative physics
+ ticks
+
+---
+ source/qcsrc/server/capture.qc | 75 ++++++++++++++++------------------
+ source/qcsrc/server/capture.qh |  1 +
+ source/qcsrc/server/client.qc  |  1 +
+ 3 files changed, 37 insertions(+), 40 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 4dcb976..b902aca 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -15,6 +15,7 @@ int capture_server_tick;
+ int capture_next_event_id;
+ bool capture_server_started;
+ bool capture_server_done;
++bool capture_server_tick_logged;
+ entity capture_player;
+ entity capture_enemy;
+ 
+@@ -226,6 +227,7 @@ bool Capture_TryReset()
+ 	capture_next_event_id = 1;
+ 	capture_server_started = true;
+ 	capture_server_done = false;
++	capture_server_tick_logged = false;
+ 	capture_prev_player_origin = capture_player.origin;
+ 	capture_prev_player_velocity = capture_player.velocity;
+ 	capture_prev_player_angles = capture_player.v_angle;
+@@ -290,23 +292,6 @@ void Capture_MoveEnemy()
+ 	PHYS_INPUT_BUTTON_JUMP(capture_enemy) = false;
+ }
+ 
+-void Capture_HoldWarmup()
+-{
+-	if(capture_server_tick >= 64)
+-		return;
+-	setorigin(capture_player, autocvar_capture_player_origin);
+-	capture_player.velocity = '0 0 0';
+-	capture_player.oldvelocity = '0 0 0';
+-	capture_player.v_angle = '0 1 0' * autocvar_capture_player_yaw;
+-	capture_player.angles = capture_player.v_angle;
+-	capture_player.fixangle = true;
+-	CS(capture_player).movement = '0 0 0';
+-	CS(capture_player).impulse = 0;
+-	PHYS_INPUT_BUTTON_ATCK(capture_player) = false;
+-	PHYS_INPUT_BUTTON_ATCK2(capture_player) = false;
+-	PHYS_INPUT_BUTTON_JUMP(capture_player) = false;
+-}
+-
+ void Capture_LogState()
+ {
+ 	entity weapon_entity = capture_player.(weaponentities[0]);
+@@ -321,14 +306,17 @@ void Capture_LogState()
+ 	row = strcat(row, sprintf(
+ 		"\"applied_action\":{\"forward\":%.6f,\"strafe\":%.6f,\"up\":%.6f,"
+ 		"\"pitch\":%.6f,\"yaw\":%.6f,\"jump\":%d,",
+-		CS(capture_player).movement.x, CS(capture_player).movement.y, CS(capture_player).movement.z,
+-		capture_player.v_angle.x, capture_player.v_angle.y,
+-		PHYS_INPUT_BUTTON_JUMP(capture_player)));
++		capture_action_forward[capture_server_tick],
++		capture_action_strafe[capture_server_tick], 0,
++		capture_action_pitch[capture_server_tick],
++		capture_action_yaw[capture_server_tick],
++		capture_action_jump[capture_server_tick]));
+ 	row = strcat(row, sprintf(
+ 		"\"primary\":%d,\"secondary\":%d,\"impulse\":%d},",
+-		PHYS_INPUT_BUTTON_ATCK(capture_player),
+-		PHYS_INPUT_BUTTON_ATCK2(capture_player),
+-		CS(capture_player).impulse));
++		capture_action_primary[capture_server_tick],
++		capture_action_secondary[capture_server_tick],
++		capture_action_reload[capture_server_tick]
++			? 20 : capture_action_impulse[capture_server_tick]));
+ 	row = strcat(row, sprintf(
+ 		"\"pre\":{\"origin\":[%.6f,%.6f,%.6f],",
+ 		capture_prev_player_origin.x, capture_prev_player_origin.y, capture_prev_player_origin.z));
+@@ -392,33 +380,40 @@ void Capture_ServerFrame()
+ 		capture_server_done = true;
+ 		return;
+ 	}
+-	if(capture_server_tick == 388)
+-	{
+-		Capture_Log(sprintf(
+-			"{\"kind\":\"output_end\",\"server_tick\":%d,\"server_time\":%.9f}",
+-			capture_server_tick, time));
+-		stuffcmd(capture_player, "\ncapture_output_end\n");
+-		capture_server_done = true;
+-		fclose(capture_server_fh);
+-		capture_server_fh = -1;
+-		return;
+-	}
+-	if(capture_server_tick >= 384)
++	if(capture_server_tick_logged)
+ 	{
++		if(capture_server_tick == CAPTURE_ACTION_COUNT - 1)
++		{
++			Capture_Log(sprintf(
++				"{\"kind\":\"output_end\",\"server_tick\":%d,\"server_time\":%.9f}",
++				capture_server_tick, time));
++			stuffcmd(capture_player, "\ncapture_output_end\n");
++			capture_server_done = true;
++			fclose(capture_server_fh);
++			capture_server_fh = -1;
++			return;
++		}
+ 		++capture_server_tick;
+-		return;
++		capture_server_tick_logged = false;
+ 	}
+-	Capture_HoldWarmup();
+ 	Capture_MoveEnemy();
+-	Capture_LogState();
+-	if(capture_server_tick == 63)
++	if(capture_server_tick == 64)
+ 	{
+ 		Capture_Log(sprintf(
+ 			"{\"kind\":\"output_begin\",\"server_tick\":%d,\"server_time\":%.9f}",
+ 			capture_server_tick, time));
+ 		stuffcmd(capture_player, "\ncapture_output_begin\n");
+ 	}
+-	++capture_server_tick;
++}
++
++void Capture_ServerFrameEnd(entity actor)
++{
++	if(!autocvar_capture_server_enable || !capture_server_started
++		|| capture_server_done || capture_server_tick_logged
++		|| actor != capture_player)
++		return;
++	Capture_LogState();
++	capture_server_tick_logged = true;
+ }
+ 
+ void Capture_Fire(entity actor, int deathtype, vector shot_origin, vector shot_direction)
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 69ecdfa..21e7542 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -26,6 +26,7 @@ float autocvar_capture_reserve;
+ void setplayermodel(entity e, string modelname);
+ void Capture_ApplyAuthoritativeAction(entity actor);
+ void Capture_ServerFrame();
++void Capture_ServerFrameEnd(entity actor);
+ void Capture_Fire(entity actor, int deathtype, vector shot_origin, vector shot_direction);
+ void Capture_ProjectileSpawn(entity projectile, entity actor, int deathtype);
+ void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
+diff --git a/source/qcsrc/server/client.qc b/source/qcsrc/server/client.qc
+index a456c05..e479591 100644
+--- a/source/qcsrc/server/client.qc
++++ b/source/qcsrc/server/client.qc
+@@ -2796,6 +2796,7 @@ void PlayerPostThink (entity this)
+ 	}
+ 
+ 	CSQCMODEL_AUTOUPDATE(this);
++	Capture_ServerFrameEnd(this);
+ }
+ 
+ // hack to copy the button fields from the client entity to the Client State

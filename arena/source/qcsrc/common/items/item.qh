@@ -1,0 +1,137 @@
+#pragma once
+
+#ifdef GAMEQC
+#include <common/models/all.qh>
+#include <common/sounds/all.qh>
+#include <common/sounds/all.inc>
+#include <common/stats.qh>
+#endif
+
+#ifdef SVQC
+#include <server/items/spawning.qh>
+#endif
+
+#ifdef GAMEQC
+const int IT_UNLIMITED_AMMO 			=  BIT(0);                                                                                                 
+const int IT_UNLIMITED_SUPERWEAPONS		=  BIT(1);                                                                                       
+
+const int IT_JETPACK               		=  BIT(2);               
+const int IT_USING_JETPACK         		=  BIT(3);                                       
+const int IT_FUEL_REGEN            		=  BIT(4);                             
+
+const int IT_RESOURCE       			=  BIT(5);                                                    
+
+const int IT_KEY1						= BIT(6);
+const int IT_KEY2						= BIT(7);
+
+const int IT_BUFF						= BIT(8);                             
+
+                                       
+                               
+const int IT_INVISIBILITY				= BIT(9);
+const int IT_INVINCIBLE					= BIT(10);
+const int IT_SUPERWEAPON				= BIT(11);        
+const int IT_STRENGTH					= BIT(12);
+const int IT_SPEED						= BIT(13);
+
+             
+const int IT_PICKUPMASK                	= IT_UNLIMITED_AMMO | IT_UNLIMITED_SUPERWEAPONS | IT_JETPACK | IT_FUEL_REGEN;                                                  
+
+                  
+const int ISF_LOCATION          = BIT(1);
+const int ISF_MODEL             = BIT(2);
+const int ISF_STATUS            = BIT(3);
+const int ISF_COLORMAP          = BIT(4);
+const int ISF_DROP              = BIT(5);
+const int ISF_ANGLES            = BIT(6);
+const int ISF_SIZE              = BIT(7);
+
+REGISTER_NET_LINKED(ENT_CLIENT_ITEM)
+
+              
+.int ItemStatus;
+const int ITS_STAYWEP           = BIT(0);
+const int ITS_ANIMATE1          = BIT(1);
+const int ITS_ANIMATE2          = BIT(2);
+const int ITS_AVAILABLE         = BIT(3);
+const int ITS_ALLOWFB           = BIT(4);
+const int ITS_ALLOWSI           = BIT(5);
+const int ITS_GLOW              = BIT(6);
+const int ITS_EXPIRING          = BIT(7);
+
+                                                                    
+const float IT_DESPAWNFX_TIME = 1.5;
+
+                                                                
+                                                                                              
+const float IT_UPDATE_INTERVAL = 0.0625;
+
+.float fade_start;
+.float fade_end;
+
+.string mdl;
+#endif
+
+#ifdef SVQC
+.float strength_finished;                                                                                               
+.float invincible_finished;         
+.float buffs_finished;         
+
+#define SPAWNFUNC_BODY(item) \
+	if (item && Item_IsDefinitionAllowed(item)) \
+		StartItem(this, item); \
+	else \
+	{ \
+		startitem_failed = true; \
+		delete(this); \
+	}
+
+#define SPAWNFUNC_ITEM(name, item) \
+	spawnfunc(name) \
+	{ \
+		SPAWNFUNC_BODY(item) \
+	}
+
+#define SPAWNFUNC_ITEM_COND(name, cond, item1, item2) \
+	SPAWNFUNC_ITEM(name, (cond ? item1 : item2))
+
+#else
+
+#define SPAWNFUNC_ITEM(name, item)
+
+#endif
+
+enum
+{
+	ITEM_FLAG_NORMAL = BIT(0),                                            
+	ITEM_FLAG_MUTATORBLOCKED = BIT(1),
+	ITEM_FLAG_RESOURCE = BIT(2)                                             
+};
+
+#define ITEM_HANDLE(signal, ...) __Item_Send_##signal(__VA_ARGS__)
+CLASS(GameItem, Object)
+    ATTRIB(GameItem, m_id, int, 0);
+                                       
+    ATTRIB(GameItem, m_canonical_spawnfunc, string);
+    METHOD(GameItem, m_spawnfunc_hookreplace, GameItem(GameItem this, entity e)) { return this; }
+    ATTRIB(GameItem, m_name, string);
+    ATTRIB(GameItem, m_icon, string);
+    ATTRIB(GameItem, m_color, vector, '1 1 1');
+    ATTRIB(GameItem, m_waypoint, string);
+    ATTRIB(GameItem, m_waypointblink, int, 1);
+#ifdef GAMEQC
+    ATTRIB(GameItem, m_glow, bool, false);
+    ATTRIB(GameItem, m_respawnsound, Sound, SND_ITEMRESPAWN);
+#endif
+    METHOD(GameItem, display, void(GameItem this, void(string name, string icon) returns))
+    {
+        TC(GameItem, this);
+        returns(this.m_name, this.m_icon ? sprintf("/gfx/hud/%s/%s", cvar_string("menu_skin"), this.m_icon) : string_null);
+    }
+    METHOD(GameItem, show, void(GameItem this))
+    {
+        TC(GameItem, this);
+        LOG_INFO("A game item");
+    }
+    void ITEM_HANDLE(Show, GameItem this) { this.show(this); }
+ENDCLASS(GameItem)

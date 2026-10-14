@@ -1,0 +1,20 @@
+#pragma once
+#include "../panel.qh"
+
+int autocvar_hud_panel_radar;
+bool autocvar_hud_panel_radar_dynamichud        = true;
+float autocvar_hud_panel_radar_foreground_alpha;
+float autocvar_hud_panel_radar_maximized_scale;
+vector autocvar_hud_panel_radar_maximized_size;
+float autocvar_hud_panel_radar_rotation;
+float autocvar_hud_panel_radar_scale;
+int autocvar_hud_panel_radar_zoommode;
+float autocvar_hud_panel_radar_maximized_rotation;
+int autocvar_hud_panel_radar_maximized_zoommode;
+bool autocvar_duel_radar_enemy;
+float autocvar_duel_radar_enemy_scale = 2;
+float autocvar_duel_radar_self_scale = 2;
+float autocvar_duel_radar_vertical_threshold = 96;
+bool autocvar_duel_radar_debug;
+
+void HUD_Radar_Show_Maximized(bool doshow, bool clickable);

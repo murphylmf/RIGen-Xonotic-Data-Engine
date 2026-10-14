@@ -1,0 +1,33 @@
+From fe8b4e847eff4b95e37f6adad31a2add6ddb746e Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Mon, 27 Jul 2026 05:09:25 +0800
+Subject: [PATCH 40/40] capture: log objective HUD suppression policy
+
+---
+ source/darkplaces/capture_telemetry.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/source/darkplaces/capture_telemetry.c b/source/darkplaces/capture_telemetry.c
+index cad5038..55a2d80 100644
+--- a/source/darkplaces/capture_telemetry.c
++++ b/source/darkplaces/capture_telemetry.c
+@@ -250,11 +250,14 @@ static void Capture_OutputBegin_f(void)
+ 		capture_episode_id, capture_expected_frames.integer);
+ 	Con_Printf(
+ 		"capture: hud policy cl_damagetext=%.0f crosshair_hitindication=%.0f "
+-		"hud_healtharmor=%.0f hud_ammo=%.0f\n",
++		"hud_healtharmor=%.0f hud_ammo=%.0f cl_hidewaypoints=%.0f "
++		"hud_modicons=%.0f\n",
+ 		Cvar_VariableValue("cl_damagetext"),
+ 		Cvar_VariableValue("crosshair_hitindication"),
+ 		Cvar_VariableValue("hud_panel_healtharmor"),
+-		Cvar_VariableValue("hud_panel_ammo"));
++		Cvar_VariableValue("hud_panel_ammo"),
++		Cvar_VariableValue("cl_hidewaypoints"),
++		Cvar_VariableValue("hud_panel_modicons"));
+ }
+ 
+ static void Capture_OutputEnd_f(void)
+-- 
+2.43.0
+

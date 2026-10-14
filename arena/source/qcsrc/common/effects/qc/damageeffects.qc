@@ -1,0 +1,430 @@
+#include "damageeffects.qh"
+
+REGISTER_NET_LINKED(ENT_CLIENT_DAMAGEINFO)
+
+#ifdef SVQC
+
+bool Damage_DamageInfo_SendEntity(entity this, entity to, int sf)
+{
+	vector org = vec3(floor(this.origin.x), floor(this.origin.y), floor(this.origin.z));
+	WriteHeader(MSG_ENTITY, ENT_CLIENT_DAMAGEINFO);
+	WriteShort(MSG_ENTITY, this.projectiledeathtype);
+	WriteVector(MSG_ENTITY, org);
+	WriteByte(MSG_ENTITY, bound(1, this.dmg, 255));
+	WriteByte(MSG_ENTITY, bound(0, this.dmg_radius, 255));
+	WriteByte(MSG_ENTITY, bound(1, this.dmg_edge, 255));
+	                                                                                            
+	                                                             
+	                                                                                           
+	WriteShort(MSG_ENTITY, floor(this.velocity.x / 4));
+	WriteShort(MSG_ENTITY, floor(this.velocity.y / 4));
+	WriteShort(MSG_ENTITY, floor(this.velocity.z / 4));
+	WriteByte(MSG_ENTITY, this.species);
+	return true;
+}
+
+void Damage_DamageInfo(vector org, float coredamage, float edgedamage, float rad, vector force, int deathtype, float bloodtype, entity dmgowner)
+{
+	                                                
+	                                                                                                            
+
+	if(!sound_allowed(MSG_BROADCAST, dmgowner))
+		deathtype |= 0x8000;
+
+	entity e = new_pure(damageinfo);
+	                                 
+	                    
+	e.origin = org;
+	e.projectiledeathtype = deathtype;
+	e.dmg = coredamage;
+	e.dmg_edge = edgedamage;
+	bool rad_negative = false;
+	if(rad < 0)
+	{
+		                                                        
+		rad_negative = true;
+		rad = -rad;
+	}
+	e.dmg_radius = rad;
+	e.dmg_force = vlen(force);
+	e.velocity = force;
+
+	e.species = bloodtype & BITS(4);                                                          
+	if(rad_negative)
+		e.species |= BIT(7);
+
+	Net_LinkEntity(e, false, 0.2, Damage_DamageInfo_SendEntity);
+}
+
+#endif
+
+#ifdef CSQC
+
+                                                                 
+.int total_damages;
+
+.entity tag_entity;
+
+.float cnt;
+.int state;
+
+.bool silent;
+
+void DamageEffect_Think(entity this)
+{
+	                                                                               
+	if(autocvar_cl_damageeffect_distribute)
+		this.nextthink = time + autocvar_cl_damageeffect_ticrate * this.owner.total_damages;
+	else
+		this.nextthink = time + autocvar_cl_damageeffect_ticrate;
+
+	if(time >= this.cnt || !this.owner || !this.owner.modelindex || !this.owner.drawmask)
+	{
+		                                                     
+		this.owner.total_damages = max(0, this.owner.total_damages - 1);
+		delete(this);
+		return;
+	}
+	if(this.state && !this.owner.csqcmodel_isdead)
+	{
+		                                                                   
+		                                                                                         
+		this.owner.total_damages = max(0, this.owner.total_damages - 1);
+		delete(this);
+		return;
+	}
+	this.state = this.owner.csqcmodel_isdead;
+	if((this.owner.isplayermodel & ISPLAYER_LOCAL) && !autocvar_chase_active)
+		return;                                                                  
+
+	                             
+	vector org = gettaginfo(this, 0);                               
+	__pointparticles(this.team, org, '0 0 0', 1);
+}
+
+string species_prefix(int specnum)
+{
+	switch(specnum)
+	{
+		case SPECIES_HUMAN:       return "";
+		case SPECIES_ALIEN:       return "alien_";
+		case SPECIES_ROBOT_SHINY: return "robot_";
+		case SPECIES_ROBOT_RUSTY: return "robot_";                                             
+		case SPECIES_ROBOT_SOLID: return "robot_";                                             
+		case SPECIES_ANIMAL:      return "animal_";
+		case SPECIES_RESERVED:    return "reserved_";
+		default:         return "";
+	}
+}
+
+void DamageEffect(entity this, vector hitorg, float thedamage, int type, int specnum)
+{
+	                                                                                                                   
+
+	int nearestbone = 0;
+	float life;
+	string effectname;
+	entity e, wep;
+
+	if(!autocvar_cl_damageeffect || autocvar_cl_gentle || autocvar_cl_gentle_damage)
+		return;
+	if(!this || !this.modelindex || !this.drawmask)
+		return;
+
+	                                                                                    
+	                                                                                                 
+	                                                                       
+	FOR_EACH_TAG(this)
+	{
+		if(!tagnum)
+			continue;                    
+		                                                                              
+		                                                                       
+		if(gettaginfo_name == "master" || gettaginfo_name == "knee_L" || gettaginfo_name == "knee_R" || gettaginfo_name == "leg_L" || gettaginfo_name == "leg_R")
+			continue;                               
+
+		                                               
+		if(nearestbone == 0 || vlen2(hitorg - gettaginfo(this, tagnum)) <= vlen2(hitorg - gettaginfo(this, nearestbone)))
+			nearestbone = tagnum;
+	}
+	gettaginfo(this, nearestbone);                       
+
+	                                                                       
+	                                                                                                                       
+	if(nearestbone)
+	{
+		if(this.total_damages >= autocvar_cl_damageeffect_bones)
+			return;                                             
+	}
+	else
+	{
+		if(autocvar_cl_damageeffect < 2 || this.total_damages)
+			return;                                                
+	}
+
+	life = bound(autocvar_cl_damageeffect_lifetime_min, thedamage * autocvar_cl_damageeffect_lifetime, autocvar_cl_damageeffect_lifetime_max);
+
+	wep = DEATH_WEAPONOF(type);
+	effectname = strcat("damage_", wep.netname);
+	if((wep.spawnflags & WEP_FLAG_BLEED))
+	{
+		                                                                                                   
+		if((this.isplayermodel & ISPLAYER_MODEL))
+		{
+			string specstr = species_prefix(specnum);
+			effectname = strcat(specstr, effectname);
+		}
+		else { return; }                       
+	}
+
+	e = new(damage);
+	setmodel(e, MDL_Null);                                       
+	setattachment(e, this, gettaginfo_name);                            
+	e.owner = this;
+	e.cnt = time + life;
+	e.team = _particleeffectnum(effectname);
+	setthink(e, DamageEffect_Think);
+	e.nextthink = time;
+	this.total_damages += 1;
+}
+
+NET_HANDLE(ENT_CLIENT_DAMAGEINFO, bool isNew)
+{
+	float thedamage, rad, edge, thisdmg;
+	bool hitplayer = false;
+	int species, forcemul;
+	vector force, thisforce;
+
+	w_deathtype = ReadShort();
+	w_issilent = (w_deathtype & 0x8000);
+	w_deathtype = (w_deathtype & 0x7FFF);
+
+	w_org = ReadVector();
+
+	thedamage = ReadByte();
+	rad = ReadByte();
+	edge = ReadByte();
+	force.x = ReadShort() * 4 + 2;
+	force.y = ReadShort() * 4 + 2;
+	force.z = ReadShort() * 4 + 2;
+
+	species = ReadByte();
+	bool rad_negative = (species & BIT(7));
+	species = (species & BITS(4));
+
+	return = true;
+
+	if (!isNew)
+		return;
+
+	forcemul = (rad_negative ? -1 : 1);
+
+	FOREACH_ENTITY_RADIUS(w_org, rad + MAX_DAMAGEEXTRARADIUS, !it.tag_entity && !is_pure(it), {
+		vector nearest = NearestPointOnBox(it, w_org);
+		if (rad)
+		{
+			thisdmg = ((vlen(nearest - w_org) - bound(MIN_DAMAGEEXTRARADIUS, it.damageextraradius, MAX_DAMAGEEXTRARADIUS)) / rad);
+			if(thisdmg >= 1)
+				continue;
+			if(thisdmg < 0)
+				thisdmg = 0;
+			if(thedamage)
+			{
+				thisdmg = thedamage + (edge - thedamage) * thisdmg;
+				thisforce = forcemul * vlen(force) * (thisdmg / thedamage) * normalize(it.origin - w_org);
+			}
+			else
+			{
+				thisdmg = 0;
+				thisforce = forcemul * vlen(force) * normalize(it.origin - w_org);
+			}
+		}
+		else
+		{
+			if(vdist((nearest - w_org), >, bound(MIN_DAMAGEEXTRARADIUS, it.damageextraradius, MAX_DAMAGEEXTRARADIUS)))
+				continue;
+
+			thisdmg = thedamage;
+			thisforce = forcemul * force;
+		}
+
+		if(it.damageforcescale)
+			if(vdist(thisforce, !=, 0))
+			{
+				it.velocity = it.velocity + damage_explosion_calcpush(it.damageforcescale * thisforce, it.velocity, damagepush_speedfactor);
+				UNSET_ONGROUND(it);
+			}
+
+		if(w_issilent)
+			it.silent = 1;
+
+		if(it.event_damage)
+			it.event_damage(it, thisdmg, w_deathtype, w_org, thisforce);
+
+		DamageEffect(it, w_org, thisdmg, w_deathtype, species);
+
+		if(it != csqcplayer && (it.isplayermodel & ISPLAYER_MODEL))
+			hitplayer = true;                                      
+	});
+
+	if(DEATH_ISVEHICLE(w_deathtype))
+	{
+		vector force_dir = normalize(force);
+		traceline(w_org - force_dir * 16, w_org + force_dir * 16, MOVE_NOMONSTERS, NULL);
+		if(trace_plane_normal != '0 0 0')
+			w_backoff = trace_plane_normal;
+		else
+			w_backoff = -1 * normalize(w_org - (w_org + force_dir * 16));
+
+		setorigin(this, w_org + w_backoff * 2);                     
+
+		switch(DEATH_ENT(w_deathtype))
+		{
+			case DEATH_VH_CRUSH:
+				break;
+
+			            
+			case DEATH_VH_SPID_MINIGUN:
+				sound(this, CH_SHOTS, SND_RIC_RANDOM(), VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_SPIDERBOT_MINIGUN_IMPACT, this.origin, w_backoff * 1000, 1);
+				break;
+			case DEATH_VH_SPID_ROCKET:
+				sound(this, CH_SHOTS, SND_ROCKET_IMPACT, VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_SPIDERBOT_ROCKET_EXPLODE, this.origin, w_backoff * 1000, 1);
+				break;
+			case DEATH_VH_SPID_DEATH:
+				sound(this, CH_SHOTS, SND_ROCKET_IMPACT, VOL_BASE, ATTEN_LOW);
+				pointparticles(EFFECT_EXPLOSION_BIG, this.origin, w_backoff * 1000, 1);
+				break;
+
+			case DEATH_VH_WAKI_GUN:
+				sound(this, CH_SHOTS, SND_LASERIMPACT, VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_RACER_IMPACT, this.origin, w_backoff * 1000, 1);
+				break;
+			case DEATH_VH_WAKI_ROCKET:
+				sound(this, CH_SHOTS, SND_ROCKET_IMPACT, VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_RACER_ROCKET_EXPLODE, this.origin, w_backoff * 1000, 1);
+				break;
+			case DEATH_VH_WAKI_DEATH:
+				sound(this, CH_SHOTS, SND_ROCKET_IMPACT, VOL_BASE, ATTEN_LOW);
+				pointparticles(EFFECT_EXPLOSION_BIG, this.origin, w_backoff * 1000, 1);
+				break;
+
+			case DEATH_VH_RAPT_CANNON:
+				sound(this, CH_SHOTS, SND_LASERIMPACT, VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_RAPTOR_CANNON_IMPACT, this.origin, w_backoff * 1000, 1);
+				break;
+			case DEATH_VH_RAPT_FRAGMENT:
+				float i;
+				vector ang, vel;
+				for(i = 1; i < 4; ++i)
+				{
+					vel = normalize(w_org - (w_org + force_dir * 16)) + randomvec() * 128;
+					ang = vectoangles(vel);
+					RaptorCBShellfragToss(w_org, vel, ang + '0 0 1' * (120 * i));
+				}
+				sound(this, CH_SHOTS, SND_ROCKET_IMPACT, VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_RAPTOR_BOMB_SPREAD, this.origin, w_backoff * 1000, 1);
+				break;
+			case DEATH_VH_RAPT_BOMB:
+				sound(this, CH_SHOTS, SND_ROCKET_IMPACT, VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_RAPTOR_BOMB_IMPACT, this.origin, w_backoff * 1000, 1);
+				break;
+			case DEATH_VH_RAPT_DEATH:
+				sound(this, CH_SHOTS, SND_LASERIMPACT, VOL_BASE, ATTEN_LOW);
+				pointparticles(EFFECT_EXPLOSION_BIG, this.origin, w_backoff * 1000, 1);
+				break;
+			case DEATH_VH_BUMB_GUN:
+				sound(this, CH_SHOTS, SND_FIREBALL_IMPACT2, VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_BIGPLASMA_IMPACT, this.origin, w_backoff * 1000, 1);
+				break;
+		}
+	}
+
+
+	if(DEATH_ISTURRET(w_deathtype))
+	{
+		vector force_dir = normalize(force);
+		traceline(w_org - force_dir * 16, w_org + force_dir * 16, MOVE_NOMONSTERS, NULL);
+		if(trace_plane_normal != '0 0 0')
+			w_backoff = trace_plane_normal;
+		else
+			w_backoff = -1 * normalize(w_org - (w_org + force_dir * 16));
+
+		setorigin(this, w_org + w_backoff * 2);                     
+
+		switch(DEATH_ENT(w_deathtype))
+		{
+			case DEATH_TURRET_EWHEEL:
+				sound(this, CH_SHOTS, SND_LASERIMPACT, VOL_BASE, ATTEN_LOW);
+				pointparticles(EFFECT_BLASTER_IMPACT, this.origin, w_backoff * 1000, 1);
+				break;
+
+			case DEATH_TURRET_FLAC:
+				pointparticles(EFFECT_HAGAR_EXPLODE, w_org, '0 0 0', 1);
+				sound(this, CH_SHOTS, SND_HAGEXP_RANDOM(), VOL_BASE, ATTEN_NORM);
+				break;
+
+			case DEATH_TURRET_MLRS:
+			case DEATH_TURRET_HK:
+			case DEATH_TURRET_WALK_ROCKET:
+			case DEATH_TURRET_HELLION:
+				sound(this, CH_SHOTS, SND_ROCKET_IMPACT, VOL_BASE, ATTEN_LOW);
+				pointparticles(EFFECT_ROCKET_EXPLODE, this.origin, w_backoff * 1000, 1);
+				break;
+
+			case DEATH_TURRET_MACHINEGUN:
+			case DEATH_TURRET_WALK_GUN:
+				sound(this, CH_SHOTS, SND_RIC_RANDOM(), VOL_BASE, ATTEN_NORM);
+				pointparticles(EFFECT_MACHINEGUN_IMPACT, this.origin, w_backoff * 1000, 1);
+				break;
+
+			case DEATH_TURRET_PLASMA:
+				sound(this, CH_SHOTS, SND_ELECTRO_IMPACT, VOL_BASE, ATTEN_LOW);
+				pointparticles(EFFECT_ELECTRO_IMPACT, this.origin, w_backoff * 1000, 1);
+				break;
+
+			case DEATH_TURRET_WALK_MELEE:
+				sound(this, CH_SHOTS, SND_RIC_RANDOM(), VOL_BASE, ATTEN_LOW);
+				pointparticles(EFFECT_TE_SPARK, this.origin, w_backoff * 1000, 1);
+				break;
+
+			case DEATH_TURRET_PHASER:
+				break;
+
+			case DEATH_TURRET_TESLA:
+				te_smallflash(this.origin);
+				break;
+		}
+	}
+
+	MUTATOR_CALLHOOK(DamageInfo, this, w_deathtype, w_org);
+
+	                                                              
+	if(!DEATH_ISSPECIAL(w_deathtype))
+	if(!hitplayer || rad)                                                                     
+	{
+		Weapon hitwep = DEATH_WEAPONOF(w_deathtype);
+		w_random = prandom();
+
+		vector force_dir = normalize(force);
+		                                                                                                    
+		                                                                                                                     
+		traceline(w_org - force_dir * 16, w_org + force_dir * 16, MOVE_NOMONSTERS, NULL);
+		if(trace_startsolid)
+			traceline(w_org - force_dir * 40, w_org + force_dir * 16, MOVE_NOMONSTERS, NULL);
+		if(trace_fraction < 1)
+			w_backoff = trace_plane_normal;
+		else
+			w_backoff = -force_dir;
+		setorigin(this, w_org + w_backoff * 2);                     
+
+		if(!(trace_dphitq3surfaceflags & Q3SURFACEFLAG_SKY))
+		{
+			if(!MUTATOR_CALLHOOK(Weapon_ImpactEffect, hitwep, this))
+				hitwep.wr_impacteffect(hitwep, this);
+		}
+	}
+}
+
+#endif

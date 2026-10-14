@@ -1,0 +1,8 @@
+                                
+#include <common/effects/qc/casings.qc>
+#include <common/effects/qc/damageeffects.qc>
+#include <common/effects/qc/gibs.qc>
+#include <common/effects/qc/globalsound.qc>
+#include <common/effects/qc/lightningarc.qc>
+#include <common/effects/qc/modeleffects.qc>
+#include <common/effects/qc/rubble.qc>

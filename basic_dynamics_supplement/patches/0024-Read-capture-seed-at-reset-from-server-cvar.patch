@@ -1,0 +1,52 @@
+From a34ae55477d4fb5f0a40488f6f061284ec26abfc Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 00:45:41 +0800
+Subject: [PATCH 24/36] Read capture seed at reset from server cvar
+
+---
+ source/qcsrc/server/capture.qc | 5 +++--
+ source/qcsrc/server/capture.qh | 1 -
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 9c32b1f..43f31ba 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -228,6 +228,7 @@ bool Capture_TryReset()
+ 		|| !capture_player.capture_physics_ready)
+ 		return false;
+ 
++	float capture_episode_seed = cvar("capture_seed");
+ 	cvar_set("bot_nofire", "1");
+ 	Capture_ResetActor(capture_player, autocvar_capture_player_origin, autocvar_capture_player_yaw);
+ 	Capture_ResetActor(capture_enemy, autocvar_capture_enemy_origin, autocvar_capture_enemy_yaw);
+@@ -248,7 +249,7 @@ bool Capture_TryReset()
+ 	// consumes a timing-dependent number of global random values before the
+ 	// atomic episode reset, so capture weapon spread uses this private stream
+ 	// seeded exactly at the reset boundary.
+-	capture_weapon_random_seed = autocvar_capture_seed;
++	capture_weapon_random_seed = capture_episode_seed;
+ 	Capture_ConfigurePlayerWeapon(capture_player);
+ 	setplayermodel(capture_enemy,
+ 		strcat("models/player/", autocvar_capture_enemy_model, ".iqm"));
+@@ -308,7 +309,7 @@ bool Capture_TryReset()
+ 		autocvar_capture_episode_id, time, GetMapname(),
+ 		etof(capture_player), etof(capture_enemy),
+ 		autocvar_capture_weapon, autocvar_capture_enemy_model,
+-		autocvar_capture_seed);
++		capture_episode_seed);
+ 	reset_row = strcat(reset_row, sprintf(
+ 		"\"anchor\":{\"id\":\"%s\",\"player_clear\":%d,\"enemy_clear\":%d,"
+ 		"\"player_ground\":%d,\"enemy_ground\":%d,"
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 766689a..71a6178 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -3,7 +3,6 @@
+ bool autocvar_capture_server_enable;
+ string autocvar_capture_episode_id;
+ string autocvar_capture_anchor_id;
+-float autocvar_capture_seed;
+ string autocvar_capture_server_log;
+ string autocvar_capture_server_action_file;
+ vector autocvar_capture_player_origin;

@@ -1,0 +1,80 @@
+From 20106ad31d312f69332d4f00f531a028139d0b2d Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:19:48 +0800
+Subject: [PATCH 04/36] Align capture audio to exact video frame window
+
+---
+ source/darkplaces/capture_telemetry.c | 19 +++++++++++++++----
+ source/darkplaces/capture_telemetry.h |  2 +-
+ source/darkplaces/cl_screen.c         |  4 +++-
+ 3 files changed, 19 insertions(+), 6 deletions(-)
+
+diff --git a/source/darkplaces/capture_telemetry.c b/source/darkplaces/capture_telemetry.c
+index 5dc9c80..26e6e46 100644
+--- a/source/darkplaces/capture_telemetry.c
++++ b/source/darkplaces/capture_telemetry.c
+@@ -416,14 +416,24 @@ void Capture_VideoFrame(void)
+ 	}
+ }
+ 
+-void Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t length)
++size_t Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t length)
+ {
+ 	int pending_index;
+ 	long long base_cursor;
++	long long target_samples;
+ 
+-	if (!capture_enable.integer || capture_mode.integer != 1 ||
+-		!capture_audio_file)
+-		return;
++	if (!capture_enable.integer || capture_mode.integer != 1)
++		return length;
++	if (!capture_output_active || !capture_audio_file || capture_output_frame == 0)
++		return 0;
++	target_samples = (long long)capture_expected_frames.integer * 750;
++	if (target_samples > 0)
++	{
++		if (capture_audio_cursor >= target_samples)
++			return 0;
++		if (capture_audio_cursor + (long long)length > target_samples)
++			length = (size_t)(target_samples - capture_audio_cursor);
++	}
+ 	base_cursor = capture_audio_cursor;
+ 	for (pending_index = 0; pending_index < CAPTURE_MAX_PENDING_SOUNDS; ++pending_index)
+ 	{
+@@ -461,6 +471,7 @@ void Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t leng
+ 	}
+ 	capture_audio_cursor += (long long)length;
+ 	fflush(capture_audio_file);
++	return length;
+ }
+ 
+ void Capture_SoundStart(int entnum, int entchannel, const char *sample_name,
+diff --git a/source/darkplaces/capture_telemetry.h b/source/darkplaces/capture_telemetry.h
+index 34c7aa5..f307187 100644
+--- a/source/darkplaces/capture_telemetry.h
++++ b/source/darkplaces/capture_telemetry.h
+@@ -8,7 +8,7 @@ void Capture_Shutdown(void);
+ void Capture_ApplyUsercmd(usercmd_t *cmd);
+ void Capture_UsercmdSent(const usercmd_t *cmd);
+ void Capture_VideoFrame(void);
+-void Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t length);
++size_t Capture_AudioSamples(const portable_sampleframe_t *paintbuffer, size_t length);
+ void Capture_SoundStart(int entnum, int entchannel, const char *sample_name,
+ 	const vec3_t source_origin);
+ 
+diff --git a/source/darkplaces/cl_screen.c b/source/darkplaces/cl_screen.c
+index 5ababdc..e88b6aa 100644
+--- a/source/darkplaces/cl_screen.c
++++ b/source/darkplaces/cl_screen.c
+@@ -1770,7 +1770,9 @@ static void SCR_CaptureVideo_VideoFrame(int newframestepframenum)
+ 
+ void SCR_CaptureVideo_SoundFrame(const portable_sampleframe_t *paintbuffer, size_t length)
+ {
+-	Capture_AudioSamples(paintbuffer, length);
++	length = Capture_AudioSamples(paintbuffer, length);
++	if (!length)
++		return;
+ 	cls.capturevideo.soundsampleframe += (int)length;
+ 	cls.capturevideo.soundframe(paintbuffer, length);
+ }

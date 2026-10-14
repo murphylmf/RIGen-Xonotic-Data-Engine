@@ -1,0 +1,240 @@
+#pragma once
+
+const int NUM_TEAMS = 4;                                  
+
+#ifdef TEAMNUMBERS_THAT_ARENT_STUPID
+const int NUM_TEAM_1 = 1;       
+const int NUM_TEAM_2 = 2;        
+const int NUM_TEAM_3 = 3;          
+const int NUM_TEAM_4 = 4;        
+const int NUM_SPECTATOR = 5;
+#else
+#ifdef CSQC
+const int NUM_TEAM_1 = 4;       
+const int NUM_TEAM_2 = 13;        
+const int NUM_TEAM_3 = 12;          
+const int NUM_TEAM_4 = 9;        
+#else
+const int NUM_TEAM_1 = 5;       
+const int NUM_TEAM_2 = 14;        
+const int NUM_TEAM_3 = 13;          
+const int NUM_TEAM_4 = 10;        
+#endif
+const int NUM_SPECTATOR = 1337;
+#endif
+
+const string COL_TEAM_1 = "^1";
+const string COL_TEAM_2 = "^4";
+const string COL_TEAM_3 = "^3";
+const string COL_TEAM_4 = "^6";
+                                                                 
+#define NAME_TEAM_1 CTX(_("TEAM^Red"))
+#define NAME_TEAM_2 CTX(_("TEAM^Blue"))
+#define NAME_TEAM_3 CTX(_("TEAM^Yellow"))
+#define NAME_TEAM_4 CTX(_("TEAM^Pink"))
+#define NAME_TEAM _("Team")
+#define NAME_NEUTRAL _("Neutral")
+
+                                                                                                       
+#define KEY_TEAM_1 CTX(_("KEY^Red"))
+#define KEY_TEAM_2 CTX(_("KEY^Blue"))
+#define KEY_TEAM_3 CTX(_("KEY^Yellow"))
+#define KEY_TEAM_4 CTX(_("KEY^Pink"))
+#define FLAG_TEAM_1 CTX(_("FLAG^Red"))
+#define FLAG_TEAM_2 CTX(_("FLAG^Blue"))
+#define FLAG_TEAM_3 CTX(_("FLAG^Yellow"))
+#define FLAG_TEAM_4 CTX(_("FLAG^Pink"))
+#define GENERATOR_TEAM_1 CTX(_("GENERATOR^Red"))
+#define GENERATOR_TEAM_2 CTX(_("GENERATOR^Blue"))
+#define GENERATOR_TEAM_3 CTX(_("GENERATOR^Yellow"))
+#define GENERATOR_TEAM_4 CTX(_("GENERATOR^Pink"))
+
+                                                                                              
+const string STATIC_NAME_TEAM_1 = "Red";
+const string STATIC_NAME_TEAM_2 = "Blue";
+const string STATIC_NAME_TEAM_3 = "Yellow";
+const string STATIC_NAME_TEAM_4 = "Pink";
+
+#ifdef CSQC
+bool teamplay;
+int myteam;
+#endif
+
+string Team_ColorCode(int teamid)
+{
+	switch(teamid)
+	{
+		case NUM_TEAM_1: return COL_TEAM_1;
+		case NUM_TEAM_2: return COL_TEAM_2;
+		case NUM_TEAM_3: return COL_TEAM_3;
+		case NUM_TEAM_4: return COL_TEAM_4;
+	}
+
+	return "^7";
+}
+
+vector Team_ColorRGB(int teamid)
+{
+	switch(teamid)
+	{
+		case NUM_TEAM_1: return '1 0.0625 0.0625';            
+		case NUM_TEAM_2: return '0.0625 0.0625 1';            
+		case NUM_TEAM_3: return '1 1 0.0625';            
+		case NUM_TEAM_4: return '1 0.0625 1';            
+	}
+
+	return '0 0 0';
+}
+
+string Team_ColorName(int teamid)
+{
+	switch(teamid)
+	{
+		case NUM_TEAM_1: return NAME_TEAM_1;
+		case NUM_TEAM_2: return NAME_TEAM_2;
+		case NUM_TEAM_3: return NAME_TEAM_3;
+		case NUM_TEAM_4: return NAME_TEAM_4;
+	}
+
+	return NAME_NEUTRAL;
+}
+
+                                                                                              
+string Static_Team_ColorName(int teamid)
+{
+	switch(teamid)
+	{
+		case NUM_TEAM_1: return STATIC_NAME_TEAM_1;
+		case NUM_TEAM_2: return STATIC_NAME_TEAM_2;
+		case NUM_TEAM_3: return STATIC_NAME_TEAM_3;
+		case NUM_TEAM_4: return STATIC_NAME_TEAM_4;
+	}
+
+	return NAME_NEUTRAL;
+}
+
+float Team_ColorToTeam(string team_color)
+{
+	switch(strtolower(team_color))
+	{
+		case "red": return NUM_TEAM_1;
+		case "blue": return NUM_TEAM_2;
+		case "yellow": return NUM_TEAM_3;
+		case "pink": return NUM_TEAM_4;
+		case "auto": return 0;
+	}
+
+	return -1;
+}
+
+                                               
+                                      
+                                                   
+bool Team_IsValidTeam(int team_num)
+{
+	switch (team_num)
+	{
+		case NUM_TEAM_1:
+		case NUM_TEAM_2:
+		case NUM_TEAM_3:
+		case NUM_TEAM_4:
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+                                                   
+                                         
+                                                         
+bool Team_IsValidIndex(int index)
+{
+	switch (index)
+	{
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+                                               
+                                           
+                       
+int Team_IndexToTeam(int index)
+{
+	switch (index)
+	{
+		case 1: return NUM_TEAM_1;
+		case 2: return NUM_TEAM_2;
+		case 3: return NUM_TEAM_3;
+		case 4: return NUM_TEAM_4;
+	}
+	return -1;
+}
+
+                                               
+                                              
+                       
+int Team_TeamToIndex(int team_num)
+{
+	switch (team_num)
+	{
+		case NUM_TEAM_1: return 1;
+		case NUM_TEAM_2: return 2;
+		case NUM_TEAM_3: return 3;
+		case NUM_TEAM_4: return 4;
+	}
+	return -1;
+}
+
+                                                                            
+                                              
+                     
+int Team_TeamToBit(int team_num)
+{
+	if (!Team_IsValidTeam(team_num))
+	{
+		return 0;
+	}
+	return BIT(Team_TeamToIndex(team_num) - 1);
+}
+
+                                                                            
+                                           
+                     
+int Team_IndexToBit(int index)
+{
+	return BIT(index - 1);
+}
+
+
+                                 
+#define TeamByColor(teamid) (Team_TeamToIndex(teamid) - 1)
+#define ColorByTeam(number) Team_IndexToTeam(number + 1)
+
+                 
+#define Team_ColorName_Lower(teamid) strtolower(Team_ColorName(teamid))
+#define Team_ColorName_Upper(teamid) strtoupper(Team_ColorName(teamid))
+
+                                                                                              
+#define Static_Team_ColorName_Lower(teamid) strtolower(Static_Team_ColorName(teamid))
+#define Static_Team_ColorName_Upper(teamid) strtoupper(Static_Team_ColorName(teamid))
+
+#define Team_FullName(teamid) strcat(Team_ColorName(teamid), " ", NAME_TEAM, "^7")
+#define Team_ColoredFullName(teamid) strcat(Team_ColorCode(teamid), Team_ColorName(teamid), " ", NAME_TEAM, "^7")
+
+#define Team_IndexToFullName(index) Team_FullName(Team_IndexToTeam(index))
+#define Team_IndexToColoredFullName(index) Team_ColoredFullName(Team_IndexToTeam(index))
+
+                                                            
+#define TCR(input,type,team) strreplace("^TC", COL_TEAM_##team, strreplace("^TT", strtoupper(type##_TEAM_##team), input))
+
+                        
+#define SAME_TEAM(a,b) (teamplay ? (a.team == b.team) : (a == b))
+#define DIFF_TEAM(a,b) (teamplay ? (a.team != b.team) : (a != b))

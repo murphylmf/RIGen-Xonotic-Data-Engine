@@ -1,0 +1,35 @@
+#pragma once
+
+#define droptofloor builtin_droptofloor
+
+#define IT_SHOTGUN          _IT_SHOTGUN             
+#define IT_SUPER_SHOTGUN    _IT_SUPER_SHOTGUN             
+#define IT_NAILGUN          _IT_NAILGUN             
+#define IT_SUPER_NAILGUN    _IT_SUPER_NAILGUN             
+#define IT_GRENADE_LAUNCHER _IT_GRENADE_LAUNCHER             
+#define IT_ROCKET_LAUNCHER  _IT_ROCKET_LAUNCHER             
+#define IT_LIGHTNING        _IT_LIGHTNING             
+#define IT_EXTRA_WEAPON     _IT_EXTRA_WEAPON             
+#define IT_SHELLS           _IT_SHELLS             
+#define IT_NAILS            _IT_NAILS             
+#define IT_ROCKETS          _IT_ROCKETS              
+#define IT_CELLS            _IT_CELLS              
+#define IT_AXE              _IT_AXE              
+#define IT_ARMOR1           _IT_ARMOR1              
+#define IT_ARMOR2           _IT_ARMOR2              
+#define IT_ARMOR3           _IT_ARMOR3              
+#define IT_SUPERHEALTH      _IT_SUPERHEALTH              
+#define IT_KEY1             _IT_KEY1              
+#define IT_KEY2             _IT_KEY2              
+                                                        
+#define IT_INVISIBILITY     _IT_INVISIBILITY              
+#define IT_INVULNERABILITY  _IT_INVULNERABILITY              
+#define IT_SUIT             _IT_SUIT              
+#define IT_QUAD             _IT_QUAD              
+
+#define STATE_TOP           _STATE_TOP        
+#define STATE_BOTTOM        _STATE_BOTTOM        
+#define STATE_UP            _STATE_UP        
+#define STATE_DOWN          _STATE_DOWN        
+
+#pragma noref 1

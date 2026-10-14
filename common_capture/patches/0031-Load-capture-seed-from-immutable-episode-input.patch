@@ -1,0 +1,92 @@
+From 94af392ce80a18b8e7eec588ff886f8e26a305c0 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 01:10:04 +0800
+Subject: [PATCH 31/36] Load capture seed from immutable episode input
+
+---
+ source/qcsrc/server/capture.qc | 31 ++++++++++++++++++++++++++-----
+ source/qcsrc/server/capture.qh |  1 +
+ 2 files changed, 27 insertions(+), 5 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index b407f73..e2ef3a8 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -19,6 +19,7 @@ bool capture_server_tick_logged;
+ entity capture_player;
+ entity capture_enemy;
+ float capture_weapon_random_seed;
++string capture_episode_seed_text;
+ 
+ #define CAPTURE_ACTION_COUNT 384
+ float capture_action_forward[CAPTURE_ACTION_COUNT];
+@@ -155,6 +156,28 @@ bool Capture_LoadAuthoritativeActions()
+ 	return true;
+ }
+ 
++bool Capture_LoadEpisodeSeed()
++{
++	int fh = fopen(autocvar_capture_server_seed_file, FILE_READ);
++	if(fh < 0)
++	{
++		LOG_WARN("capture: could not read episode seed file ",
++			autocvar_capture_server_seed_file);
++		return false;
++	}
++	string line = fgets(fh);
++	fclose(fh);
++	if(line == "")
++	{
++		LOG_WARN("capture: episode seed file is empty ",
++			autocvar_capture_server_seed_file);
++		return false;
++	}
++	capture_episode_seed_text = strzone(line);
++	capture_weapon_random_seed = crc16(false, capture_episode_seed_text);
++	return true;
++}
++
+ void Capture_ApplyAuthoritativeAction(entity actor)
+ {
+ 	if(!autocvar_capture_server_enable || actor != capture_player)
+@@ -257,6 +280,8 @@ bool Capture_TryReset()
+ 
+ 	if(!Capture_LoadAuthoritativeActions())
+ 		return false;
++	if(!Capture_LoadEpisodeSeed())
++		return false;
+ 	if(capture_server_fh >= 0)
+ 		fclose(capture_server_fh);
+ 	capture_server_fh = fopen(autocvar_capture_server_log, FILE_WRITE);
+@@ -265,11 +290,6 @@ bool Capture_TryReset()
+ 		LOG_WARN("capture: could not open server telemetry ", autocvar_capture_server_log);
+ 		return false;
+ 	}
+-	// cvar_string returns a temporary engine string. Zone it only after all
+-	// failing reset operations so subsequent builtins cannot overwrite the
+-	// episode seed before it is hashed and serialized.
+-	string capture_episode_seed_text = strzone(cvar_string("capture_seed_text"));
+-	capture_weapon_random_seed = crc16(false, capture_episode_seed_text);
+ 	capture_server_tick = 0;
+ 	capture_next_event_id = 1;
+ 	capture_server_started = true;
+@@ -326,6 +346,7 @@ bool Capture_TryReset()
+ 		enemy_ground_distance, anchor_los_fraction));
+ 	Capture_Log(reset_row);
+ 	strunzone(capture_episode_seed_text);
++	capture_episode_seed_text = string_null;
+ 	stuffcmd(capture_player,
+ 		sprintf("\ncapture_episode_reset \"%s\"\n", autocvar_capture_episode_id));
+ 	return true;
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 71a6178..5054bfa 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -5,6 +5,7 @@ string autocvar_capture_episode_id;
+ string autocvar_capture_anchor_id;
+ string autocvar_capture_server_log;
+ string autocvar_capture_server_action_file;
++string autocvar_capture_server_seed_file;
+ vector autocvar_capture_player_origin;
+ vector autocvar_capture_enemy_origin;
+ vector autocvar_capture_enemy_motion_vector;

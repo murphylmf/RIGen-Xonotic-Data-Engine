@@ -1,0 +1,511 @@
+#include "physics.qh"
+#include "input.qh"
+
+.int disableclientprediction;
+
+void sys_phys_simulate(entity this, float dt);
+void sys_phys_simulate_simple(entity this, float dt);
+
+void sys_phys_postupdate(entity this);
+
+void sys_phys_update(entity this, float dt)
+{
+	if (!IS_CLIENT(this)) {
+		sys_phys_simulate_simple(this, dt);
+		return;
+	}
+	sys_in_update(this, dt);
+
+	sys_phys_fix(this, dt);
+	if (sys_phys_override(this, dt))
+		return;
+
+	sys_phys_monitor(this, dt);
+
+	PHYS_CS(this).movement_old = PHYS_CS(this).movement;
+	PHYS_CS(this).v_angle_old = this.v_angle;
+	PHYS_CS(this).buttons_old = PHYS_INPUT_BUTTON_MASK(this);
+
+	sys_phys_ai(this);
+
+	sys_phys_pregame_hold(this);
+
+	if (IS_SVQC) {
+		if (this.move_movetype == MOVETYPE_NONE) { return; }
+		                                                        
+		if(this.move_movetype == MOVETYPE_FOLLOW)                                  
+			this.disableclientprediction = 1;
+		else if(this.move_qcphysics)
+			this.disableclientprediction = -1;
+		else
+			this.disableclientprediction = 0;
+	}
+
+	viewloc_PlayerPhysics(this);
+
+	PM_check_frozen(this);
+
+	PM_check_blocked(this);
+
+	float maxspeed_mod = 1;
+
+                                
+	if (this.conveyor.active) { this.velocity -= this.conveyor.movedir; }
+	MUTATOR_CALLHOOK(PlayerPhysics, this, dt);
+
+	if (!IS_PLAYER(this)) {
+		sys_phys_spectator_control(this);
+		maxspeed_mod = STAT(SPECTATORSPEED, this);
+	}
+	sys_phys_fixspeed(this, maxspeed_mod);
+
+	if (IS_DEAD(this)) {
+		                    
+		vector midpoint = ((this.absmin + this.absmax) * 0.5);
+		int cont = pointcontents(midpoint);
+		if (cont == CONTENT_WATER || cont == CONTENT_LAVA || cont == CONTENT_SLIME) {
+			this.velocity = this.velocity * 0.5;
+
+			                   
+			                                                         
+			                            
+		}
+		sys_phys_postupdate(this);
+		return;
+	}
+
+	PM_check_slick(this);
+
+	if (IS_SVQC && !PHYS_FIXANGLE(this)) { this.angles = '0 1 0' * this.v_angle.y; }
+	if (IS_PLAYER(this)) {
+		if (IS_ONGROUND(this)) {
+			PM_check_hitground(this);
+			PM_Footsteps(this);
+		} else if (IsFlying(this)) {
+			this.wasFlying = true;
+		}
+		CheckPlayerJump(this);
+	}
+
+	if (this.flags & FL_WATERJUMP) {
+		this.velocity_x = this.movedir.x;
+		this.velocity_y = this.movedir.y;
+		if (time > this.teleport_time || this.waterlevel == WATERLEVEL_NONE) {
+			this.flags &= ~FL_WATERJUMP;
+			this.teleport_time = 0;
+		}
+	} else if (MUTATOR_CALLHOOK(PM_Physics, this, maxspeed_mod, dt)) {
+		          
+	} else if (this.move_movetype == MOVETYPE_NOCLIP
+	    || this.move_movetype == MOVETYPE_FLY
+	    || this.move_movetype == MOVETYPE_FLY_WORLDONLY
+	    || MUTATOR_CALLHOOK(IsFlying, this)) {
+		this.com_phys_friction = PHYS_FRICTION(this);
+		this.com_phys_vel_max = PHYS_MAXSPEED(this) * maxspeed_mod;
+		this.com_phys_acc_rate = PHYS_ACCELERATE(this) * maxspeed_mod;
+		this.com_phys_friction_air = true;
+		sys_phys_simulate(this, dt);
+		this.com_phys_friction_air = false;
+	} else if (this.waterlevel >= WATERLEVEL_SWIMMING) {
+		this.com_phys_vel_max = PHYS_MAXSPEED(this) * maxspeed_mod;
+		this.com_phys_acc_rate = PHYS_ACCELERATE(this) * maxspeed_mod;
+		this.com_phys_water = true;
+		sys_phys_simulate(this, dt);
+		this.com_phys_water = false;
+		this.jumppadcount = 0;
+	} else if (this.ladder_entity) {
+		this.com_phys_friction = PHYS_FRICTION(this);
+		this.com_phys_vel_max = PHYS_MAXSPEED(this) * maxspeed_mod;
+		this.com_phys_acc_rate = PHYS_ACCELERATE(this) * maxspeed_mod;
+		this.com_phys_gravity = -PHYS_GRAVITY(this) * dt;
+		if (PHYS_ENTGRAVITY(this)) { this.com_phys_gravity *= PHYS_ENTGRAVITY(this); }
+		this.com_phys_ladder = true;
+		this.com_phys_friction_air = true;
+		sys_phys_simulate(this, dt);
+		this.com_phys_friction_air = false;
+		this.com_phys_ladder = false;
+		this.com_phys_gravity = 0;
+	} else if (ITEMS_STAT(this) & IT_USING_JETPACK) {
+		PM_jetpack(this, maxspeed_mod, dt);
+	} else if (IS_ONGROUND(this) && (!IS_ONSLICK(this) || !PHYS_SLICK_APPLYGRAVITY(this))) {
+		if (!WAS_ONGROUND(this)) {
+			emit(phys_land, this);
+			if (this.lastground < time - 0.3) {
+				this.velocity *= (1 - PHYS_FRICTION_ONLAND(this));
+			}
+		}
+		this.com_phys_vel_max = PHYS_MAXSPEED(this) * maxspeed_mod;
+		this.com_phys_gravity = -PHYS_GRAVITY(this) * dt;
+		if (PHYS_ENTGRAVITY(this)) { this.com_phys_gravity *= PHYS_ENTGRAVITY(this); }
+		this.com_phys_ground = true;
+		this.com_phys_vel_2d = true;
+		sys_phys_simulate(this, dt);
+		this.com_phys_vel_2d = false;
+		this.com_phys_ground = false;
+		this.com_phys_gravity = 0;
+	} else {
+		this.com_phys_acc_rate_air = PHYS_AIRACCELERATE(this) * min(maxspeed_mod, 1);
+		this.com_phys_acc_rate_air_stop = PHYS_AIRSTOPACCELERATE(this) * maxspeed_mod;
+		this.com_phys_acc_rate_air_strafe = PHYS_AIRSTRAFEACCELERATE(this) * maxspeed_mod;
+		this.com_phys_vel_max_air_strafe = PHYS_MAXAIRSTRAFESPEED(this) * maxspeed_mod;
+		this.com_phys_vel_max_air = PHYS_MAXAIRSPEED(this) * maxspeed_mod;
+		this.com_phys_vel_max = PHYS_MAXAIRSPEED(this) * min(maxspeed_mod, 1);
+		this.com_phys_air = true;
+		this.com_phys_vel_2d = true;
+		sys_phys_simulate(this, dt);
+		this.com_phys_vel_2d = false;
+		this.com_phys_air = false;
+	}
+
+	sys_phys_postupdate(this);
+}
+
+void sys_phys_postupdate(entity this)
+{
+	if (IS_ONGROUND(this)) { this.lastground = time; }
+                                       
+	if (this.conveyor.active) { this.velocity += this.conveyor.movedir; }
+	this.lastflags = this.flags;
+
+	this.lastclassname = this.classname;
+}
+
+                  
+void sys_phys_simulate(entity this, float dt)
+{
+	if (!this.com_phys_ground && !this.com_phys_air) {
+		             
+		         
+		                             
+		                                   
+		           
+		UNSET_ONGROUND(this);
+
+		if (this.com_phys_friction_air) {
+			const float grav = -this.com_phys_gravity;
+			this.velocity_z += grav / 2;
+			this.velocity = this.velocity * (1 - dt * this.com_phys_friction);
+			this.velocity_z += grav / 2;
+		}
+	}
+
+	if (this.com_phys_water) {
+		                                        
+		                              
+		if (this.com_in_jump && this.waterlevel == WATERLEVEL_SWIMMING && this.velocity_z >= -180 && !this.viewloc && !PHYS_FROZEN(this)) {
+			vector yawangles = '0 1 0' * this.v_angle.y;
+			vector forward, right, up;
+			MAKE_VECTORS(yawangles, forward, right, up);
+			vector spot = this.origin + 24 * forward;
+			spot_z += 8;
+			traceline(spot, spot, MOVE_NOMONSTERS, this);
+			if (trace_startsolid) {
+				spot_z += 24;
+				traceline(spot, spot, MOVE_NOMONSTERS, this);
+				if (!trace_startsolid) {
+					this.velocity = forward * 50;
+					this.velocity_z = 310;
+					UNSET_ONGROUND(this);
+					SET_JUMP_HELD(this);
+				}
+			}
+		}
+	}
+
+	vector forward, right, up;
+	MAKE_VECTORS(vmul(this.v_angle, (this.com_phys_vel_2d ? '0 1 0' : '1 1 1')), forward, right, up);
+	                                                                                                                   
+	vector wishvel = forward * PHYS_CS(this).movement.x
+	    + right * PHYS_CS(this).movement.y
+	    + '0 0 1' * PHYS_CS(this).movement.z * (this.com_phys_vel_2d ? 0 : 1);
+	if (this.com_phys_water) {
+		if (PHYS_FROZEN(this))
+		{
+			if(this.waterlevel >= WATERLEVEL_SUBMERGED && this.velocity.z >= -70)                                         
+				wishvel = '0 0 160';             
+			else if(this.waterlevel >= WATERLEVEL_SWIMMING && this.velocity.z > 0)
+				wishvel = eZ * 1.3 * min(this.velocity.z, 160);                                          
+		}
+		else
+		{
+			if (PHYS_INPUT_BUTTON_CROUCH(this)) {
+				wishvel.z = -PHYS_MAXSPEED(this);
+			}
+			if (this.viewloc) {
+				wishvel.z = -160;                   
+			} else if (wishvel == '0 0 0') {
+				wishvel = '0 0 -60';                        
+			}
+		}
+	}
+	if (this.com_phys_ladder) {
+		if (this.viewloc) {
+			wishvel.z = PHYS_CS(this).movement_old.x;
+		}
+		if (this.ladder_entity.classname == "func_water") {
+			float f = vlen(wishvel);
+			if (f > this.ladder_entity.speed) {
+				wishvel *= (this.ladder_entity.speed / f);
+			}
+
+			this.watertype = this.ladder_entity.skin;
+			f = this.ladder_entity.origin_z + this.ladder_entity.maxs_z;
+			if ((this.origin_z + this.view_ofs_z) < f) {
+				this.waterlevel = WATERLEVEL_SUBMERGED;
+			} else if ((this.origin_z + (this.mins_z + this.maxs_z) * 0.5) < f) {
+				this.waterlevel = WATERLEVEL_SWIMMING;
+			} else if ((this.origin_z + this.mins_z + 1) < f) {
+				this.waterlevel = WATERLEVEL_WETFEET;
+			} else {
+				this.waterlevel = WATERLEVEL_NONE;
+				this.watertype = CONTENT_EMPTY;
+			}
+		}
+	}
+	               
+	const vector wishdir = normalize(wishvel);
+	float wishspeed = min(vlen(wishvel), this.com_phys_vel_max);
+
+	if (this.com_phys_air) {
+		if (!(this.flags & FL_WATERJUMP)) {
+			                        
+			float airaccelqw = PHYS_AIRACCEL_QW(this);
+			float wishspeed0 = wishspeed;
+			const float maxairspd = this.com_phys_vel_max;
+			wishspeed = min(wishspeed, maxairspd);
+			if (IS_DUCKED(this)) {
+				wishspeed *= 0.5;
+			}
+			float airaccel = this.com_phys_acc_rate_air;
+
+			float accelerating = (this.velocity * wishdir > 0);
+			float wishspeed2 = wishspeed;
+
+			                   
+			if (PHYS_AIRSTOPACCELERATE(this)) {
+				vector curdir = normalize(vec2(this.velocity));
+				airaccel += (this.com_phys_acc_rate_air_stop - airaccel) * max(0, -(curdir * wishdir));
+			}
+			                                          
+			                                  
+			                                                                                        
+			      
+			                                       
+			                                                       
+			                                                 
+			                                                                    
+			float strafity = IsMoveInDirection(PHYS_CS(this).movement, -90) + IsMoveInDirection(PHYS_CS(this).movement, +90);                                            
+			if (PHYS_MAXAIRSTRAFESPEED(this)) {
+				wishspeed =
+				    min(wishspeed,
+					GeomLerp(this.com_phys_vel_max_air, strafity, this.com_phys_vel_max_air_strafe));
+			}
+			if (PHYS_AIRSTRAFEACCELERATE(this)) {
+				airaccel = GeomLerp(airaccel, strafity, this.com_phys_acc_rate_air_strafe);
+			}
+			if (PHYS_AIRSTRAFEACCEL_QW(this)) {
+				airaccelqw =
+				    (((strafity > 0.5 ? PHYS_AIRSTRAFEACCEL_QW(this) : PHYS_AIRACCEL_QW(this)) >= 0) ? +1 : -1)
+				    *
+				    (1 - GeomLerp(1 - fabs(PHYS_AIRACCEL_QW(this)), strafity, 1 - fabs(PHYS_AIRSTRAFEACCEL_QW(this))));
+			}
+			       
+
+			if (PHYS_WARSOWBUNNY_TURNACCEL(this) && accelerating && PHYS_CS(this).movement.y == 0 && PHYS_CS(this).movement.x != 0) {
+				PM_AirAccelerate(this, dt, wishdir, wishspeed2);
+			} else {
+				float sidefric = maxairspd ? (PHYS_AIRACCEL_SIDEWAYS_FRICTION(this) / maxairspd) : 0;
+				PM_Accelerate(this, dt, wishdir, wishspeed, wishspeed0, airaccel, airaccelqw,
+					PHYS_AIRACCEL_QW_STRETCHFACTOR(this), sidefric, PHYS_AIRSPEEDLIMIT_NONQW(this));
+			}
+
+			if (PHYS_AIRCONTROL(this)) {
+				CPM_PM_Aircontrol(this, dt, wishdir, wishspeed2);
+			}
+		}
+	} else {
+		if (this.com_phys_ground && IS_DUCKED(this)) { wishspeed *= 0.5; }
+		if (this.com_phys_water) {
+			wishspeed *= 0.7;
+
+			                                                 
+			{
+				                 
+				float f = 1 - dt * PHYS_FRICTION(this);
+				f = min(max(0, f), 1);
+				this.velocity *= f;
+
+				f = wishspeed - this.velocity * wishdir;
+				if (f > 0) {
+					float accelspeed = min(PHYS_ACCELERATE(this) * dt * wishspeed, f);
+					this.velocity += accelspeed * wishdir;
+				}
+
+				                                          
+				if (this.com_in_jump && !this.viewloc && !PHYS_FROZEN(this)) {
+					       
+					           
+					            
+					             
+					                     
+					this.velocity_z = 200;
+					if (this.waterlevel >= WATERLEVEL_SUBMERGED) {
+						this.velocity_z = PHYS_MAXSPEED(this) * 0.7;
+					}
+				}
+			}
+			if (this.viewloc) {
+				const float addspeed = wishspeed - this.velocity * wishdir;
+				if (addspeed > 0) {
+					const float accelspeed = min(PHYS_ACCELERATE(this) * dt * wishspeed, addspeed);
+					this.velocity += accelspeed * wishdir;
+				}
+			} else {
+				                     
+				PM_Accelerate(this, dt, wishdir, wishspeed, wishspeed, this.com_phys_acc_rate, 1, 0, 0, 0);
+			}
+			return;
+		}
+		if (this.com_phys_ground) {
+			                      
+			const float f2 = vlen2(vec2(this.velocity));
+			if (f2 > 0) {
+				                            
+				                        
+				const int realfriction = (IS_ONSLICK(this))
+				    ? PHYS_FRICTION_SLICK(this)
+					: PHYS_FRICTION(this);
+
+				float f = sqrt(f2);
+				f = 1 - dt * realfriction
+				    * ((f < PHYS_STOPSPEED(this)) ? (PHYS_STOPSPEED(this) / f) : 1);
+				f = max(0, f);
+				this.velocity *= f;
+				  
+                                  
+
+                                       
+
+                                
+                                                                             
+                                                                
+                                                                
+          
+                                               
+                                               
+
+                                           
+                                 
+                                                                                  
+                                                                 
+                         
+                                  
+                                                                  
+                                                                  
+       
+			}
+			const float addspeed = wishspeed - this.velocity * wishdir;
+			if (addspeed > 0) {
+				const float accelspeed = min(PHYS_ACCELERATE(this) * dt * wishspeed, addspeed);
+				this.velocity += accelspeed * wishdir;
+			}
+			return;
+		}
+
+		if (!(this.flags & FL_WATERJUMP)) {
+			PM_Accelerate(this, dt, wishdir, wishspeed, wishspeed, this.com_phys_acc_rate, 1, 0, 0, 0);
+		}
+	}
+}
+
+.entity groundentity;
+                         
+void sys_phys_simulate_simple(entity this, float dt)
+{
+	vector mn = this.mins;
+	vector mx = this.maxs;
+
+	vector g = '0 0 0';
+	if (this.com_phys_gravity_factor && !g) g = '0 0 -1' * PHYS_GRAVITY(NULL);
+
+	vector vel = this.com_phys_vel;
+	vector pos = this.com_phys_pos;
+
+	                  
+
+	vel += g * dt;
+
+	this.angles += dt * this.avelocity;
+	float movetime = dt;
+	for (int i = 0; i < MAX_CLIP_PLANES && movetime > 0; i++) {
+		vector push = vel * movetime;
+		vector p0 = pos;
+		vector p1 = p0 + push;
+		                
+		tracebox(p0, mn, mx, p1, MOVE_NORMAL, this);
+		if (!trace_startsolid) {
+			bool hit = trace_fraction < 1;
+			pos = trace_endpos;
+			entity ent = trace_ent;
+			                             
+			if (this.solid != SOLID_NOT) {
+				FOREACH_ENTITY_RADIUS_ORDERED(0.5 * (this.absmin + this.absmax), 0.5 * vlen(this.absmax - this.absmin), true, {
+					if (it.solid != SOLID_TRIGGER || it == this) continue;
+					if (gettouch(it) && boxesoverlap(it.absmin, it.absmax, this.absmin, this.absmax)) {
+					                                      
+					    trace_allsolid = false;
+					    trace_startsolid = false;
+					    trace_fraction = 1;
+					    trace_inwater = false;
+					    trace_inopen = true;
+					    trace_endpos = it.origin;
+					    trace_plane_normal = '0 0 1';
+					    trace_plane_dist = 0;
+					    trace_ent = this;
+					    trace_dpstartcontents = 0;
+					    trace_dphitcontents = 0;
+					    trace_dphitq3surfaceflags = 0;
+					    trace_dphittexturename = string_null;
+					    gettouch(it)(this, it);
+					    vel = this.velocity;
+					}
+				});
+			}
+			if (hit && this.solid >= SOLID_TRIGGER && (!IS_ONGROUND(this) || this.groundentity != ent)) {
+				                          
+				tracebox(p0, mn, mx, p1, MOVE_NORMAL, this);
+				void(entity, entity) touched = gettouch(this);
+				if (touched && this.solid != SOLID_NOT) {
+					touched(ent, this);
+				}
+				void(entity, entity) touched2 = gettouch(ent);
+				if (this && ent && touched2 && ent.solid != SOLID_NOT) {
+					trace_endpos = ent.origin;
+					trace_plane_normal *= -1;
+					trace_plane_dist *= -1;
+					trace_ent = this;
+					trace_dpstartcontents = 0;
+					trace_dphitcontents = 0;
+					trace_dphitq3surfaceflags = 0;
+					trace_dphittexturename = string_null;
+					touched2(this, ent);
+				}
+			}
+		}
+		                    
+		if (wasfreed(this)) { return; }
+		tracebox(p0, mn, mx, p1, MOVE_NORMAL, this);
+		if (trace_fraction == 1) { break; }
+		movetime *= 1 - min(1, trace_fraction);
+		ClipVelocity(vel, trace_plane_normal, vel, 1);
+	}
+
+	this.com_phys_vel = vel;
+	this.com_phys_pos = pos;
+	setorigin(this, this.com_phys_pos);
+}
+
+void sys_phys_update_single(entity this)
+{
+	sys_phys_simulate_simple(this, frametime);
+}

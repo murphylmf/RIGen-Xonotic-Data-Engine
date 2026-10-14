@@ -1,0 +1,612 @@
+From 2650aef5cd55b04a9acd6ea3869a129be84b4e32 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 17:54:26 +0800
+Subject: [PATCH 02/36] Add authoritative capture reset and event telemetry
+
+---
+ source/darkplaces/capture_telemetry.c         |   5 +
+ .../qcsrc/common/weapons/weapon/devastator.qc |   3 +
+ source/qcsrc/server/_mod.inc                  |   1 +
+ source/qcsrc/server/_mod.qh                   |   1 +
+ source/qcsrc/server/capture.qc                | 381 ++++++++++++++++++
+ source/qcsrc/server/capture.qh                |  35 ++
+ source/qcsrc/server/damage.qc                 |   7 +
+ source/qcsrc/server/main.qc                   |   1 +
+ source/qcsrc/server/weapons/tracing.qc        |   2 +
+ source/qcsrc/server/weapons/weaponsystem.qc   |   5 +
+ 10 files changed, 441 insertions(+)
+ create mode 100644 source/qcsrc/server/capture.qc
+ create mode 100644 source/qcsrc/server/capture.qh
+
+diff --git a/source/darkplaces/capture_telemetry.c b/source/darkplaces/capture_telemetry.c
+index e958fb3..5dc9c80 100644
+--- a/source/darkplaces/capture_telemetry.c
++++ b/source/darkplaces/capture_telemetry.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include "quakedef.h"
++#include <errno.h>
+ #include "capture_telemetry.h"
+ 
+ #define CAPTURE_MAX_ACTIONS 1024
+@@ -260,7 +261,11 @@ static void Capture_OutputEnd_f(void)
+ 	Con_Printf("capture: output end id=%s frames=%d audio_cursor=%lld\n",
+ 		capture_episode_id, capture_output_frame, capture_audio_cursor);
+ 	if (capture_quit_on_end.integer)
++	{
++		if (capture_mode.integer == 0 && cls.demorecording)
++			Cbuf_AddText("stop\n");
+ 		Cbuf_AddText("defer 0.2 quit\n");
++	}
+ }
+ 
+ void Capture_Init(void)
+diff --git a/source/qcsrc/common/weapons/weapon/devastator.qc b/source/qcsrc/common/weapons/weapon/devastator.qc
+index 6f428dc..85d5f32 100644
+--- a/source/qcsrc/common/weapons/weapon/devastator.qc
++++ b/source/qcsrc/common/weapons/weapon/devastator.qc
+@@ -2,6 +2,8 @@
+ 
+ #ifdef SVQC
+ 
++#include <server/capture.qh>
++
+ .entity lastrocket;
+ 
+ void W_Devastator_Unregister(entity this)
+@@ -350,6 +352,7 @@ void W_Devastator_Attack(Weapon thiswep, entity actor, .entity weaponentity, int
+ 	missile.missile_flags = MIF_SPLASH;
+ 
+ 	CSQCProjectile(missile, WEP_CVAR(devastator, guiderate) == 0 && WEP_CVAR(devastator, speedaccel) == 0, PROJECTILE_ROCKET, false); // because of fly sound
++	Capture_ProjectileSpawn(missile, actor, thiswep.m_id);
+ 
+ 	// common properties
+ 	MUTATOR_CALLHOOK(EditProjectile, actor, missile);
+diff --git a/source/qcsrc/server/_mod.inc b/source/qcsrc/server/_mod.inc
+index c82e892..80159cf 100644
+--- a/source/qcsrc/server/_mod.inc
++++ b/source/qcsrc/server/_mod.inc
+@@ -2,6 +2,7 @@
+ #include <server/anticheat.qc>
+ #include <server/antilag.qc>
+ #include <server/campaign.qc>
++#include <server/capture.qc>
+ #include <server/chat.qc>
+ #include <server/cheats.qc>
+ #include <server/client.qc>
+diff --git a/source/qcsrc/server/_mod.qh b/source/qcsrc/server/_mod.qh
+index 52574ef..f8b060c 100644
+--- a/source/qcsrc/server/_mod.qh
++++ b/source/qcsrc/server/_mod.qh
+@@ -2,6 +2,7 @@
+ #include <server/anticheat.qh>
+ #include <server/antilag.qh>
+ #include <server/campaign.qh>
++#include <server/capture.qh>
+ #include <server/chat.qh>
+ #include <server/cheats.qh>
+ #include <server/client.qh>
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+new file mode 100644
+index 0000000..8896324
+--- /dev/null
++++ b/source/qcsrc/server/capture.qc
+@@ -0,0 +1,381 @@
++#include "capture.qh"
++
++#include <common/deathtypes/all.qh>
++#include <common/resources/sv_resources.qh>
++#include <common/stats.qh>
++#include <common/weapons/_all.qh>
++#include <common/wepent.qh>
++#include <server/client.qh>
++#include <server/items/items.qh>
++#include <server/weapons/selection.qh>
++#include <server/weapons/weaponsystem.qh>
++
++int capture_server_fh = -1;
++int capture_server_tick;
++int capture_next_event_id;
++bool capture_server_started;
++bool capture_server_done;
++entity capture_player;
++entity capture_enemy;
++
++vector capture_prev_player_origin;
++vector capture_prev_player_velocity;
++vector capture_prev_player_angles;
++float capture_prev_player_health;
++float capture_prev_player_armor;
++float capture_prev_player_clip;
++float capture_prev_player_reserve;
++
++void Capture_Log(string text)
++{
++	if(capture_server_fh >= 0)
++	{
++		fputs(capture_server_fh, text);
++		fputs(capture_server_fh, "\n");
++	}
++}
++
++int Capture_NewEvent()
++{
++	return capture_next_event_id++;
++}
++
++float Capture_Reserve(entity actor, Weapon weapon)
++{
++	if(weapon == WEP_Null || weapon.ammo_type == RES_NONE)
++		return 0;
++	return GetResource(actor, weapon.ammo_type);
++}
++
++void Capture_SetResources(entity actor, float health, float armor, float reserve)
++{
++	SetResourceExplicit(actor, RES_HEALTH, health);
++	SetResourceExplicit(actor, RES_ARMOR, armor);
++	SetResourceExplicit(actor, RES_BULLETS, reserve);
++	SetResourceExplicit(actor, RES_SHELLS, reserve);
++	SetResourceExplicit(actor, RES_CELLS, reserve);
++	SetResourceExplicit(actor, RES_ROCKETS, reserve);
++	SetResourceExplicit(actor, RES_PLASMA, reserve);
++	SetResourceExplicit(actor, RES_FUEL, reserve);
++}
++
++void Capture_ResetActor(entity actor, vector origin, float yaw)
++{
++	setorigin(actor, origin);
++	actor.velocity = '0 0 0';
++	actor.avelocity = '0 0 0';
++	actor.oldvelocity = '0 0 0';
++	actor.angles = '0 1 0' * yaw;
++	actor.v_angle = actor.angles;
++	actor.fixangle = true;
++	actor.deadflag = DEAD_NO;
++}
++
++void Capture_ConfigurePlayerWeapon(entity actor)
++{
++	Weapon weapon = Weapon_from_name(autocvar_capture_weapon);
++	if(weapon == WEP_Null)
++		weapon = WEP_MACHINEGUN;
++	STAT(WEAPONS, actor) = weapon.m_wepset;
++	W_GiveWeapon(actor, weapon.m_id);
++	W_SwitchWeapon_Force(actor, weapon, weaponentities[0]);
++	entity weapon_entity = actor.(weaponentities[0]);
++	weapon_entity.m_weapon = weapon;
++	weapon_entity.m_switchweapon = weapon;
++	weapon_entity.clip_load = autocvar_capture_clip;
++	weapon_entity.old_clip_load = autocvar_capture_clip;
++	weapon_entity.(weapon_load[weapon.m_id]) = autocvar_capture_clip;
++}
++
++bool Capture_TryReset()
++{
++	capture_player = NULL;
++	capture_enemy = NULL;
++	FOREACH_CLIENT(IS_REAL_CLIENT(it) && IS_PLAYER(it),
++	{
++		capture_player = it;
++		break;
++	});
++	FOREACH_CLIENT(IS_BOT_CLIENT(it) && IS_PLAYER(it),
++	{
++		capture_enemy = it;
++		break;
++	});
++	if(!capture_player || !capture_enemy)
++		return false;
++
++	cvar_set("bot_nofire", "1");
++	Capture_ResetActor(capture_player, autocvar_capture_player_origin, autocvar_capture_player_yaw);
++	Capture_ResetActor(capture_enemy, autocvar_capture_enemy_origin, autocvar_capture_enemy_yaw);
++	Capture_SetResources(capture_player,
++		autocvar_capture_player_health,
++		autocvar_capture_player_armor,
++		autocvar_capture_reserve);
++	Capture_SetResources(capture_enemy,
++		autocvar_capture_enemy_health,
++		autocvar_capture_enemy_armor,
++		autocvar_capture_reserve);
++	Capture_ConfigurePlayerWeapon(capture_player);
++	setplayermodel(capture_enemy,
++		strcat("models/player/", autocvar_capture_enemy_model, ".iqm"));
++	PHYS_INPUT_BUTTON_ATCK(capture_enemy) = false;
++	PHYS_INPUT_BUTTON_ATCK2(capture_enemy) = false;
++	PHYS_INPUT_BUTTON_JUMP(capture_enemy) = false;
++
++	if(capture_server_fh >= 0)
++		fclose(capture_server_fh);
++	capture_server_fh = fopen(autocvar_capture_server_log, FILE_WRITE);
++	if(capture_server_fh < 0)
++	{
++		LOG_WARN("capture: could not open server telemetry ", autocvar_capture_server_log);
++		return false;
++	}
++	capture_server_tick = 0;
++	capture_next_event_id = 1;
++	capture_server_started = true;
++	capture_server_done = false;
++	capture_prev_player_origin = capture_player.origin;
++	capture_prev_player_velocity = capture_player.velocity;
++	capture_prev_player_angles = capture_player.v_angle;
++	capture_prev_player_health = GetResource(capture_player, RES_HEALTH);
++	capture_prev_player_armor = GetResource(capture_player, RES_ARMOR);
++	entity weapon_entity = capture_player.(weaponentities[0]);
++	capture_prev_player_clip = weapon_entity.clip_load;
++	capture_prev_player_reserve = Capture_Reserve(capture_player, weapon_entity.m_weapon);
++
++	Capture_Log(sprintf(
++		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
++		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\"}",
++		autocvar_capture_episode_id, time, GetMapname(),
++		etof(capture_player), etof(capture_enemy),
++		autocvar_capture_weapon, autocvar_capture_enemy_model));
++	stuffcmd(capture_player,
++		sprintf("\ncapture_episode_reset \"%s\"\n", autocvar_capture_episode_id));
++	return true;
++}
++
++void Capture_MoveEnemy()
++{
++	vector offset = '0 0 0';
++	float t = capture_server_tick / 64.0;
++	switch(autocvar_capture_enemy_motion)
++	{
++		case 1:
++			offset = autocvar_capture_enemy_motion_vector
++				* (sin(t * M_PI * 0.8) * autocvar_capture_enemy_motion_distance);
++			break;
++		case 2:
++			offset = autocvar_capture_enemy_motion_vector
++				* (sin(t * M_PI * 0.4) * autocvar_capture_enemy_motion_distance);
++			break;
++		case 3:
++			if((floor(t * 2) % 2) == 0)
++				offset = autocvar_capture_enemy_motion_vector
++					* (sin(t * M_PI) * autocvar_capture_enemy_motion_distance);
++			break;
++	}
++	vector target = autocvar_capture_enemy_origin + offset;
++	capture_enemy.velocity = (target - capture_enemy.origin) * 64;
++	setorigin(capture_enemy, target);
++	capture_enemy.v_angle = '0 1 0' * autocvar_capture_enemy_yaw;
++	capture_enemy.angles = capture_enemy.v_angle;
++	capture_enemy.fixangle = true;
++	PHYS_INPUT_BUTTON_ATCK(capture_enemy) = false;
++	PHYS_INPUT_BUTTON_ATCK2(capture_enemy) = false;
++	PHYS_INPUT_BUTTON_JUMP(capture_enemy) = false;
++}
++
++void Capture_LogState()
++{
++	entity weapon_entity = capture_player.(weaponentities[0]);
++	Weapon weapon = weapon_entity.m_weapon;
++	float health = GetResource(capture_player, RES_HEALTH);
++	float armor = GetResource(capture_player, RES_ARMOR);
++	float clip = weapon_entity.clip_load;
++	float reserve = Capture_Reserve(capture_player, weapon);
++	Capture_Log(sprintf(
++		"{\"kind\":\"state\",\"episode_id\":\"%s\",\"server_tick\":%d,\"server_time\":%.9f,"
++		"\"applied_action\":{\"forward\":%.6f,\"strafe\":%.6f,\"up\":%.6f,"
++		"\"pitch\":%.6f,\"yaw\":%.6f,\"jump\":%d,\"primary\":%d,\"secondary\":%d,\"impulse\":%d},"
++		"\"pre\":{\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f],"
++		"\"angles\":[%.6f,%.6f,%.6f],\"health\":%.6f,\"armor\":%.6f,\"clip\":%.6f,\"reserve\":%.6f},"
++		"\"post\":{\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f],"
++		"\"angles\":[%.6f,%.6f,%.6f],\"health\":%.6f,\"armor\":%.6f,\"clip\":%.6f,\"reserve\":%.6f,"
++		"\"weapon\":\"%s\",\"onground\":%d},"
++		"\"enemy\":{\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f],"
++		"\"health\":%.6f,\"armor\":%.6f,\"model\":\"%s\"}}",
++		autocvar_capture_episode_id, capture_server_tick, time,
++		CS(capture_player).movement.x, CS(capture_player).movement.y, CS(capture_player).movement.z,
++		capture_player.v_angle.x, capture_player.v_angle.y,
++		PHYS_INPUT_BUTTON_JUMP(capture_player),
++		PHYS_INPUT_BUTTON_ATCK(capture_player),
++		PHYS_INPUT_BUTTON_ATCK2(capture_player),
++		CS(capture_player).impulse,
++		capture_prev_player_origin.x, capture_prev_player_origin.y, capture_prev_player_origin.z,
++		capture_prev_player_velocity.x, capture_prev_player_velocity.y, capture_prev_player_velocity.z,
++		capture_prev_player_angles.x, capture_prev_player_angles.y, capture_prev_player_angles.z,
++		capture_prev_player_health, capture_prev_player_armor,
++		capture_prev_player_clip, capture_prev_player_reserve,
++		capture_player.origin.x, capture_player.origin.y, capture_player.origin.z,
++		capture_player.velocity.x, capture_player.velocity.y, capture_player.velocity.z,
++		capture_player.v_angle.x, capture_player.v_angle.y, capture_player.v_angle.z,
++		health, armor, clip, reserve, weapon.netname,
++		boolean(capture_player.flags & FL_ONGROUND),
++		capture_enemy.origin.x, capture_enemy.origin.y, capture_enemy.origin.z,
++		capture_enemy.velocity.x, capture_enemy.velocity.y, capture_enemy.velocity.z,
++		GetResource(capture_enemy, RES_HEALTH),
++		GetResource(capture_enemy, RES_ARMOR),
++		autocvar_capture_enemy_model));
++	capture_prev_player_origin = capture_player.origin;
++	capture_prev_player_velocity = capture_player.velocity;
++	capture_prev_player_angles = capture_player.v_angle;
++	capture_prev_player_health = health;
++	capture_prev_player_armor = armor;
++	capture_prev_player_clip = clip;
++	capture_prev_player_reserve = reserve;
++}
++
++void Capture_ServerFrame()
++{
++	if(!autocvar_capture_server_enable || capture_server_done)
++		return;
++	if(!capture_server_started)
++	{
++		Capture_TryReset();
++		return;
++	}
++	if(!capture_player || !IS_PLAYER(capture_player)
++		|| !capture_enemy || !IS_PLAYER(capture_enemy))
++	{
++		Capture_Log("{\"kind\":\"fatal\",\"reason\":\"capture_actor_missing\"}");
++		capture_server_done = true;
++		return;
++	}
++	Capture_MoveEnemy();
++	Capture_LogState();
++	if(capture_server_tick == 63)
++	{
++		Capture_Log(sprintf(
++			"{\"kind\":\"output_begin\",\"server_tick\":%d,\"server_time\":%.9f}",
++			capture_server_tick, time));
++		stuffcmd(capture_player, "\ncapture_output_begin\n");
++	}
++	if(capture_server_tick == 383)
++	{
++		Capture_Log(sprintf(
++			"{\"kind\":\"output_end\",\"server_tick\":%d,\"server_time\":%.9f}",
++			capture_server_tick, time));
++		stuffcmd(capture_player, "\ncapture_output_end\n");
++		capture_server_done = true;
++		fclose(capture_server_fh);
++		capture_server_fh = -1;
++	}
++	++capture_server_tick;
++}
++
++void Capture_Fire(entity actor, int deathtype, vector shot_origin, vector shot_direction)
++{
++	if(!autocvar_capture_server_enable || !capture_server_started || capture_server_done)
++		return;
++	int event_id = Capture_NewEvent();
++	actor.capture_last_fire_event = event_id;
++	Capture_Log(sprintf(
++		"{\"kind\":\"event\",\"event\":\"fire\",\"event_id\":%d,\"parent_event_id\":null,"
++		"\"server_tick\":%d,\"server_time\":%.9f,\"actor\":%d,\"weapon_id\":%d,"
++		"\"secondary\":%d,\"origin\":[%.6f,%.6f,%.6f],\"direction\":[%.9f,%.9f,%.9f]}",
++		event_id, capture_server_tick, time, etof(actor),
++		DEATH_WEAPONOF(deathtype).m_id, boolean(deathtype & HITTYPE_SECONDARY),
++		shot_origin.x, shot_origin.y, shot_origin.z,
++		shot_direction.x, shot_direction.y, shot_direction.z));
++}
++
++void Capture_ProjectileSpawn(entity projectile, entity actor, int deathtype)
++{
++	if(!autocvar_capture_server_enable || !capture_server_started || capture_server_done)
++		return;
++	projectile.capture_event_id = Capture_NewEvent();
++	Capture_Log(sprintf(
++		"{\"kind\":\"event\",\"event\":\"projectile\",\"event_id\":%d,\"parent_event_id\":%d,"
++		"\"server_tick\":%d,\"server_time\":%.9f,\"entity\":%d,\"actor\":%d,\"weapon_id\":%d,"
++		"\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f]}",
++		projectile.capture_event_id, actor.capture_last_fire_event,
++		capture_server_tick, time, etof(projectile), etof(actor),
++		DEATH_WEAPONOF(deathtype).m_id,
++		projectile.origin.x, projectile.origin.y, projectile.origin.z,
++		projectile.velocity.x, projectile.velocity.y, projectile.velocity.z));
++}
++
++void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
++	float damage, int deathtype, vector hitloc,
++	float pre_health, float pre_armor)
++{
++	if(!autocvar_capture_server_enable || !capture_server_started || capture_server_done)
++		return;
++	int parent = attacker ? attacker.capture_last_fire_event : 0;
++	if(inflictor && inflictor.capture_event_id)
++		parent = inflictor.capture_event_id;
++	int impact_event = Capture_NewEvent();
++	int damage_event = Capture_NewEvent();
++	float post_health = GetResource(target, RES_HEALTH);
++	float post_armor = GetResource(target, RES_ARMOR);
++	Capture_Log(sprintf(
++		"{\"kind\":\"event\",\"event\":\"impact\",\"event_id\":%d,\"parent_event_id\":%d,"
++		"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,"
++		"\"direct\":%d,\"splash\":%d,\"hitloc\":[%.6f,%.6f,%.6f]}",
++		impact_event, parent, capture_server_tick, time, etof(target),
++		!boolean(deathtype & HITTYPE_SPLASH), boolean(deathtype & HITTYPE_SPLASH),
++		hitloc.x, hitloc.y, hitloc.z));
++	Capture_Log(sprintf(
++		"{\"kind\":\"event\",\"event\":\"damage\",\"event_id\":%d,\"parent_event_id\":%d,"
++		"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,\"attacker\":%d,"
++		"\"amount\":%.6f,\"pre_health\":%.6f,\"post_health\":%.6f,"
++		"\"pre_armor\":%.6f,\"post_armor\":%.6f,\"killed\":%d}",
++		damage_event, impact_event, capture_server_tick, time, etof(target),
++		(attacker ? etof(attacker) : 0), damage,
++		pre_health, post_health, pre_armor, post_armor,
++		post_health < 1));
++	if(post_health < 1)
++	{
++		int death_event = Capture_NewEvent();
++		Capture_Log(sprintf(
++			"{\"kind\":\"event\",\"event\":\"death\",\"event_id\":%d,\"parent_event_id\":%d,"
++			"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,\"attacker\":%d}",
++			death_event, damage_event, capture_server_tick, time, etof(target),
++			attacker ? etof(attacker) : 0));
++	}
++}
++
++void Capture_ReloadStart(entity actor, entity weapon_entity)
++{
++	if(!autocvar_capture_server_enable || !capture_server_started || capture_server_done)
++		return;
++	int event_id = Capture_NewEvent();
++	weapon_entity.capture_event_id = event_id;
++	Weapon weapon = weapon_entity.m_weapon;
++	Capture_Log(sprintf(
++		"{\"kind\":\"event\",\"event\":\"reload_start\",\"event_id\":%d,\"parent_event_id\":null,"
++		"\"server_tick\":%d,\"server_time\":%.9f,\"actor\":%d,\"weapon\":\"%s\","
++		"\"pre_clip\":%.6f,\"pre_reserve\":%.6f}",
++		event_id, capture_server_tick, time, etof(actor), weapon.netname,
++		weapon_entity.clip_load, Capture_Reserve(actor, weapon)));
++}
++
++void Capture_ReloadComplete(entity actor, entity weapon_entity,
++	float pre_clip, float pre_reserve)
++{
++	if(!autocvar_capture_server_enable || !capture_server_started || capture_server_done)
++		return;
++	Weapon weapon = weapon_entity.m_weapon;
++	int event_id = Capture_NewEvent();
++	float post_reserve = Capture_Reserve(actor, weapon);
++	Capture_Log(sprintf(
++		"{\"kind\":\"event\",\"event\":\"reload_complete\",\"event_id\":%d,\"parent_event_id\":%d,"
++		"\"server_tick\":%d,\"server_time\":%.9f,\"actor\":%d,\"weapon\":\"%s\","
++		"\"pre_clip\":%.6f,\"post_clip\":%.6f,\"pre_reserve\":%.6f,\"post_reserve\":%.6f,"
++		"\"success\":%d}",
++		event_id, weapon_entity.capture_event_id,
++		capture_server_tick, time, etof(actor), weapon.netname,
++		pre_clip, weapon_entity.clip_load, pre_reserve, post_reserve,
++		weapon_entity.clip_load > pre_clip && post_reserve < pre_reserve));
++}
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+new file mode 100644
+index 0000000..4abc25e
+--- /dev/null
++++ b/source/qcsrc/server/capture.qh
+@@ -0,0 +1,35 @@
++#pragma once
++
++bool autocvar_capture_server_enable;
++string autocvar_capture_episode_id;
++string autocvar_capture_server_log;
++vector autocvar_capture_player_origin;
++vector autocvar_capture_enemy_origin;
++vector autocvar_capture_enemy_motion_vector;
++float autocvar_capture_player_yaw;
++float autocvar_capture_enemy_yaw;
++int autocvar_capture_enemy_motion;
++float autocvar_capture_enemy_motion_distance;
++string autocvar_capture_enemy_model;
++string autocvar_capture_weapon;
++float autocvar_capture_player_health;
++float autocvar_capture_player_armor;
++float autocvar_capture_enemy_health;
++float autocvar_capture_enemy_armor;
++float autocvar_capture_clip;
++float autocvar_capture_reserve;
++
++.int capture_event_id;
++.int capture_last_fire_event;
++
++void setplayermodel(entity e, string modelname);
++void Capture_ServerFrame();
++void Capture_Fire(entity actor, int deathtype, vector shot_origin, vector shot_direction);
++void Capture_ProjectileSpawn(entity projectile, entity actor, int deathtype);
++void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
++	float damage, int deathtype, vector hitloc,
++	float pre_health, float pre_armor);
++void Capture_ReloadStart(entity actor, entity weapon_entity);
++void Capture_ReloadComplete(entity actor, entity weapon_entity,
++	float pre_clip, float pre_reserve);
++float Capture_Reserve(entity actor, Weapon weapon);
+diff --git a/source/qcsrc/server/damage.qc b/source/qcsrc/server/damage.qc
+index 44bce18..6741afa 100644
+--- a/source/qcsrc/server/damage.qc
++++ b/source/qcsrc/server/damage.qc
+@@ -27,6 +27,7 @@
+ #include <lib/warpzone/common.qh>
+ #include <server/bot/api.qh>
+ #include <server/client.qh>
++#include <server/capture.qh>
+ #include <server/gamelog.qh>
+ #include <server/hook.qh>
+ #include <server/items/items.qh>
+@@ -854,7 +855,13 @@ void Damage(entity targ, entity inflictor, entity attacker, float damage, int de
+ 	// apply damage
+ 	if (damage != 0 || (targ.damageforcescale && force))
+ 	if (targ.event_damage)
++	{
++		float capture_pre_health = GetResource(targ, RES_HEALTH);
++		float capture_pre_armor = GetResource(targ, RES_ARMOR);
+ 		targ.event_damage (targ, inflictor, attacker, damage, deathtype, weaponentity, hitloc, force);
++		Capture_DamageApplied(targ, inflictor, attacker, damage, deathtype,
++			hitloc, capture_pre_health, capture_pre_armor);
++	}
+ 
+ 	// apply mirror damage if any
+ 	if(!autocvar_g_mirrordamage_onlyweapons || DEATH_WEAPONOF(deathtype) != WEP_Null)
+diff --git a/source/qcsrc/server/main.qc b/source/qcsrc/server/main.qc
+index 8a2da54..1b1dfcd 100644
+--- a/source/qcsrc/server/main.qc
++++ b/source/qcsrc/server/main.qc
+@@ -357,6 +357,7 @@ void StartFrame()
+ 	GlobalStats_updateglobal();
+     FOREACH_CLIENT(true, GlobalStats_update(it));
+     IL_EACH(g_players, IS_FAKE_CLIENT(it), PlayerPostThink(it));
++	Capture_ServerFrame();
+ }
+ 
+ .vector originjitter;
+diff --git a/source/qcsrc/server/weapons/tracing.qc b/source/qcsrc/server/weapons/tracing.qc
+index dbd3d5b..64c9d70 100644
+--- a/source/qcsrc/server/weapons/tracing.qc
++++ b/source/qcsrc/server/weapons/tracing.qc
+@@ -10,6 +10,7 @@
+ #include <common/wepent.qh>
+ #include <lib/warpzone/common.qh>
+ #include <server/antilag.qh>
++#include <server/capture.qh>
+ #include <server/damage.qh>
+ #include <server/main.qh>
+ #include <server/mutators/_mod.qh>
+@@ -101,6 +102,7 @@ void W_SetupShot_Dir_ProjectileSize_Range(entity ent, .entity weaponentity, vect
+ 		w_shotdir = s_forward;
+ 	else
+ 		w_shotdir = normalize(w_shotend - w_shotorg);
++	Capture_Fire(ent, deathtype, w_shotorg, w_shotdir);
+ 
+ 	//vector prevdir = w_shotdir;
+ 	//vector prevorg = w_shotorg;
+diff --git a/source/qcsrc/server/weapons/weaponsystem.qc b/source/qcsrc/server/weapons/weaponsystem.qc
+index 20e713c..d6d8589 100644
+--- a/source/qcsrc/server/weapons/weaponsystem.qc
++++ b/source/qcsrc/server/weapons/weaponsystem.qc
+@@ -17,6 +17,7 @@
+ #include <lib/csqcmodel/sv_model.qh>
+ #include <server/cheats.qh>
+ #include <server/client.qh>
++#include <server/capture.qh>
+ #include <server/command/common.qh>
+ #include <server/damage.qh>
+ #include <server/items/items.qh>
+@@ -728,6 +729,8 @@ void W_ReloadedAndReady(Weapon thiswep, entity actor, .entity weaponentity, int
+ 
+ 	entity w_ent = actor.(weaponentity);
+ 	Weapon wpn = w_ent.m_weapon;
++	float capture_pre_clip = w_ent.old_clip_load;
++	float capture_pre_reserve = Capture_Reserve(actor, wpn);
+ 
+ 	w_ent.clip_load = w_ent.old_clip_load;  // restore the ammo counter, in case we still had ammo in the weapon before reloading
+ 
+@@ -745,6 +748,7 @@ void W_ReloadedAndReady(Weapon thiswep, entity actor, .entity weaponentity, int
+ 		SetResource(actor, wpn.ammo_type, ammo - load);
+ 	}
+ 	w_ent.(weapon_load[w_ent.m_weapon.m_id]) = w_ent.clip_load;
++	Capture_ReloadComplete(actor, w_ent, capture_pre_clip, capture_pre_reserve);
+ 
+ 	// do not set ATTACK_FINISHED in reload code any more. This causes annoying delays if eg: You start reloading a weapon,
+ 	// then quickly switch to another weapon and back. Reloading is canceled, but the reload delay is still there,
+@@ -818,6 +822,7 @@ void W_Reload(entity actor, .entity weaponentity, float sent_ammo_min, Sound sen
+ 
+ 	// now begin the reloading process
+ 
++	Capture_ReloadStart(actor, this);
+ 	_sound(actor, CH_WEAPON_SINGLE, actor.reload_sound, VOL_BASE, ATTEN_NORM);
+ 
+ 	// do not set ATTACK_FINISHED in reload code any more. This causes annoying delays if eg: You start reloading a weapon,

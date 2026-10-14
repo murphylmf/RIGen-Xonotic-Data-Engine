@@ -1,0 +1,52 @@
+#pragma once
+
+#include <common/command/_mod.qh>
+
+#include "item.qh"
+
+                                             
+REGISTRY(Items, 32)
+#ifdef GAMEQC
+REGISTRY_DEPENDS(Items, Models)
+#endif
+REGISTER_REGISTRY(Items)
+#define REGISTER_ITEM(id, class) REGISTER(Items, ITEM, id, m_id, NEW(class))
+
+#ifdef CSQC
+                                                                                 
+                                                                         
+IntrusiveList default_order_items;
+STATIC_INIT(default_order_items)
+{
+	default_order_items = IL_NEW();
+	FOREACH(Items, true, {
+		IL_PUSH(default_order_items, it);
+	});
+}
+#endif
+
+REGISTRY_SORT(Items)
+REGISTRY_CHECK(Items)
+
+REGISTRY_DEFINE_GET(Items, NULL)
+STATIC_INIT(Items) { FOREACH(Items, true, it.m_id = i); }
+
+void Dump_Items();
+
+GENERIC_COMMAND(dumpitems, "Dump all items to the console", false) {
+    switch (request) {
+        case CMD_REQUEST_COMMAND: {
+            Dump_Items();
+            return;
+        }
+        default:
+        case CMD_REQUEST_USAGE: {
+            LOG_HELP("Usage:^3 ", GetProgramCommandPrefix(), " dumpitems");
+            return;
+        }
+    }
+}
+
+#ifdef GAMEQC
+string Item_Model(string item_mdl);
+#endif

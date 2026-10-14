@@ -1,0 +1,622 @@
+  
+                                         
+
+                                                             
+                                                           
+                                                              
+                                                      
+
+                                                               
+                                                              
+                                                    
+
+                                                    
+
+                                                                 
+                                                           
+                                                                           
+
+  
+
+#include "quakedef.h"
+#include "capture_telemetry.h"
+
+#ifdef CONFIG_VIDEO_CAPTURE
+extern cvar_t cl_capturevideo;
+extern cvar_t cl_capturevideo_demo_stop;
+#endif
+int old_vsync = 0;
+
+static void CL_FinishTimeDemo (void);
+
+  
+                                                                              
+
+         
+
+                                                                           
+                                              
+
+                                                                        
+                        
+                                                                              
+  
+
+  
+                     
+           
+
+                                             
+                     
+  
+void CL_NextDemo (void)
+{
+	char	str[MAX_INPUTLINE];
+
+	if (cls.demonum == -1)
+		return;		                   
+
+	if (!cls.demos[cls.demonum][0] || cls.demonum == MAX_DEMOS)
+	{
+		cls.demonum = 0;
+		if (!cls.demos[cls.demonum][0])
+		{
+			Con_Print("No demos listed with startdemos\n");
+			cls.demonum = -1;
+			return;
+		}
+	}
+
+	dpsnprintf (str, sizeof(str), "playdemo %s\n", cls.demos[cls.demonum]);
+	Cbuf_InsertText (str);
+	cls.demonum++;
+}
+
+  
+              
+               
+
+                                                           
+              
+  
+                                              
+void CL_StopPlayback (void)
+{
+#ifdef CONFIG_VIDEO_CAPTURE
+	if (cl_capturevideo_demo_stop.integer)
+		Cvar_Set("cl_capturevideo", "0");
+#endif
+
+	if (!cls.demoplayback)
+		return;
+
+	FS_Close (cls.demofile);
+	cls.demoplayback = false;
+	cls.demofile = NULL;
+
+	if (cls.timedemo)
+		CL_FinishTimeDemo ();
+
+	if (!cls.demostarting)                                          
+		if (COM_CheckParm("-demo") || COM_CheckParm("-capturedemo"))
+			Host_Quit_f();
+
+}
+
+  
+                    
+                   
+
+                                                                     
+                     
+  
+void CL_WriteDemoMessage (sizebuf_t *message)
+{
+	int		len;
+	int		i;
+	float	f;
+
+	if (cls.demopaused)                        
+		return;
+
+	len = LittleLong (message->cursize);
+	FS_Write (cls.demofile, &len, 4);
+	for (i=0 ; i<3 ; i++)
+	{
+		f = LittleFloat (cl.viewangles[i]);
+		FS_Write (cls.demofile, &f, 4);
+	}
+	FS_Write (cls.demofile, message->data, message->cursize);
+}
+
+  
+                    
+          
+
+                                                                              
+                                                                               
+                    
+  
+void CL_CutDemo (unsigned char **buf, fs_offset_t *filesize)
+{
+	*buf = NULL;
+	*filesize = 0;
+
+	FS_Close(cls.demofile);
+	*buf = FS_LoadFile(cls.demoname, tempmempool, false, filesize);
+
+	                             
+	cls.demofile = FS_OpenRealFile(cls.demoname, "wb", false);
+	if(!cls.demofile)
+		Sys_Error("failed to reopen the demo file");
+	FS_Printf(cls.demofile, "%i\n", cls.forcetrack);
+}
+
+  
+                    
+            
+
+                                                           
+                                                                               
+                    
+  
+void CL_PasteDemo (unsigned char **buf, fs_offset_t *filesize)
+{
+	fs_offset_t startoffset = 0;
+
+	if(!*buf)
+		return;
+
+	               
+	while(startoffset < *filesize && ((char *)(*buf))[startoffset] != '\n')
+		++startoffset;
+	if(startoffset < *filesize)
+		++startoffset;
+
+	FS_Write(cls.demofile, *buf + startoffset, *filesize - startoffset);
+
+	Mem_Free(*buf);
+	*buf = NULL;
+	*filesize = 0;
+}
+
+  
+                    
+                  
+
+                         
+                    
+  
+void CL_ReadDemoMessage(void)
+{
+	int i;
+	float f;
+
+	if (!cls.demoplayback)
+		return;
+
+	                       
+	if (cls.demopaused)
+		return;
+
+	for (;;)
+	{
+		                                                
+		                                    
+		if (cls.signon == SIGNONS)
+		{
+			if (cls.timedemo)
+			{
+				cls.td_frames++;
+				cls.td_onesecondframes++;
+				                                                               
+				                                                            
+				                                 
+				if (cls.td_frames == 0)
+				{
+					cls.td_starttime = realtime;
+					cls.td_onesecondnexttime = cl.time + 1;
+					cls.td_onesecondrealtime = realtime;
+					cls.td_onesecondframes = 0;
+					cls.td_onesecondminfps = 0;
+					cls.td_onesecondmaxfps = 0;
+					cls.td_onesecondavgfps = 0;
+					cls.td_onesecondavgcount = 0;
+				}
+				if (cl.time >= cls.td_onesecondnexttime)
+				{
+					double fps = cls.td_onesecondframes / (realtime - cls.td_onesecondrealtime);
+					if (cls.td_onesecondavgcount == 0)
+					{
+						cls.td_onesecondminfps = fps;
+						cls.td_onesecondmaxfps = fps;
+					}
+					cls.td_onesecondrealtime = realtime;
+					cls.td_onesecondminfps = min(cls.td_onesecondminfps, fps);
+					cls.td_onesecondmaxfps = max(cls.td_onesecondmaxfps, fps);
+					cls.td_onesecondavgfps += fps;
+					cls.td_onesecondavgcount++;
+					cls.td_onesecondframes = 0;
+					cls.td_onesecondnexttime++;
+				}
+			}
+			else if (cl.time < cl.mtime[0]
+				&& !Capture_DemoFixedStepReadReady(cl.time, cl.mtime[0]))
+			{
+				                                 
+				return;
+			}
+		}
+
+		                       
+		FS_Read(cls.demofile, &cl_message.cursize, 4);
+		cl_message.cursize = LittleLong(cl_message.cursize);
+		if(cl_message.cursize & DEMOMSG_CLIENT_TO_SERVER)                                                     
+		{
+			                        
+			FS_Seek(cls.demofile, 12 + (cl_message.cursize & (~DEMOMSG_CLIENT_TO_SERVER)), SEEK_CUR);
+			continue;
+		}
+		if (cl_message.cursize > cl_message.maxsize)
+		{
+			Con_Printf("Demo message (%i) > cl_message.maxsize (%i)", cl_message.cursize, cl_message.maxsize);
+			cl_message.cursize = 0;
+			CL_Disconnect();
+			return;
+		}
+		VectorCopy(cl.mviewangles[0], cl.mviewangles[1]);
+		for (i = 0;i < 3;i++)
+		{
+			FS_Read(cls.demofile, &f, 4);
+			cl.mviewangles[0][i] = LittleFloat(f);
+		}
+
+		if (FS_Read(cls.demofile, cl_message.data, cl_message.cursize) == cl_message.cursize)
+		{
+			MSG_BeginReading(&cl_message);
+			CL_ParseServerMessage();
+
+			if (cls.signon != SIGNONS)
+				Cbuf_Execute();                                                                    
+
+			                                                       
+			if (!cls.demoplayback)
+				return;
+
+			if (cls.timedemo)
+				return;
+		}
+		else
+		{
+			CL_Disconnect();
+			return;
+		}
+	}
+}
+
+
+  
+                    
+         
+
+                     
+                    
+  
+void CL_Stop_f (void)
+{
+	sizebuf_t buf;
+	unsigned char bufdata[64];
+
+	if (!cls.demorecording)
+	{
+		Con_Print("Not recording a demo.\n");
+		return;
+	}
+
+                                              
+	                                                          
+	buf.data = bufdata;
+	buf.maxsize = sizeof(bufdata);
+	SZ_Clear(&buf);
+	MSG_WriteByte(&buf, svc_disconnect);
+	CL_WriteDemoMessage(&buf);
+
+            
+	if(cl_autodemo.integer && (cl_autodemo_delete.integer & 1))
+	{
+		FS_RemoveOnClose(cls.demofile);
+		Con_Print("Completed and deleted demo\n");
+	}
+	else
+		Con_Print("Completed demo\n");
+	FS_Close (cls.demofile);
+	cls.demofile = NULL;
+	cls.demorecording = false;
+}
+
+  
+                    
+           
+
+                                  
+                    
+  
+void CL_Record_f (void)
+{
+	int c, track;
+	char name[MAX_OSPATH];
+	char vabuf[1024];
+
+	c = Cmd_Argc();
+	if (c != 2 && c != 3 && c != 4)
+	{
+		Con_Print("record <demoname> [<map> [cd track]]\n");
+		return;
+	}
+
+	if (strstr(Cmd_Argv(1), ".."))
+	{
+		Con_Print("Relative pathnames are not allowed.\n");
+		return;
+	}
+
+	if (c == 2 && cls.state == ca_connected)
+	{
+		Con_Print("Can not record - already connected to server\nClient demo recording must be started before connecting\n");
+		return;
+	}
+
+	if (cls.state == ca_connected)
+		CL_Disconnect();
+
+	                                          
+	if (c == 4)
+	{
+		track = atoi(Cmd_Argv(3));
+		Con_Printf("Forcing CD track to %i\n", cls.forcetrack);
+	}
+	else
+		track = -1;
+
+	                    
+	strlcpy (name, Cmd_Argv(1), sizeof (name));
+	FS_DefaultExtension (name, ".dem", sizeof (name));
+
+	                   
+	if (c > 2)
+		Cmd_ExecuteString ( va(vabuf, sizeof(vabuf), "map %s", Cmd_Argv(2)), src_command, false);
+
+	                     
+	Con_Printf("recording to %s.\n", name);
+	cls.demofile = FS_OpenRealFile(name, "wb", false);
+	if (!cls.demofile)
+	{
+		Con_Print("ERROR: couldn't open.\n");
+		return;
+	}
+	strlcpy(cls.demoname, name, sizeof(cls.demoname));
+
+	cls.forcetrack = track;
+	FS_Printf(cls.demofile, "%i\n", cls.forcetrack);
+
+	cls.demorecording = true;
+	cls.demo_lastcsprogssize = -1;
+	cls.demo_lastcsprogscrc = -1;
+}
+
+
+  
+                    
+             
+
+               
+                    
+  
+void CL_PlayDemo_f (void)
+{
+	char	name[MAX_QPATH];
+	int c;
+	qboolean neg = false;
+	qfile_t *f;
+
+	if (Cmd_Argc() != 2)
+	{
+		Con_Print("play <demoname> : plays a demo\n");
+		return;
+	}
+
+	                     
+	strlcpy (name, Cmd_Argv(1), sizeof (name));
+	FS_DefaultExtension (name, ".dem", sizeof (name));
+	f = FS_OpenVirtualFile(name, false);
+	if (!f)
+	{
+		Con_Printf("ERROR: couldn't open %s.\n", name);
+		cls.demonum = -1;		                 
+		return;
+	}
+
+	cls.demostarting = true;
+
+	                         
+	CL_Disconnect ();
+	Host_ShutdownServer ();
+
+	                                                                  
+	NetConn_UpdateSockets();
+
+	cls.protocol = PROTOCOL_QUAKE;
+
+	Con_Printf("Playing demo %s.\n", name);
+	cls.demofile = f;
+	strlcpy(cls.demoname, name, sizeof(cls.demoname));
+
+	cls.demoplayback = true;
+	cls.state = ca_connected;
+	cls.forcetrack = 0;
+
+	while ((c = FS_Getc (cls.demofile)) != '\n')
+		if (c == '-')
+			neg = true;
+		else
+			cls.forcetrack = cls.forcetrack * 10 + (c - '0');
+
+	if (neg)
+		cls.forcetrack = -cls.forcetrack;
+
+	cls.demostarting = false;
+}
+
+typedef struct
+{
+	int frames;
+	double time, totalfpsavg;
+	double fpsmin, fpsavg, fpsmax;
+}
+benchmarkhistory_t;
+static size_t doublecmp_offset;
+static int doublecmp_withoffset(const void *a_, const void *b_)
+{
+	const double *a = (const double *) ((const char *) a_ + doublecmp_offset);
+	const double *b = (const double *) ((const char *) b_ + doublecmp_offset);
+	if(*a > *b)
+		return +1;
+	if(*a < *b)
+		return -1;
+	return 0;
+}
+
+  
+                    
+                 
+
+                    
+  
+static void CL_FinishTimeDemo (void)
+{
+	int frames;
+	int i;
+	double time, totalfpsavg;
+	double fpsmin, fpsavg, fpsmax;                          
+	static int benchmark_runs = 0;
+	char vabuf[1024];
+
+	cls.timedemo = false;
+
+	frames = cls.td_frames;
+	time = realtime - cls.td_starttime;
+	totalfpsavg = time > 0 ? frames / time : 0;
+	fpsmin = cls.td_onesecondminfps;
+	fpsavg = cls.td_onesecondavgcount ? cls.td_onesecondavgfps / cls.td_onesecondavgcount : 0;
+	fpsmax = cls.td_onesecondmaxfps;
+	                                                                           
+	Con_Printf("%i frames %5.7f seconds %5.7f fps, one-second fps min/avg/max: %.0f %.0f %.0f (%i seconds)\n", frames, time, totalfpsavg, fpsmin, fpsavg, fpsmax, cls.td_onesecondavgcount);
+	Log_Printf("benchmark.log", "date %s | enginedate %s | demo %s | commandline %s | run %d | result %i frames %5.7f seconds %5.7f fps, one-second fps min/avg/max: %.0f %.0f %.0f (%i seconds)\n", Sys_TimeString("%Y-%m-%d %H:%M:%S"), buildstring, cls.demoname, cmdline.string, benchmark_runs + 1, frames, time, totalfpsavg, fpsmin, fpsavg, fpsmax, cls.td_onesecondavgcount);
+	if (COM_CheckParm("-benchmark"))
+	{
+		++benchmark_runs;
+		i = COM_CheckParm("-benchmarkruns");
+		if(i && i + 1 < com_argc)
+		{
+			static benchmarkhistory_t *history = NULL;
+			if(!history)
+				history = (benchmarkhistory_t *)Z_Malloc(sizeof(*history) * atoi(com_argv[i + 1]));
+
+			history[benchmark_runs - 1].frames = frames;
+			history[benchmark_runs - 1].time = time;
+			history[benchmark_runs - 1].totalfpsavg = totalfpsavg;
+			history[benchmark_runs - 1].fpsmin = fpsmin;
+			history[benchmark_runs - 1].fpsavg = fpsavg;
+			history[benchmark_runs - 1].fpsmax = fpsmax;
+
+			if(atoi(com_argv[i + 1]) > benchmark_runs)
+			{
+				                        
+				Cbuf_AddText(va(vabuf, sizeof(vabuf), "timedemo %s\n", cls.demoname));
+				                      
+			}
+			else
+			{
+				                   
+				int first = COM_CheckParm("-benchmarkruns_skipfirst") ? 1 : 0;
+				if(benchmark_runs > first)
+				{
+#define DO_MIN(f) \
+					for(i = first; i < benchmark_runs; ++i) if((i == first) || (history[i].f < f)) f = history[i].f
+
+#define DO_MAX(f) \
+					for(i = first; i < benchmark_runs; ++i) if((i == first) || (history[i].f > f)) f = history[i].f
+
+#define DO_MED(f) \
+					doublecmp_offset = (char *)&history->f - (char *)history; \
+					qsort(history + first, benchmark_runs - first, sizeof(*history), doublecmp_withoffset); \
+					if((first + benchmark_runs) & 1) \
+						f = history[(first + benchmark_runs - 1) / 2].f; \
+					else \
+						f = (history[(first + benchmark_runs - 2) / 2].f + history[(first + benchmark_runs) / 2].f) / 2
+
+					DO_MIN(frames);
+					DO_MAX(time);
+					DO_MIN(totalfpsavg);
+					DO_MIN(fpsmin);
+					DO_MIN(fpsavg);
+					DO_MIN(fpsmax);
+					Con_Printf("MIN: %i frames %5.7f seconds %5.7f fps, one-second fps min/avg/max: %.0f %.0f %.0f (%i seconds)\n", frames, time, totalfpsavg, fpsmin, fpsavg, fpsmax, cls.td_onesecondavgcount);
+
+					DO_MED(frames);
+					DO_MED(time);
+					DO_MED(totalfpsavg);
+					DO_MED(fpsmin);
+					DO_MED(fpsavg);
+					DO_MED(fpsmax);
+					Con_Printf("MED: %i frames %5.7f seconds %5.7f fps, one-second fps min/avg/max: %.0f %.0f %.0f (%i seconds)\n", frames, time, totalfpsavg, fpsmin, fpsavg, fpsmax, cls.td_onesecondavgcount);
+
+					DO_MAX(frames);
+					DO_MIN(time);
+					DO_MAX(totalfpsavg);
+					DO_MAX(fpsmin);
+					DO_MAX(fpsavg);
+					DO_MAX(fpsmax);
+					Con_Printf("MAX: %i frames %5.7f seconds %5.7f fps, one-second fps min/avg/max: %.0f %.0f %.0f (%i seconds)\n", frames, time, totalfpsavg, fpsmin, fpsavg, fpsmax, cls.td_onesecondavgcount);
+				}
+				Z_Free(history);
+				history = NULL;
+				Host_Quit_f();
+			}
+		}
+		else
+			Host_Quit_f();
+	}
+}
+
+  
+                    
+             
+
+                   
+                    
+  
+void CL_TimeDemo_f (void)
+{
+	if (Cmd_Argc() != 2)
+	{
+		Con_Print("timedemo <demoname> : gets demo speeds\n");
+		return;
+	}
+
+	srand(0);                                                
+
+	CL_PlayDemo_f ();
+
+                                                                       
+                                           
+
+	                                           
+	key_dest = key_game;
+	key_consoleactive = 0;
+	scr_con_current = 0;
+
+	cls.timedemo = true;
+	cls.td_frames = -2;		                       
+	cls.demonum = -1;		                 
+}

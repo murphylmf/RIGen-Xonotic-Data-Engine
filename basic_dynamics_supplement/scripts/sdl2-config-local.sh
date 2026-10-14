@@ -1,0 +1,1 @@
+/mnt/afs/xonotic_capture_CCI/scripts/sdl2-config-local.sh

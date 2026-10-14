@@ -1,0 +1,44 @@
+#pragma once
+
+         
+                                                          
+                                              
+
+#include <common/resources/resources.qh>
+
+                                                                               
+
+                                                                       
+                                 
+                                                                
+                                                            
+float GetResource(entity e, Resource res_type);
+
+                                                                           
+                                      
+                                                                
+                                                
+                                                           
+bool SetResourceExplicit(entity e, Resource res_type, float amount);
+
+                                                                          
+                                      
+                                                                
+                                                
+                      
+void SetResource(entity e, Resource res_type, float amount);
+
+                                         
+                                                         
+                                                                
+                                                 
+                      
+void TakeResource(entity receiver, Resource res_type, float amount);
+
+                                                                   
+                                                         
+                                                                
+                                                 
+                                                
+                      
+void TakeResourceWithLimit(entity receiver, Resource res_type, float amount, float limit);

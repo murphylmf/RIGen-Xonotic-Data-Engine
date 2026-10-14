@@ -1,0 +1,24 @@
+#pragma once
+
+#include "plasma_weapon.qh"
+
+CLASS(PlasmaTurret, Turret)
+                 ATTRIB(PlasmaTurret, spawnflags, int, TUR_FLAG_SPLASH | TUR_FLAG_MEDPROJ | TUR_FLAG_PLAYER);
+                 ATTRIB(PlasmaTurret, m_mins, vector, '-32 -32 0');
+                 ATTRIB(PlasmaTurret, m_maxs, vector, '32 32 64');
+                 ATTRIB(PlasmaTurret, mdl, string, "base.md3");
+                 ATTRIB_STRZONE(PlasmaTurret, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(PlasmaTurret, head_model, string, strcat("models/turrets/", "plasma.md3"));
+                 ATTRIB(PlasmaTurret, netname, string, "plasma");
+                 ATTRIB(PlasmaTurret, turret_name, string, _("Plasma Cannon"));
+    ATTRIB(PlasmaTurret, m_weapon, Weapon, WEP_PLASMA);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+	END()
+	TR_PROPS(X, PlasmaTurret, plasma)
+#undef X
+
+ENDCLASS(PlasmaTurret)
+REGISTER_TURRET(PLASMA, NEW(PlasmaTurret));

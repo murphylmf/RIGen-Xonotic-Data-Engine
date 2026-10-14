@@ -1,0 +1,70 @@
+#pragma once
+
+bool autocvar_capture_server_enable;
+string autocvar_capture_episode_id;
+string autocvar_capture_anchor_id;
+string autocvar_capture_server_log;
+string autocvar_capture_server_action_file;
+bool autocvar_capture_enemy_present;
+bool autocvar_capture_enemy_timeline_enable;
+string autocvar_capture_enemy_timeline_file;
+int autocvar_capture_enemy_actor_count;
+vector autocvar_capture_player_origin;
+vector autocvar_capture_enemy_origin;
+vector autocvar_capture_enemy_motion_vector;
+float autocvar_capture_player_pitch;
+float autocvar_capture_player_yaw;
+float autocvar_capture_enemy_yaw;
+int autocvar_capture_enemy_motion;
+float autocvar_capture_enemy_motion_distance;
+int autocvar_capture_enemy_motion_start_tick;
+string autocvar_capture_enemy_policy;
+int autocvar_capture_enemy_policy_seed;
+float autocvar_capture_enemy_motion_speed;
+float autocvar_capture_enemy_motion_block_seconds;
+int autocvar_capture_enemy_motion_block_0;
+int autocvar_capture_enemy_motion_block_1;
+int autocvar_capture_enemy_motion_block_2;
+int autocvar_capture_enemy_motion_block_3;
+int autocvar_capture_enemy_motion_block_4;
+bool autocvar_capture_enemy_jump_enabled;
+float autocvar_capture_enemy_jump_height;
+int autocvar_capture_enemy_jump_duration_ticks;
+int autocvar_capture_enemy_jump_start_tick_in_block;
+int autocvar_capture_enemy_jump_block_0;
+int autocvar_capture_enemy_jump_block_1;
+int autocvar_capture_enemy_jump_block_2;
+int autocvar_capture_enemy_jump_block_3;
+int autocvar_capture_enemy_jump_block_4;
+bool autocvar_capture_enemy_movement_audio;
+float autocvar_capture_enemy_step_stride;
+string autocvar_capture_enemy_model;
+int autocvar_capture_enemy_skin;
+int autocvar_capture_enemy_color;
+string autocvar_capture_weapon;
+float autocvar_capture_player_health;
+float autocvar_capture_player_armor;
+float autocvar_capture_enemy_health;
+float autocvar_capture_enemy_armor;
+float autocvar_capture_clip;
+float autocvar_capture_reserve;
+
+.int capture_event_id;
+.int capture_last_fire_event;
+.bool capture_physics_ready;
+.bool capture_identity_locked;
+
+void setplayermodel(entity e, string modelname);
+void Capture_ApplyAuthoritativeAction(entity actor);
+vector Capture_WeaponSpreadRandom(entity actor);
+void Capture_ServerFrame();
+void Capture_ServerFrameEnd(entity actor);
+void Capture_Fire(entity actor, int deathtype, vector shot_origin, vector shot_direction);
+void Capture_ProjectileSpawn(entity projectile, entity actor, int deathtype);
+void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
+	float damage, int deathtype, vector hitloc,
+	float pre_health, float pre_armor);
+void Capture_ReloadStart(entity actor, entity weapon_entity);
+void Capture_ReloadComplete(entity actor, entity weapon_entity,
+	float pre_clip, float pre_reserve);
+float Capture_Reserve(entity actor, Weapon weapon);

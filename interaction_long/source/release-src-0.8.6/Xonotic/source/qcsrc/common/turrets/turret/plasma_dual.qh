@@ -1,0 +1,31 @@
+#pragma once
+
+#include "plasma_weapon.qh"
+
+CLASS(PlasmaDualAttack, PlasmaAttack)
+                ATTRIB(PlasmaDualAttack, spawnflags, int, WEP_FLAG_HIDDEN | WEP_FLAG_SPECIALATTACK);
+                ATTRIB(PlasmaDualAttack, netname, string, "turret_plasma_dual");
+                ATTRIB(PlasmaDualAttack, m_name, string, _("Dual plasma"));
+ENDCLASS(PlasmaDualAttack)
+REGISTER_WEAPON(PLASMA_DUAL, NEW(PlasmaDualAttack));
+
+CLASS(DualPlasmaTurret, PlasmaTurret)
+                 ATTRIB(DualPlasmaTurret, spawnflags, int, TUR_FLAG_SPLASH | TUR_FLAG_MEDPROJ | TUR_FLAG_PLAYER);
+                 ATTRIB(DualPlasmaTurret, m_mins, vector, '-32 -32 0');
+                 ATTRIB(DualPlasmaTurret, m_maxs, vector, '32 32 64');
+                 ATTRIB(DualPlasmaTurret, mdl, string, "base.md3");
+                 ATTRIB_STRZONE(DualPlasmaTurret, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(DualPlasmaTurret, head_model, string, strcat("models/turrets/", "plasmad.md3"));
+                 ATTRIB(DualPlasmaTurret, netname, string, "plasma_dual");
+                 ATTRIB(DualPlasmaTurret, turret_name, string, _("Dual Plasma Cannon"));
+    ATTRIB(DualPlasmaTurret, m_weapon, Weapon, WEP_PLASMA_DUAL);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+	END()
+	TR_PROPS(X, DualPlasmaTurret, plasma_dual)
+#undef X
+
+ENDCLASS(DualPlasmaTurret)
+REGISTER_TURRET(PLASMA_DUAL, NEW(DualPlasmaTurret));

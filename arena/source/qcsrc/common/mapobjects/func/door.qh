@@ -1,0 +1,21 @@
+#pragma once
+
+#ifdef SVQC
+bool autocvar_sv_doors_always_open;
+#endif
+
+const int DOOR_START_OPEN = BIT(0);
+const int DOOR_DONT_LINK = BIT(2);
+const int SPAWNFLAGS_GOLD_KEY = BIT(3);                                                    
+const int SPAWNFLAGS_SILVER_KEY = BIT(4);                                                    
+const int DOOR_TOGGLE = BIT(5);
+
+const int DOOR_NONSOLID = BIT(10);
+const int DOOR_CRUSH = BIT(11);                                                            
+
+
+#ifdef CSQC
+                    
+
+.float door_finished;
+#endif

@@ -1,0 +1,63 @@
+{
+  "Name": "xonotic_stage2_motion_temporal42k_v13r3_7x4_28gpu_0820",
+  "DisplayName": "xonotic_stage2_motion_temporal42k_v13r3_7x4_28gpu_0820",
+  "JobType": "PyTorchJob",
+  "WorkspaceId": "89",
+  "ResourceId": "quota114cy6id9sq",
+  "Priority": 2,
+  "SchedulingStrategy": "Auto",
+  "UserCommand": "cd ./xonotic_workspace && export RUN_ID=stage2_motion_temporal_visibility_42k_v13r3_28gpu_20260820_01 STAGE2_MANIFEST_ROOT=./xonotic_workspace STAGE2_OUTPUT_ROOT=./xonotic_workspace STAGE2_EXPECTED_NODES=7 STAGE2_GPUS_PER_NODE=4 STAGE2_WORKERS_PER_GPU=8 XONOTIC_LIVE_TIME_SCALE=2 && exec bash production_scripts/launch_dlc_7x4_activeonly_v13_resilient.sh",
+  "JobSpecs": [
+    {
+      "Type": "Worker",
+      "Image": "vivix-data-registry-vpc.ap-southeast-8.cr.aliyuncs.com/vivix/vivix_data:p02-turbo-torch212-cu130-fa4",
+      "PodCount": 7,
+      "ResourceConfig": {
+        "CPU": "120",
+        "GPU": "4",
+        "Memory": "800Gi",
+        "SharedMemory": "800Gi"
+      }
+    }
+  ],
+  "DataSources": [
+    {
+      "DataSourceId": "d-bxl1kc01xrjyrds68a",
+      "DataSourceType": "bmcpfs",
+      "DataSourceVersion": "v1",
+      "MountAccess": "RW",
+      "MountPath": "."
+    }
+  ],
+  "Settings": {
+    "AdvancedSettings": {
+      "HpnAffinity": "TryBest"
+    },
+    "EnableErrorMonitoringInAIMaster": true,
+    "EnableRDMA": true,
+    "ErrorMonitoringArgs": "--job-execution-mode=Async --enable-job-restart=True --max-num-of-job-restart=100 --enable-job-hang-detection=False --fault-tolerant-policy=OnFailure --max-num-of-same-error=1000 --max-tolerated-failure-rate=-1",
+    "OversoldType": "ForbiddenQuotaOverSold",
+    "QuotaInstanceTypes": [
+      "ml.gx9bxf.72.612xlarge"
+    ],
+    "ResourceQuotaUserQuotaValue": "208019882733561061-89",
+    "Tags": {
+      "CloneFromJobID": "dlc1s2ojkau15mr1",
+      "FaultTolerance": "job-hold-case-attempts-2",
+      "Purpose": "xonotic-stage2-motion-temporal-42k-v13r3",
+      "ReplacesJobID": "dlcwle39mjrssnil",
+      "Topology": "7x4-whole-node"
+    }
+  },
+  "UserVpc": {
+    "VpcId": "vpc-v1sggow7w2azl2qeviq6n",
+    "SwitchId": "vsw-v1s4jkljqrj6vfzjzjam5",
+    "SecurityGroupId": "sg-v1sj28o91aw6grbn6iw5",
+    "ExtendedCidrs": [
+      "10.0.16.0/21",
+      "10.0.64.0/19",
+      "10.0.8.0/22",
+      "10.0.0.0/24"
+    ]
+  }
+}

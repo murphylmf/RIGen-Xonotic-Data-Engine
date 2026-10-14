@@ -1,0 +1,14 @@
+#pragma once
+
+                                                                                            
+
+.entity viewloc;                                                       
+
+void viewloc_PlayerPhysics(entity this);
+
+#ifdef CSQC
+
+void viewloc_SetViewLocation();
+void viewloc_SetTags(entity this);
+
+#endif

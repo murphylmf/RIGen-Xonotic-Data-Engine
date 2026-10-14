@@ -1,0 +1,11 @@
+#pragma once
+
+             
+const int PARTICLES_IMPULSE = BIT(1);
+const int PARTICLES_VISCULLING = BIT(2);
+
+            
+const int SF_POINTPARTICLES_IMPULSE = BIT(4);
+const int SF_POINTPARTICLES_MOVING = BIT(5);                             
+const int SF_POINTPARTICLES_JITTER_AND_COUNT = BIT(6);                                       
+const int SF_POINTPARTICLES_BOUNDS = BIT(7);                                 

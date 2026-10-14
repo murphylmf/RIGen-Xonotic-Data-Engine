@@ -1,0 +1,13 @@
+#pragma once
+
+                                                    
+                                              
+                                                    
+
+bool shuffleteams_on_reset_map;
+void shuffleteams();
+
+void race_deleteTime(string map, float pos);
+
+                                                                                                      
+void GameCommand_macro_write_aliases(float fh);

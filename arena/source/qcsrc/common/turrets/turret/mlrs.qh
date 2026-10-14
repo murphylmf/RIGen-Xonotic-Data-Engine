@@ -1,0 +1,24 @@
+#pragma once
+
+#include "mlrs_weapon.qh"
+
+CLASS(MLRSTurret, Turret)
+                 ATTRIB(MLRSTurret, spawnflags, int, TUR_FLAG_SPLASH | TUR_FLAG_MEDPROJ | TUR_FLAG_PLAYER);
+                 ATTRIB(MLRSTurret, m_mins, vector, '-32 -32 0');
+                 ATTRIB(MLRSTurret, m_maxs, vector, '32 32 64');
+                 ATTRIB(MLRSTurret, mdl, string, "base.md3");
+                 ATTRIB_STRZONE(MLRSTurret, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(MLRSTurret, head_model, string, strcat("models/turrets/", "mlrs.md3"));
+                 ATTRIB(MLRSTurret, netname, string, "mlrs");
+                 ATTRIB(MLRSTurret, turret_name, string, _("MLRS Turret"));
+    ATTRIB(MLRSTurret, m_weapon, Weapon, WEP_TUR_MLRS);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+	END()
+	TR_PROPS(X, MLRSTurret, mlrs)
+#undef X
+
+ENDCLASS(MLRSTurret)
+REGISTER_TURRET(MLRS, NEW(MLRSTurret));

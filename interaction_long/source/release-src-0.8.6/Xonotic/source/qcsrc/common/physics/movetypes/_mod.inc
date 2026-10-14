@@ -1,0 +1,7 @@
+                                
+#include <common/physics/movetypes/follow.qc>
+#include <common/physics/movetypes/movetypes.qc>
+#include <common/physics/movetypes/push.qc>
+#include <common/physics/movetypes/step.qc>
+#include <common/physics/movetypes/toss.qc>
+#include <common/physics/movetypes/walk.qc>

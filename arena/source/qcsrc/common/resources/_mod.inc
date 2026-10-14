@@ -1,0 +1,8 @@
+                                
+#include <common/resources/resources.qc>
+#ifdef CSQC
+    #include <common/resources/cl_resources.qc>
+#endif
+#ifdef SVQC
+    #include <common/resources/sv_resources.qc>
+#endif

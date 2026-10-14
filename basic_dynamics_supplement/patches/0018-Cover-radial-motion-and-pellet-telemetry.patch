@@ -1,0 +1,47 @@
+From eac2f5a48fa15603f9647e1a6960514992873120 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 19:26:27 +0800
+Subject: [PATCH 18/36] Cover radial motion and pellet telemetry
+
+---
+ source/qcsrc/server/capture.qc | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index e5b8dbd..6682968 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -265,6 +265,8 @@ void Capture_MoveEnemy()
+ {
+ 	vector offset = '0 0 0';
+ 	vector commanded_velocity = '0 0 0';
++	vector radial = normalize(
++		autocvar_capture_player_origin - autocvar_capture_enemy_origin);
+ 	float t = capture_server_tick / 64.0;
+ 	switch(autocvar_capture_enemy_motion)
+ 	{
+@@ -276,9 +278,10 @@ void Capture_MoveEnemy()
+ 				* autocvar_capture_enemy_motion_distance);
+ 			break;
+ 		case 2:
+-			offset = autocvar_capture_enemy_motion_vector
++			// Radial sine motion alternates deterministic approach and retreat.
++			offset = radial
+ 				* (sin(t * M_PI * 0.4) * autocvar_capture_enemy_motion_distance);
+-			commanded_velocity = autocvar_capture_enemy_motion_vector
++			commanded_velocity = radial
+ 				* (cos(t * M_PI * 0.4) * M_PI * 0.4
+ 				* autocvar_capture_enemy_motion_distance);
+ 			break;
+@@ -510,8 +513,10 @@ void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
+ 		"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,",
+ 		impact_event, parent, capture_server_tick, time, etof(target));
+ 	row = strcat(row, sprintf(
+-		"\"direct\":%d,\"splash\":%d,\"hitloc\":[%.6f,%.6f,%.6f]}",
++		"\"direct\":%d,\"splash\":%d,\"pellet\":%d,"
++		"\"hitloc\":[%.6f,%.6f,%.6f]}",
+ 		!boolean(deathtype & HITTYPE_SPLASH), boolean(deathtype & HITTYPE_SPLASH),
++		DEATH_WEAPONOF(deathtype) == WEP_SHOTGUN,
+ 		hitloc.x, hitloc.y, hitloc.z));
+ 	Capture_Log(row);
+ 	row = sprintf(

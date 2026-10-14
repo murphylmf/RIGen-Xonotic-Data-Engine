@@ -1,0 +1,140 @@
+#pragma once
+
+#include <common/scores.qh>
+
+bool autocvar_g_full_getstatus_responses;
+
+entity scores_initialized;                                                   
+
+   
+                                                                        
+                                             
+   
+void PlayerScore_Attach(entity player);
+
+   
+                                                                               
+   
+void PlayerScore_Detach(entity player);
+
+   
+                                       
+                                                                 
+                                                                                       
+                         
+   
+float PlayerScore_Add(entity player, PlayerScoreField scorefield, float score);
+
+   
+                                                  
+                                                                 
+                                                                                       
+                                               
+   
+float PlayerScore_Set(entity player, PlayerScoreField scorefield, float score);
+
+   
+                                     
+                                       
+                                            
+                          
+   
+#define PlayerScore_Get(player, scorefield) PlayerScore_Add(player, scorefield, 0)
+
+   
+                                                 
+                            
+                                              
+                                              
+   
+float PlayerScore_Clear(entity player);
+
+   
+                                              
+                                                
+                         
+   
+float TeamScore_Add(entity player, float scorefield, float score);
+
+   
+                                  
+                                                
+                         
+   
+float TeamScore_AddToTeam(int t, float scorefield, float score);
+
+   
+                                                                    
+   
+float TeamScore_GetCompareValue(float t);
+
+   
+                                                                          
+                                        
+   
+float PlayerTeamScore_Add(entity player, PlayerScoreField pscorefield, float tscorefield, float score);
+
+   
+                                                                    
+   
+void ScoreInfo_SetLabel_TeamScore(float i, string label, float scoreflags);
+
+   
+                                                                      
+   
+void ScoreInfo_SetLabel_PlayerScore(PlayerScoreField i, string label, float scoreflags);
+
+   
+                                                            
+                                         
+   
+void ScoreInfo_Init(int teams);
+
+   
+                                        
+   
+void Score_ClearAll();
+
+   
+                                                
+   
+void Score_NicePrint(entity to);
+
+   
+                                                              
+   
+void WinningConditionHelper(entity this);
+float WinningConditionHelper_topscore;                        
+float WinningConditionHelper_secondscore;                            
+float WinningConditionHelper_winnerteam;                                                     
+float WinningConditionHelper_secondteam;                                                    
+float WinningConditionHelper_equality;                            
+entity WinningConditionHelper_winner;                                               
+entity WinningConditionHelper_second;                                              
+float WinningConditionHelper_lowerisbetter;                          
+float WinningConditionHelper_zeroisworst;                          
+#define WINNINGCONDITIONHELPER_LOWERISBETTER_WORST 999999999
+
+   
+                                          
+                                                                          
+              
+                                                                              
+                                                  
+                                                                              
+                                     
+                                                        
+                                                          
+   
+string GetPlayerScoreString(entity pl, float shortString);
+string GetTeamScoreString(float tm, float shortString);
+
+   
+                                                                             
+                                                
+                                                                 
+                                                                                                         
+                                   
+                                   
+   
+entity PlayerScore_Sort(.float field, int teams, bool strict, bool nospectators);

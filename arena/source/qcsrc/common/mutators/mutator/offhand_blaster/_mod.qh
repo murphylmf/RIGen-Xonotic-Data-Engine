@@ -1,0 +1,7 @@
+                                
+#ifdef CSQC
+    #include <common/mutators/mutator/offhand_blaster/cl_offhand_blaster.qh>
+#endif
+#ifdef SVQC
+    #include <common/mutators/mutator/offhand_blaster/sv_offhand_blaster.qh>
+#endif

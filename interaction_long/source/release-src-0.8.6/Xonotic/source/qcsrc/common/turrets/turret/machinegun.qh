@@ -1,0 +1,24 @@
+#pragma once
+
+#include "machinegun_weapon.qh"
+
+CLASS(MachineGunTurret, Turret)
+                 ATTRIB(MachineGunTurret, spawnflags, int, TUR_FLAG_PLAYER);
+                 ATTRIB(MachineGunTurret, m_mins, vector, '-32 -32 0');
+                 ATTRIB(MachineGunTurret, m_maxs, vector, '32 32 64');
+                 ATTRIB(MachineGunTurret, mdl, string, "base.md3");
+                 ATTRIB_STRZONE(MachineGunTurret, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(MachineGunTurret, head_model, string, strcat("models/turrets/", "machinegun.md3"));
+                 ATTRIB(MachineGunTurret, netname, string, "machinegun");
+                 ATTRIB(MachineGunTurret, turret_name, string, _("Machinegun Turret"));
+    ATTRIB(MachineGunTurret, m_weapon, Weapon, WEP_TUR_MACHINEGUN);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+	END()
+	TR_PROPS(X, MachineGunTurret, machinegun)
+#undef X
+
+ENDCLASS(MachineGunTurret)
+REGISTER_TURRET(MACHINEGUN, NEW(MachineGunTurret));

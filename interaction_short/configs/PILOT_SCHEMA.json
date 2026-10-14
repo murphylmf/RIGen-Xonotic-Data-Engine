@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:xonotic-capture:pilot-scenario:v1",
+  "title": "Xonotic 0.8.6 Pilot Scenario",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "episode_id",
+    "split",
+    "seed",
+    "target_bin",
+    "map",
+    "anchor_id",
+    "anchor",
+    "enemy_model",
+    "weapon",
+    "warmup_ticks",
+    "output_ticks",
+    "player",
+    "enemy"
+  ],
+  "properties": {
+    "schema_version": {"const": "xonotic-pilot-scenario-v1"},
+    "episode_id": {"type": "string", "pattern": "^pilot_[0-9]{3}$"},
+    "split": {"const": "pilot"},
+    "seed": {"type": "integer", "minimum": 0},
+    "target_bin": {
+      "enum": [
+        "atomic_dynamics",
+        "mixed_dynamics",
+        "combat_outcome",
+        "mobile_fire",
+        "machinegun_reload"
+      ]
+    },
+    "map": {"enum": ["stormkeep", "solarium", "xoylent"]},
+    "anchor_id": {
+      "type": "string",
+      "pattern": "^(stormkeep|solarium|xoylent)_dm[0-9]{2}_dm[0-9]{2}$"
+    },
+    "anchor": {
+      "type": "object",
+      "required": [
+        "catalog",
+        "player_spawn_index",
+        "enemy_spawn_index",
+        "player_xy_jitter",
+        "enemy_xy_jitter"
+      ]
+    },
+    "enemy_model": {"enum": ["ignis", "nyx", "seraphina"]},
+    "weapon": {"enum": ["MachineGun", "Shotgun", "Vortex", "Devastator"]},
+    "warmup_ticks": {"const": 64},
+    "output_ticks": {"const": 320},
+    "player": {"type": "object"},
+    "enemy": {"type": "object"}
+  },
+  "additionalProperties": true
+}

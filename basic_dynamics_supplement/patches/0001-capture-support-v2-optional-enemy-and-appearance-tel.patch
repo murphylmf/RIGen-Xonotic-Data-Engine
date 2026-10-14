@@ -1,0 +1,262 @@
+From 6ea72749c92325c5af8c0dfebf733f8e4e164b0e Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sun, 26 Jul 2026 07:49:35 +0800
+Subject: [PATCH] capture: support v2 optional enemy and appearance telemetry
+
+---
+ source/qcsrc/server/capture.qc | 148 ++++++++++++++++++++++-----------
+ source/qcsrc/server/capture.qh |   4 +
+ 2 files changed, 105 insertions(+), 47 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index e6b2ddb..88e3741 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -113,7 +113,7 @@ bool Capture_LoadAuthoritativeActions()
+ 	capture_episode_seed_header_seen = false;
+ 	capture_weapon_random_seed = 0;
+ 	float yaw = autocvar_capture_player_yaw;
+-	float pitch = 0;
++	float pitch = autocvar_capture_player_pitch;
+ 	for(string line; (line = fgets(fh)); )
+ 	{
+ 		if(substring(line, 0, 6) == "#seed,")
+@@ -192,13 +192,13 @@ void Capture_ApplyAuthoritativeAction(entity actor)
+ 		? 20 : capture_action_impulse[tick];
+ }
+ 
+-void Capture_ResetActor(entity actor, vector origin, float yaw)
++void Capture_ResetActor(entity actor, vector origin, float pitch, float yaw)
+ {
+ 	setorigin(actor, origin);
+ 	actor.velocity = '0 0 0';
+ 	actor.avelocity = '0 0 0';
+ 	actor.oldvelocity = '0 0 0';
+-	actor.angles = '0 1 0' * yaw;
++	actor.angles = '1 0 0' * pitch + '0 1 0' * yaw;
+ 	actor.v_angle = actor.angles;
+ 	actor.fixangle = true;
+ 	actor.deadflag = DEAD_NO;
+@@ -234,7 +234,8 @@ bool Capture_TryReset()
+ 		capture_enemy = it;
+ 		break;
+ 	});
+-	if(!capture_player || !capture_enemy)
++	if(!capture_player
++		|| (autocvar_capture_enemy_present && !capture_enemy))
+ 		return false;
+ 	// IS_PLAYER becomes true slightly before the join path finishes restoring
+ 	// normal walk physics. Starting the episode in that window makes the
+@@ -244,31 +245,53 @@ bool Capture_TryReset()
+ 		return false;
+ 
+ 	cvar_set("bot_nofire", "1");
+-	Capture_ResetActor(capture_player, autocvar_capture_player_origin, autocvar_capture_player_yaw);
+-	Capture_ResetActor(capture_enemy, autocvar_capture_enemy_origin, autocvar_capture_enemy_yaw);
+-	// The enemy remains a solid, damageable player entity, but bot navigation
+-	// must not inject random velocity between analytic capture updates.
+-	capture_enemy.move_qcphysics = false;
+-	capture_enemy.respawn_flags |= RESPAWN_DENY;
+-	set_movetype(capture_enemy, MOVETYPE_NONE);
++	// Xonotic's empty-server join path requires a temporary bot client on
++	// some gametypes.  Enemy-absent episodes drop that setup bot atomically
++	// before tick zero and set the desired bot count to zero, so no enemy
++	// entity exists during either warm-up or output telemetry.
++	if(!autocvar_capture_enemy_present && capture_enemy)
++	{
++		cvar_set("bot_number", "0");
++		dropclient(capture_enemy);
++		capture_enemy = NULL;
++	}
++	Capture_ResetActor(capture_player, autocvar_capture_player_origin,
++		autocvar_capture_player_pitch, autocvar_capture_player_yaw);
+ 	Capture_SetResources(capture_player,
+ 		autocvar_capture_player_health,
+ 		autocvar_capture_player_armor,
+ 		autocvar_capture_reserve);
+-	Capture_SetResources(capture_enemy,
+-		autocvar_capture_enemy_health,
+-		autocvar_capture_enemy_armor,
+-		autocvar_capture_reserve);
++	if(autocvar_capture_enemy_present)
++	{
++		Capture_ResetActor(capture_enemy,
++			autocvar_capture_enemy_origin, 0, autocvar_capture_enemy_yaw);
++		// The enemy remains a solid, damageable player entity, but bot
++		// navigation must not inject random velocity between analytic capture
++		// updates. Its world trajectory is independent of live camera state.
++		capture_enemy.move_qcphysics = false;
++		capture_enemy.respawn_flags |= RESPAWN_DENY;
++		set_movetype(capture_enemy, MOVETYPE_NONE);
++		Capture_SetResources(capture_enemy,
++			autocvar_capture_enemy_health,
++			autocvar_capture_enemy_armor,
++			autocvar_capture_reserve);
++	}
+ 	// The engine's sv_random_seed is applied at map start. Connection setup
+ 	// consumes a timing-dependent number of global random values before the
+ 	// atomic episode reset, so capture weapon spread uses this private stream
+ 	// seeded exactly at the reset boundary.
+ 	Capture_ConfigurePlayerWeapon(capture_player);
+-	setplayermodel(capture_enemy,
+-		strcat("models/player/", autocvar_capture_enemy_model, ".iqm"));
+-	PHYS_INPUT_BUTTON_ATCK(capture_enemy) = false;
+-	PHYS_INPUT_BUTTON_ATCK2(capture_enemy) = false;
+-	PHYS_INPUT_BUTTON_JUMP(capture_enemy) = false;
++	if(autocvar_capture_enemy_present)
++	{
++		setplayermodel(capture_enemy,
++			strcat("models/player/", autocvar_capture_enemy_model, ".iqm"));
++		capture_enemy.skin = autocvar_capture_enemy_skin;
++		capture_enemy.clientcolors = autocvar_capture_enemy_color;
++		capture_enemy.colormap = 1024 + autocvar_capture_enemy_color;
++		PHYS_INPUT_BUTTON_ATCK(capture_enemy) = false;
++		PHYS_INPUT_BUTTON_ATCK2(capture_enemy) = false;
++		PHYS_INPUT_BUTTON_JUMP(capture_enemy) = false;
++	}
+ 
+ 	if(!Capture_LoadAuthoritativeActions())
+ 		return false;
+@@ -303,25 +326,38 @@ bool Capture_TryReset()
+ 		capture_player.origin - '0 0 96', MOVE_WORLDONLY, capture_player);
+ 	bool player_ground = !trace_startsolid && trace_fraction < 1;
+ 	float player_ground_distance = capture_player.origin.z - trace_endpos.z;
+-	tracebox(capture_enemy.origin, anchor_mins, anchor_maxs,
+-		capture_enemy.origin, MOVE_WORLDONLY, capture_enemy);
+-	bool enemy_clear = !trace_startsolid && !trace_allsolid;
+-	tracebox(capture_enemy.origin + '0 0 1', anchor_mins, anchor_maxs,
+-		capture_enemy.origin - '0 0 96', MOVE_WORLDONLY, capture_enemy);
+-	bool enemy_ground = !trace_startsolid && trace_fraction < 1;
+-	float enemy_ground_distance = capture_enemy.origin.z - trace_endpos.z;
+-	traceline(capture_player.origin + '0 0 24',
+-		capture_enemy.origin + '0 0 24',
+-		MOVE_WORLDONLY, capture_player);
+-	float anchor_los_fraction = trace_fraction;
++	bool enemy_clear = false;
++	bool enemy_ground = false;
++	float enemy_ground_distance = 0;
++	float anchor_los_fraction = 0;
++	if(autocvar_capture_enemy_present)
++	{
++		tracebox(capture_enemy.origin, anchor_mins, anchor_maxs,
++			capture_enemy.origin, MOVE_WORLDONLY, capture_enemy);
++		enemy_clear = (!trace_startsolid && !trace_allsolid);
++		tracebox(capture_enemy.origin + '0 0 1', anchor_mins, anchor_maxs,
++			capture_enemy.origin - '0 0 96', MOVE_WORLDONLY, capture_enemy);
++		enemy_ground = (!trace_startsolid && trace_fraction < 1);
++		enemy_ground_distance = capture_enemy.origin.z - trace_endpos.z;
++		traceline(capture_player.origin + '0 0 24',
++			capture_enemy.origin + '0 0 24',
++			MOVE_WORLDONLY, capture_player);
++		anchor_los_fraction = trace_fraction;
++	}
+ 
+ 	string reset_row = sprintf(
+ 		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
+-		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
+-		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",",
++		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,"
++		"\"enemy_present\":%d,\"enemy_entity\":%d,"
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\","
++		"\"enemy_skin\":%d,\"enemy_color\":%d,",
+ 		autocvar_capture_episode_id, time, GetMapname(),
+-		etof(capture_player), etof(capture_enemy),
+-		autocvar_capture_weapon, autocvar_capture_enemy_model);
++		etof(capture_player), autocvar_capture_enemy_present,
++		(autocvar_capture_enemy_present ? etof(capture_enemy) : 0),
++		autocvar_capture_weapon,
++		(autocvar_capture_enemy_present ? autocvar_capture_enemy_model : ""),
++		(autocvar_capture_enemy_present ? autocvar_capture_enemy_skin : -1),
++		(autocvar_capture_enemy_present ? autocvar_capture_enemy_color : -1));
+ 	reset_row = strcat(reset_row, sprintf(
+ 		"\"seed_header_seen\":%d,\"seed_crc\":%.0f,"
+ 		"\"weapon_rng_seed\":%.6f,",
+@@ -345,6 +381,8 @@ bool Capture_TryReset()
+ 
+ void Capture_MoveEnemy()
+ {
++	if(!autocvar_capture_enemy_present)
++		return;
+ 	vector offset = '0 0 0';
+ 	vector commanded_velocity = '0 0 0';
+ 	vector radial = normalize(
+@@ -442,17 +480,32 @@ void Capture_LogState()
+ 	row = strcat(row, sprintf(
+ 		"\"clip\":%.6f,\"reserve\":%.6f,\"weapon\":\"%s\",\"onground\":%d},",
+ 		clip, reserve, weapon.netname, boolean(capture_player.flags & FL_ONGROUND)));
+-	row = strcat(row, sprintf(
+-		"\"enemy\":{\"origin\":[%.6f,%.6f,%.6f],",
+-		capture_enemy.origin.x, capture_enemy.origin.y, capture_enemy.origin.z));
+-	row = strcat(row, sprintf(
+-		"\"velocity\":[%.6f,%.6f,%.6f],",
+-		capture_enemy.velocity.x, capture_enemy.velocity.y, capture_enemy.velocity.z));
+-	row = strcat(row, sprintf(
+-		"\"health\":%.6f,\"armor\":%.6f,\"model\":\"%s\"}}",
+-		GetResource(capture_enemy, RES_HEALTH),
+-		GetResource(capture_enemy, RES_ARMOR),
+-		autocvar_capture_enemy_model));
++	if(autocvar_capture_enemy_present)
++	{
++		traceline(capture_player.origin + '0 0 24',
++			capture_enemy.origin + '0 0 24',
++			MOVE_WORLDONLY, capture_player);
++		float enemy_los_fraction = trace_fraction;
++		float enemy_distance = vlen(
++			capture_enemy.origin - capture_player.origin);
++		row = strcat(row, sprintf(
++			"\"enemy\":{\"present\":1,\"origin\":[%.6f,%.6f,%.6f],",
++			capture_enemy.origin.x, capture_enemy.origin.y, capture_enemy.origin.z));
++		row = strcat(row, sprintf(
++			"\"velocity\":[%.6f,%.6f,%.6f],",
++			capture_enemy.velocity.x, capture_enemy.velocity.y, capture_enemy.velocity.z));
++		row = strcat(row, sprintf(
++			"\"health\":%.6f,\"armor\":%.6f,\"model\":\"%s\","
++			"\"skin\":%d,\"color\":%d,\"distance\":%.6f,"
++			"\"los_fraction\":%.9f}}",
++			GetResource(capture_enemy, RES_HEALTH),
++			GetResource(capture_enemy, RES_ARMOR),
++			autocvar_capture_enemy_model, autocvar_capture_enemy_skin,
++			autocvar_capture_enemy_color, enemy_distance,
++			enemy_los_fraction));
++	}
++	else
++		row = strcat(row, "\"enemy\":null}");
+ 	Capture_Log(row);
+ 	capture_prev_player_origin = capture_player.origin;
+ 	capture_prev_player_velocity = capture_player.velocity;
+@@ -473,7 +526,8 @@ void Capture_ServerFrame()
+ 		return;
+ 	}
+ 	if(!capture_player || !IS_PLAYER(capture_player)
+-		|| !capture_enemy || !IS_PLAYER(capture_enemy))
++		|| (autocvar_capture_enemy_present
++			&& (!capture_enemy || !IS_PLAYER(capture_enemy))))
+ 	{
+ 		Capture_Log("{\"kind\":\"fatal\",\"reason\":\"capture_actor_missing\"}");
+ 		capture_server_done = true;
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 71a6178..ebcae5c 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -5,14 +5,18 @@ string autocvar_capture_episode_id;
+ string autocvar_capture_anchor_id;
+ string autocvar_capture_server_log;
+ string autocvar_capture_server_action_file;
++bool autocvar_capture_enemy_present;
+ vector autocvar_capture_player_origin;
+ vector autocvar_capture_enemy_origin;
+ vector autocvar_capture_enemy_motion_vector;
++float autocvar_capture_player_pitch;
+ float autocvar_capture_player_yaw;
+ float autocvar_capture_enemy_yaw;
+ int autocvar_capture_enemy_motion;
+ float autocvar_capture_enemy_motion_distance;
+ string autocvar_capture_enemy_model;
++int autocvar_capture_enemy_skin;
++int autocvar_capture_enemy_color;
+ string autocvar_capture_weapon;
+ float autocvar_capture_player_health;
+ float autocvar_capture_player_armor;
+-- 
+2.43.0
+

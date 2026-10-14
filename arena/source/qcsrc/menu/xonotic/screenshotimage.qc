@@ -1,0 +1,73 @@
+#include "screenshotimage.qh"
+
+entity makeXonoticScreenshotImage()
+{
+	entity me;
+	me = NEW(XonoticScreenshotImage);
+	me.configureXonoticScreenshotImage(me);
+	return me;
+}
+
+void XonoticScreenshotImage_configureXonoticScreenshotImage(entity me)
+{
+	me.configureXonoticImage(me, string_null, -2);
+	me.zoomLimitedByTheBox = false;                                                                                                                             
+	me.zoomSnapToTheBox = false;                         
+}
+
+void XonoticScreenshotImage_load(entity me, string theImage)
+{
+	me.screenshotTime = time;
+	me.src = theImage;
+	strcpy(me.screenshotTitle, substring(me.src, 13, strlen(theImage) - 13));                        
+
+	me.initZoom(me);                                        
+	me.setZoom(me, 0, 0);
+}
+
+METHOD(XonoticScreenshotImage, mousePress, bool(XonoticScreenshotImage this, vector pos))
+{
+	return this.drag_setStartPos(this, pos);
+}
+
+float XonoticScreenshotImage_mouseDrag(entity me, vector coords)
+{
+	return me.drag(me, coords);
+}
+
+float XonoticScreenshotImage_mouseMove(entity me, vector coords)
+{
+	return me.drag_setStartPos(me, coords);
+}
+
+void XonoticScreenshotImage_draw(entity me)
+{
+	if (me.src != "")
+	{
+		float theAlpha;
+		SUPER(XonoticScreenshotImage).draw(me);
+		if (me.showTitle && time < me.screenshotTime + 4)                                                
+		{
+			theAlpha = (4 - (time - me.screenshotTime));
+			draw_CenterText('0.5 0 0', me.screenshotTitle, me.realFontSize, '1 1 1', theAlpha, false);
+		}
+		if (time < me.zoomTime + 2)                                                
+		{
+			string zoomString;
+			float myzoom = me.zoomFactor * 100;
+			if (myzoom - floor(myzoom) == 0)
+				zoomString = sprintf("%d%%", myzoom);
+			else
+				zoomString = sprintf("%.2f%%", myzoom);
+			theAlpha = (2 - (time - me.zoomTime));
+			draw_Text('0.05 0.95 0', zoomString, me.realFontSize, '1 1 1', theAlpha, false);
+		}
+	}
+}
+
+void XonoticScreenshotImage_resizeNotify(entity me, vector relOrigin, vector relSize, vector absOrigin, vector absSize)
+{
+	SUPER(XonoticScreenshotImage).resizeNotify(me, relOrigin, relSize, absOrigin, absSize);
+	me.realFontSize_y = me.fontSize / absSize.y;
+	me.realFontSize_x = me.fontSize / absSize.x;
+}

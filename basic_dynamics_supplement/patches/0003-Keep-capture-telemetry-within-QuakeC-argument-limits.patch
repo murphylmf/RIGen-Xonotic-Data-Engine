@@ -1,0 +1,240 @@
+From 589abd432287882b7a77659e68a1c8e6504baba8 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:13:25 +0800
+Subject: [PATCH 03/36] Keep capture telemetry within QuakeC argument limits
+
+---
+ source/qcsrc/server/capture.qc | 143 ++++++++++++++++++++-------------
+ 1 file changed, 87 insertions(+), 56 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 8896324..f7452e5 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -194,39 +194,58 @@ void Capture_LogState()
+ 	float armor = GetResource(capture_player, RES_ARMOR);
+ 	float clip = weapon_entity.clip_load;
+ 	float reserve = Capture_Reserve(capture_player, weapon);
+-	Capture_Log(sprintf(
+-		"{\"kind\":\"state\",\"episode_id\":\"%s\",\"server_tick\":%d,\"server_time\":%.9f,"
++	string row = sprintf(
++		"{\"kind\":\"state\",\"episode_id\":\"%s\",\"server_tick\":%d,\"server_time\":%.9f,",
++		autocvar_capture_episode_id, capture_server_tick, time);
++	row = strcat(row, sprintf(
+ 		"\"applied_action\":{\"forward\":%.6f,\"strafe\":%.6f,\"up\":%.6f,"
+-		"\"pitch\":%.6f,\"yaw\":%.6f,\"jump\":%d,\"primary\":%d,\"secondary\":%d,\"impulse\":%d},"
+-		"\"pre\":{\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f],"
+-		"\"angles\":[%.6f,%.6f,%.6f],\"health\":%.6f,\"armor\":%.6f,\"clip\":%.6f,\"reserve\":%.6f},"
+-		"\"post\":{\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f],"
+-		"\"angles\":[%.6f,%.6f,%.6f],\"health\":%.6f,\"armor\":%.6f,\"clip\":%.6f,\"reserve\":%.6f,"
+-		"\"weapon\":\"%s\",\"onground\":%d},"
+-		"\"enemy\":{\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f],"
+-		"\"health\":%.6f,\"armor\":%.6f,\"model\":\"%s\"}}",
+-		autocvar_capture_episode_id, capture_server_tick, time,
++		"\"pitch\":%.6f,\"yaw\":%.6f,\"jump\":%d,",
+ 		CS(capture_player).movement.x, CS(capture_player).movement.y, CS(capture_player).movement.z,
+ 		capture_player.v_angle.x, capture_player.v_angle.y,
+-		PHYS_INPUT_BUTTON_JUMP(capture_player),
++		PHYS_INPUT_BUTTON_JUMP(capture_player)));
++	row = strcat(row, sprintf(
++		"\"primary\":%d,\"secondary\":%d,\"impulse\":%d},",
+ 		PHYS_INPUT_BUTTON_ATCK(capture_player),
+ 		PHYS_INPUT_BUTTON_ATCK2(capture_player),
+-		CS(capture_player).impulse,
+-		capture_prev_player_origin.x, capture_prev_player_origin.y, capture_prev_player_origin.z,
+-		capture_prev_player_velocity.x, capture_prev_player_velocity.y, capture_prev_player_velocity.z,
++		CS(capture_player).impulse));
++	row = strcat(row, sprintf(
++		"\"pre\":{\"origin\":[%.6f,%.6f,%.6f],",
++		capture_prev_player_origin.x, capture_prev_player_origin.y, capture_prev_player_origin.z));
++	row = strcat(row, sprintf(
++		"\"velocity\":[%.6f,%.6f,%.6f],",
++		capture_prev_player_velocity.x, capture_prev_player_velocity.y, capture_prev_player_velocity.z));
++	row = strcat(row, sprintf(
++		"\"angles\":[%.6f,%.6f,%.6f],\"health\":%.6f,\"armor\":%.6f,",
+ 		capture_prev_player_angles.x, capture_prev_player_angles.y, capture_prev_player_angles.z,
+-		capture_prev_player_health, capture_prev_player_armor,
+-		capture_prev_player_clip, capture_prev_player_reserve,
+-		capture_player.origin.x, capture_player.origin.y, capture_player.origin.z,
+-		capture_player.velocity.x, capture_player.velocity.y, capture_player.velocity.z,
++		capture_prev_player_health, capture_prev_player_armor));
++	row = strcat(row, sprintf(
++		"\"clip\":%.6f,\"reserve\":%.6f},",
++		capture_prev_player_clip, capture_prev_player_reserve));
++	row = strcat(row, sprintf(
++		"\"post\":{\"origin\":[%.6f,%.6f,%.6f],",
++		capture_player.origin.x, capture_player.origin.y, capture_player.origin.z));
++	row = strcat(row, sprintf(
++		"\"velocity\":[%.6f,%.6f,%.6f],",
++		capture_player.velocity.x, capture_player.velocity.y, capture_player.velocity.z));
++	row = strcat(row, sprintf(
++		"\"angles\":[%.6f,%.6f,%.6f],\"health\":%.6f,\"armor\":%.6f,",
+ 		capture_player.v_angle.x, capture_player.v_angle.y, capture_player.v_angle.z,
+-		health, armor, clip, reserve, weapon.netname,
+-		boolean(capture_player.flags & FL_ONGROUND),
+-		capture_enemy.origin.x, capture_enemy.origin.y, capture_enemy.origin.z,
+-		capture_enemy.velocity.x, capture_enemy.velocity.y, capture_enemy.velocity.z,
++		health, armor));
++	row = strcat(row, sprintf(
++		"\"clip\":%.6f,\"reserve\":%.6f,\"weapon\":\"%s\",\"onground\":%d},",
++		clip, reserve, weapon.netname, boolean(capture_player.flags & FL_ONGROUND)));
++	row = strcat(row, sprintf(
++		"\"enemy\":{\"origin\":[%.6f,%.6f,%.6f],",
++		capture_enemy.origin.x, capture_enemy.origin.y, capture_enemy.origin.z));
++	row = strcat(row, sprintf(
++		"\"velocity\":[%.6f,%.6f,%.6f],",
++		capture_enemy.velocity.x, capture_enemy.velocity.y, capture_enemy.velocity.z));
++	row = strcat(row, sprintf(
++		"\"health\":%.6f,\"armor\":%.6f,\"model\":\"%s\"}}",
+ 		GetResource(capture_enemy, RES_HEALTH),
+ 		GetResource(capture_enemy, RES_ARMOR),
+ 		autocvar_capture_enemy_model));
++	Capture_Log(row);
+ 	capture_prev_player_origin = capture_player.origin;
+ 	capture_prev_player_velocity = capture_player.velocity;
+ 	capture_prev_player_angles = capture_player.v_angle;
+@@ -252,16 +271,7 @@ void Capture_ServerFrame()
+ 		capture_server_done = true;
+ 		return;
+ 	}
+-	Capture_MoveEnemy();
+-	Capture_LogState();
+-	if(capture_server_tick == 63)
+-	{
+-		Capture_Log(sprintf(
+-			"{\"kind\":\"output_begin\",\"server_tick\":%d,\"server_time\":%.9f}",
+-			capture_server_tick, time));
+-		stuffcmd(capture_player, "\ncapture_output_begin\n");
+-	}
+-	if(capture_server_tick == 383)
++	if(capture_server_tick == 384)
+ 	{
+ 		Capture_Log(sprintf(
+ 			"{\"kind\":\"output_end\",\"server_tick\":%d,\"server_time\":%.9f}",
+@@ -270,6 +280,16 @@ void Capture_ServerFrame()
+ 		capture_server_done = true;
+ 		fclose(capture_server_fh);
+ 		capture_server_fh = -1;
++		return;
++	}
++	Capture_MoveEnemy();
++	Capture_LogState();
++	if(capture_server_tick == 63)
++	{
++		Capture_Log(sprintf(
++			"{\"kind\":\"output_begin\",\"server_tick\":%d,\"server_time\":%.9f}",
++			capture_server_tick, time));
++		stuffcmd(capture_player, "\ncapture_output_begin\n");
+ 	}
+ 	++capture_server_tick;
+ }
+@@ -280,14 +300,17 @@ void Capture_Fire(entity actor, int deathtype, vector shot_origin, vector shot_d
+ 		return;
+ 	int event_id = Capture_NewEvent();
+ 	actor.capture_last_fire_event = event_id;
+-	Capture_Log(sprintf(
++	string row = sprintf(
+ 		"{\"kind\":\"event\",\"event\":\"fire\",\"event_id\":%d,\"parent_event_id\":null,"
+ 		"\"server_tick\":%d,\"server_time\":%.9f,\"actor\":%d,\"weapon_id\":%d,"
+-		"\"secondary\":%d,\"origin\":[%.6f,%.6f,%.6f],\"direction\":[%.9f,%.9f,%.9f]}",
++		"\"secondary\":%d,",
+ 		event_id, capture_server_tick, time, etof(actor),
+-		DEATH_WEAPONOF(deathtype).m_id, boolean(deathtype & HITTYPE_SECONDARY),
++		DEATH_WEAPONOF(deathtype).m_id, boolean(deathtype & HITTYPE_SECONDARY));
++	row = strcat(row, sprintf(
++		"\"origin\":[%.6f,%.6f,%.6f],\"direction\":[%.9f,%.9f,%.9f]}",
+ 		shot_origin.x, shot_origin.y, shot_origin.z,
+ 		shot_direction.x, shot_direction.y, shot_direction.z));
++	Capture_Log(row);
+ }
+ 
+ void Capture_ProjectileSpawn(entity projectile, entity actor, int deathtype)
+@@ -295,15 +318,17 @@ void Capture_ProjectileSpawn(entity projectile, entity actor, int deathtype)
+ 	if(!autocvar_capture_server_enable || !capture_server_started || capture_server_done)
+ 		return;
+ 	projectile.capture_event_id = Capture_NewEvent();
+-	Capture_Log(sprintf(
++	string row = sprintf(
+ 		"{\"kind\":\"event\",\"event\":\"projectile\",\"event_id\":%d,\"parent_event_id\":%d,"
+-		"\"server_tick\":%d,\"server_time\":%.9f,\"entity\":%d,\"actor\":%d,\"weapon_id\":%d,"
+-		"\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f]}",
++		"\"server_tick\":%d,\"server_time\":%.9f,\"entity\":%d,\"actor\":%d,\"weapon_id\":%d,",
+ 		projectile.capture_event_id, actor.capture_last_fire_event,
+ 		capture_server_tick, time, etof(projectile), etof(actor),
+-		DEATH_WEAPONOF(deathtype).m_id,
++		DEATH_WEAPONOF(deathtype).m_id);
++	row = strcat(row, sprintf(
++		"\"origin\":[%.6f,%.6f,%.6f],\"velocity\":[%.6f,%.6f,%.6f]}",
+ 		projectile.origin.x, projectile.origin.y, projectile.origin.z,
+ 		projectile.velocity.x, projectile.velocity.y, projectile.velocity.z));
++	Capture_Log(row);
+ }
+ 
+ void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
+@@ -319,30 +344,34 @@ void Capture_DamageApplied(entity target, entity inflictor, entity attacker,
+ 	int damage_event = Capture_NewEvent();
+ 	float post_health = GetResource(target, RES_HEALTH);
+ 	float post_armor = GetResource(target, RES_ARMOR);
+-	Capture_Log(sprintf(
++	string row = sprintf(
+ 		"{\"kind\":\"event\",\"event\":\"impact\",\"event_id\":%d,\"parent_event_id\":%d,"
+-		"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,"
++		"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,",
++		impact_event, parent, capture_server_tick, time, etof(target));
++	row = strcat(row, sprintf(
+ 		"\"direct\":%d,\"splash\":%d,\"hitloc\":[%.6f,%.6f,%.6f]}",
+-		impact_event, parent, capture_server_tick, time, etof(target),
+ 		!boolean(deathtype & HITTYPE_SPLASH), boolean(deathtype & HITTYPE_SPLASH),
+ 		hitloc.x, hitloc.y, hitloc.z));
+-	Capture_Log(sprintf(
++	Capture_Log(row);
++	row = sprintf(
+ 		"{\"kind\":\"event\",\"event\":\"damage\",\"event_id\":%d,\"parent_event_id\":%d,"
+-		"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,\"attacker\":%d,"
++		"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,\"attacker\":%d,",
++		damage_event, impact_event, capture_server_tick, time, etof(target),
++		(attacker ? etof(attacker) : 0));
++	row = strcat(row, sprintf(
+ 		"\"amount\":%.6f,\"pre_health\":%.6f,\"post_health\":%.6f,"
+ 		"\"pre_armor\":%.6f,\"post_armor\":%.6f,\"killed\":%d}",
+-		damage_event, impact_event, capture_server_tick, time, etof(target),
+-		(attacker ? etof(attacker) : 0), damage,
+-		pre_health, post_health, pre_armor, post_armor,
++		damage, pre_health, post_health, pre_armor, post_armor,
+ 		post_health < 1));
++	Capture_Log(row);
+ 	if(post_health < 1)
+ 	{
+ 		int death_event = Capture_NewEvent();
+ 		Capture_Log(sprintf(
+-			"{\"kind\":\"event\",\"event\":\"death\",\"event_id\":%d,\"parent_event_id\":%d,"
+-			"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,\"attacker\":%d}",
+-			death_event, damage_event, capture_server_tick, time, etof(target),
+-			attacker ? etof(attacker) : 0));
++				"{\"kind\":\"event\",\"event\":\"death\",\"event_id\":%d,\"parent_event_id\":%d,"
++				"\"server_tick\":%d,\"server_time\":%.9f,\"target\":%d,\"attacker\":%d}",
++				death_event, damage_event, capture_server_tick, time, etof(target),
++				(attacker ? etof(attacker) : 0)));
+ 	}
+ }
+ 
+@@ -369,13 +398,15 @@ void Capture_ReloadComplete(entity actor, entity weapon_entity,
+ 	Weapon weapon = weapon_entity.m_weapon;
+ 	int event_id = Capture_NewEvent();
+ 	float post_reserve = Capture_Reserve(actor, weapon);
+-	Capture_Log(sprintf(
++	string row = sprintf(
+ 		"{\"kind\":\"event\",\"event\":\"reload_complete\",\"event_id\":%d,\"parent_event_id\":%d,"
+-		"\"server_tick\":%d,\"server_time\":%.9f,\"actor\":%d,\"weapon\":\"%s\","
++		"\"server_tick\":%d,\"server_time\":%.9f,\"actor\":%d,\"weapon\":\"%s\",",
++		event_id, weapon_entity.capture_event_id,
++		capture_server_tick, time, etof(actor), weapon.netname);
++	row = strcat(row, sprintf(
+ 		"\"pre_clip\":%.6f,\"post_clip\":%.6f,\"pre_reserve\":%.6f,\"post_reserve\":%.6f,"
+ 		"\"success\":%d}",
+-		event_id, weapon_entity.capture_event_id,
+-		capture_server_tick, time, etof(actor), weapon.netname,
+ 		pre_clip, weapon_entity.clip_load, pre_reserve, post_reserve,
+ 		weapon_entity.clip_load > pre_clip && post_reserve < pre_reserve));
++	Capture_Log(row);
+ }

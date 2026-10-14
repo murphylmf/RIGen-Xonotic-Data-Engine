@@ -1,0 +1,22 @@
+From 8c76a83ab75768fa95dafb2c4e6362c48436e238 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 00:50:52 +0800
+Subject: [PATCH 26/36] Parse current capture seed string at reset
+
+---
+ source/qcsrc/server/capture.qc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 9d766f5..1d20c0e 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -228,7 +228,7 @@ bool Capture_TryReset()
+ 		|| !capture_player.capture_physics_ready)
+ 		return false;
+ 
+-	float capture_episode_seed = cvar("capture_seed");
++	float capture_episode_seed = stof(cvar_string("capture_seed"));
+ 	cvar_set("bot_nofire", "1");
+ 	Capture_ResetActor(capture_player, autocvar_capture_player_origin, autocvar_capture_player_yaw);
+ 	Capture_ResetActor(capture_enemy, autocvar_capture_enemy_origin, autocvar_capture_enemy_yaw);

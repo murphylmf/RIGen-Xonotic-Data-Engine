@@ -1,0 +1,27 @@
+#pragma once
+
+#include "../item/tab.qh"
+CLASS(XonoticTab, Tab)
+	                                 
+	  
+                                             
+                                    
+                                       
+   
+	METHOD(XonoticTab, showNotify, void(entity));
+
+	ATTRIB(XonoticTab, marginTop, float, 0);                                                
+	ATTRIB(XonoticTab, marginBottom, float, 0);                                             
+	ATTRIB(XonoticTab, marginLeft, float, 0);                                               
+	ATTRIB(XonoticTab, marginRight, float, 0);                                              
+	ATTRIB(XonoticTab, columnSpacing, float, SKINMARGIN_COLUMNS);                           
+	ATTRIB(XonoticTab, rowSpacing, float, SKINMARGIN_ROWS);                                 
+	ATTRIB(XonoticTab, rowHeight, float, SKINFONTSIZE_NORMAL * SKINHEIGHT_NORMAL);          
+
+	ATTRIB(XonoticTab, backgroundImage, string);
+
+	                                                    
+	                                              
+	                                                                   
+	ATTRIB(XonoticTab, titleTooltip, string);
+ENDCLASS(XonoticTab)

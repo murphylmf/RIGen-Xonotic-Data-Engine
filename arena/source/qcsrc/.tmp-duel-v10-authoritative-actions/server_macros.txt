@@ -1,0 +1,1934 @@
+#define __SSP_STRONG__ 3
+#define NAV_WALK 0
+#define REGISTER_STAT(...) EVAL_REGISTER_STAT(OVERLOAD(REGISTER_STAT, __VA_ARGS__))
+#define PHYS_DODGING_ENABLED(s) CS_CVAR(s).cvar_cl_dodging
+#define __UINT_LEAST16_MAX__ 0xffff
+#define remove(this) delete(this)
+#define PHYS_INPUT_BUTTON_BUTTON1(s) (CS(s).button0)
+#define ACCUMULATE_FUNCTION(func,otherfunc) ACCUMULATE void func() { otherfunc(); }
+#define M_ARGV(x,type) MUTATOR_ARGV_ ##x ##_ ##type
+#define NUM_URL_ID (URI_GET_URLLIB_END - URI_GET_URLLIB + 1)
+#define EV_W_Reload(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define vec2_2(x,y) (_vec2_x = (x), _vec2_y = (y), _vec2)
+#define W_NET_BOTH(class,fld,T,wepname) W_NET_PRI(class, fld, T, wepname) W_NET_SEC(class, fld, T, wepname)
+#define sound8(e,o,chan,samp,vol,atten,speed,sf) MACRO_BEGIN entity __e; int __chan = chan; string __samp = samp; bool auto = false; if (__chan > 0) __e = e; else { auto = true; __chan = fabs(__chan); entity tmp = __e = new(csqc_autochannel); setthink(tmp, SUB_Remove); tmp.nextthink = time + soundlength(__samp); } vector old_origin = __e.origin; vector old_mins = __e.mins; vector old_maxs = __e.maxs; setorigin(__e, o); setsize(__e, '0 0 0', '0 0 0'); sound7(__e, __chan, __samp, vol, atten, speed, sf); if (!auto) { setorigin(__e, old_origin); setsize(__e, old_mins, old_maxs); } MACRO_END
+#define METHOD(cname,name,prototype) STATIC_METHOD(cname, name, prototype); classfield(cname) .prototype name; _INIT_STATIC(cname) { this.name = METHOD_REFERENCE(cname, name); } STATIC_METHOD(cname, name, prototype)
+#define EV_Spawn_Score(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(vector, MUTATOR_ARGV_2_vector) o(vector, MUTATOR_ARGV_2_vector)
+#define _R_MAP(r,max) ArrayList r; STATIC_INIT(r) { AL_NEW(r, max, NULL, e); }
+#define SV_OnEntityPreSpawnFunction _SV_OnEntityPreSpawnFunction
+#define IS_CSQC 0
+#define EV_SV_ParseClientCommand(i,o) i(entity, MUTATOR_ARGV_0_entity) i(string, MUTATOR_ARGV_1_string) i(int, MUTATOR_ARGV_2_int) i(string, MUTATOR_ARGV_3_string)
+#define REGISTRY_SORT_1(id) REGISTRY_SORT_2(id, 0)
+#define REGISTRY_SORT_2(id,skip) void _REGISTRY_SWAP_ ##id(int i, int j, entity pass) { i += skip; j += skip; entity a = _R_GET(_ ##id, i), b = _R_GET(_ ##id, j); _R_SET(_ ##id, i, b); _R_SET(_ ##id, j, a); entity a_next = a.REGISTRY_NEXT, b_next = b.REGISTRY_NEXT; a.REGISTRY_NEXT = b_next; b.REGISTRY_NEXT = a_next; if (i == 0) id ##_first = b; else _R_GET(_ ##id, i - 1).REGISTRY_NEXT = b; if (j == 0) id ##_first = a; else _R_GET(_ ##id, j - 1).REGISTRY_NEXT = a; } int _REGISTRY_CMP_ ##id(int i, int j, entity pass) { i += skip; j += skip; string a = _R_GET(_ ##id, i).registered_id; string b = _R_GET(_ ##id, j).registered_id; return strcmp(a, b); } STATIC_INIT(Registry_sort_ ##id) { heapsort(id ##_COUNT - (skip), _REGISTRY_SWAP_ ##id, _REGISTRY_CMP_ ##id, NULL); }
+#define _STRUCT_STORE(x,id,type,END) _CONCAT3(_STRUCT_STORE_DST x, _, id) = _CONCAT3(_STRUCT_STORE_SRC x, _, id);
+#define MIN_URL_ID URI_GET_URLLIB
+#define MURDER_FRAG_FIRE BOLD(_("^K3%sYou burned ^BG%s"))
+#define __BFLT16_NORM_MAX__ 3.38953138925153547590470800371487867e+38BF16
+#define SPECTATE_COPY() ACCUMULATE void SpectateCopy(entity this, entity spectatee)
+#define _LOG_DEBUG(s) _LOG(dprint2, "^2DEBUG", s)
+#define count_hours_decs(time,decs) sprintf(CTX(_("CI_DEC^%s hours")), ftos_decimals(time, decs))
+#define PHYS_NOSTEP(s) STAT(NOSTEP)
+#define walkmove(e,...) (__self = (e), builtin_walkmove(__VA_ARGS__))
+#define __FLT32X_DECIMAL_DIG__ 17
+#define EV_SpectateCopy(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define SND_NADE_BONUS SND_KH_ALARM
+#define bool float
+#define EV_VoteCommand_Parse(i,o) i(entity, MUTATOR_ARGV_0_entity) i(string, MUTATOR_ARGV_1_string) i(string, MUTATOR_ARGV_2_string) i(float, MUTATOR_ARGV_3_float) i(float, MUTATOR_ARGV_4_float)
+#define ChangeYaw(e,...) (__self = (e), builtin_ChangeYaw(__VA_ARGS__))
+#define W_PROP_BOTH(class,fld,T,wepname) W_PROP_PRI(class, fld, T, wepname) W_PROP_SEC(class, fld, T, wepname)
+#define ALLPROPERTIES_COMMON CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_FRAME, int, ReadByte, WriteByte, frame) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_MODELINDEX, int, ReadShort, WriteShort, modelindex) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_ORIGIN, vector, ReadVector, WriteVector, origin) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_SIZE, vector, ReadVector, WriteVector, mins) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_SIZE, vector, ReadVector, WriteVector, maxs) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_PITCHROLL, float, ReadAngle, WriteAngle, angles_x) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_YAW, float, ReadAngle, WriteAngle, angles_y) CSQCMODEL_PROPERTY(CSQCMODEL_PROPERTY_PITCHROLL, float, ReadAngle, WriteAngle, angles_z) CSQCMODEL_EXTRAPROPERTIES
+#define __FLT32_HAS_DENORM__ 1
+#define __FLT64X_HAS_INFINITY__ 1
+#define DMG_NOWEP (weaponentities[0])
+#define _STRUCT_STORE_DST(_,it) it
+#define EV_AddedPlayerScore(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) i(entity, MUTATOR_ARGV_2_entity)
+#define __UINT_LEAST64_MAX__ 0xffffffffffffffffUL
+#define SFL_ZERO_IS_WORST SFL_TIME
+#define __FLT_EVAL_METHOD_TS_18661_3__ 0
+#define SERVER_COMMAND(id,description) CLASS(servercommand_ ##id, Command) ATTRIB(servercommand_ ##id, m_name, string, #id); ATTRIB(servercommand_ ##id, m_description, string, description); ENDCLASS(servercommand_ ##id) REGISTER(SERVER_COMMANDS, CMD_SV, id, m_id, NEW(servercommand_ ##id)); METHOD(servercommand_ ##id, m_invokecmd, void(servercommand_ ##id this, int request, entity caller, int arguments, string command))
+#define QCC_SUPPORT_NIL 
+#define GAMEPLAYFIX_NOGRAVITYONGROUND autocvar_sv_gameplayfix_nogravityonground
+#define NEW(cname,...) OVERLOAD_(spawn ##cname, new_pure(cname) P99_IF_EMPTY(__VA_ARGS__)()(, __VA_ARGS__))
+#define MUTATOR_STATIC() MACRO_BEGIN MUTATOR_ONADD { if (time > 1) { error("This is a game type and it cannot be added at runtime."); } } MUTATOR_ONREMOVE { LOG_INFO("This is a game type and it cannot be removed at runtime."); return -1; } MACRO_END
+#define __BFLT16_MAX_EXP__ 128
+#define CONSTRUCT(cname,...) OVERLOAD_(spawn ##cname, this P99_IF_EMPTY(__VA_ARGS__)()(, __VA_ARGS__))
+#define _W_CONFIG(class,fld,T,wepname) if (#wepname == this.netname) WEP_CONFIG_WRITE_CVARS(wepname, fld, T);
+#define EV_SetResource(i,o) i(entity, MUTATOR_ARGV_7_entity) i(entity, MUTATOR_ARGV_8_entity) o(entity, MUTATOR_ARGV_8_entity) i(float, MUTATOR_ARGV_9_float) o(float, MUTATOR_ARGV_9_float)
+#define EV_reset_map_global(i,o) 
+#define static_init_precache() CALL_ACCUMULATED_FUNCTION(__static_init_3)
+#define __UINT_LEAST8_MAX__ 0xff
+#define __UINTMAX_TYPE__ long unsigned int
+#define CALL_ACCUMULATED_FUNCTION(func) func()
+#define __linux 1
+#define addstat_vectori(id,fld) MACRO_BEGIN addstat_int(id + 0, fld ##_x); addstat_int(id + 1, fld ##_y); addstat_int(id + 2, fld ##_z); MACRO_END
+#define __CHAR_UNSIGNED__ 1
+#define PHYS_MULTIJUMP_SPEED(s) STAT(MULTIJUMP_SPEED, s)
+#define EV_SendWaypoint(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(int, MUTATOR_ARGV_2_int) o(int, MUTATOR_ARGV_2_int) i(int, MUTATOR_ARGV_3_int) o(int, MUTATOR_ARGV_3_int)
+#define PHYS_CS(s) CS(s)
+#define __FLT128_MIN_EXP__ (-16381)
+#define ENTCS_SET_MUTABLE_STRING(var,x) MACRO_BEGIN strcpy(var, x); MACRO_END
+#define _MUTATOR_CALLBACK(name,func) Callback CB_ ##name; bool func(); ACCUMULATE void RegisterCallbacks() { CB_ ##name = NEW(Callback, func); }
+#define AL_EACH(this,T,cond,body) MACRO_BEGIN const noref ArrayList _al = this; for (int i = 0, n = _al.al_len; i < n; ++i) { const noref _AL_type__ ##T() it = AL_get ##T(_al, i); if (cond) { body } } MACRO_END
+#define ReadAnimation() ReadRegistered(Animations)
+#define __INT_LEAST16_WIDTH__ 16
+#define __SCHAR_MAX__ 0x7f
+#define EV_FixPlayermodel(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string) i(int, MUTATOR_ARGV_1_int) o(int, MUTATOR_ARGV_1_int) i(entity, MUTATOR_ARGV_2_entity)
+#define teamscores_label(i) _teamscores_label[i]
+#define CTF_RECORD "/ctf100record/"
+#define __SHRT_MAX__ 0x7fff
+#define EV_EditProjectile(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define __SIZEOF_INT__ 4
+#define PlayerPostThink _PlayerPostThink
+#define Read_byte() ReadByte()
+#define PHYS_INPUT_BUTTON_BUTTON_CHAT(s) (CS(s).buttonchat)
+#define __GCC_ATOMIC_CHAR16_T_LOCK_FREE 2
+#define StartFrame _StartFrame
+#define __USER_LABEL_PREFIX__ 
+#define argv_end_index _argv_end_index
+#define CLIENT_COMMANDS(ent,request,arguments,command) CLIENT_COMMAND("autoswitch", ClientCommand_autoswitch(ent, request, arguments), "Whether or not to switch automatically when getting a better weapon") CLIENT_COMMAND("clear_ignores", ClientCommand_clear_ignores(ent, request), "Remove all existing ignored clients") CLIENT_COMMAND("clientversion", ClientCommand_clientversion(ent, request, arguments), "Release version of the game") CLIENT_COMMAND("ignore", ClientCommand_ignore(ent, request, arguments, command), "Ignore a client in the game keeping out of personal chat log for a match") CLIENT_COMMAND("join", ClientCommand_join(ent, request), "Become a player in the game") CLIENT_COMMAND("kill", ClientCommand_kill(ent, request), "Become a member of the dead") CLIENT_COMMAND("minigame", ClientCommand_minigame(ent, request, arguments, command), "Start a minigame") CLIENT_COMMAND("mv_getpicture", ClientCommand_mv_getpicture(ent, request, arguments), "Retrieve mapshot picture from the server") CLIENT_COMMAND("physics", ClientCommand_physics(ent, request, arguments), "Change physics set") CLIENT_COMMAND("ready", ClientCommand_ready(ent, request), "Qualify as ready to end warmup stage (or restart server if allowed)") CLIENT_COMMAND("say", ClientCommand_say(ent, request, arguments, command), "Print a message to chat to all players") CLIENT_COMMAND("say_team", ClientCommand_say_team(ent, request, arguments, command), "Print a message to chat to all team mates") CLIENT_COMMAND("selectteam", ClientCommand_selectteam(ent, request, arguments), "Attempt to choose a team to join into") CLIENT_COMMAND("selfstuff", ClientCommand_selfstuff(ent, request, command), "Stuffcmd a command to your own client") CLIENT_COMMAND("sentcvar", ClientCommand_sentcvar(ent, request, arguments), "New system for sending a client cvar to the server") CLIENT_COMMAND("spectate", ClientCommand_spectate(ent, request), "Become an observer") CLIENT_COMMAND("suggestmap", ClientCommand_suggestmap(ent, request, arguments), "Suggest a map to the mapvote at match end") CLIENT_COMMAND("tell", ClientCommand_tell(ent, request, arguments, command), "Send a message directly to a player") CLIENT_COMMAND("voice", ClientCommand_voice(ent, request, arguments, command), "Send voice message via sound") CLIENT_COMMAND("unignore", ClientCommand_unignore(ent, request, arguments, command), "Remove an existing ignored player") CLIENT_COMMAND("wpeditor", ClientCommand_wpeditor(ent, request, arguments), "Waypoint editor commands")
+#define SET_DUCKED(s) ((s).flags |= FL_DUCKED)
+#define __LDBL_HAS_INFINITY__ 1
+#define _STRUCT_STORE_SRC(it,_) it
+#define W_UPDATE_SEC(class,fld,T,wepname) _W_UPDATE(class, secondary_ ##fld, T, wepname)
+#define VTBL(cname,base) _INIT_STATIC(cname); entity cname ##_vtbl; void cname ##_vtbl_init() { cname e = new_pure(vtbl); spawn ##cname ##_static(e); e.vtblname = #cname; e.vtblbase = base ##_vtbl ? base ##_vtbl : e; cname ##_vtbl = e; } ACCUMULATE_FUNCTION(RegisterClasses, cname ##_vtbl_init)
+#define __INT_FAST16_TYPE__ long int
+#define PHYS_INPUT_BUTTON_MINIGAME(s) PHYS_INPUT_BUTTON_BUTTON12(s)
+#define sound(e,c,s,v,a) _sound(e, c, Sound_fixpath(s), v, a)
+#define PFLOAT (1/1024)
+#define spawnfunc(id) void __spawnfunc_ ##id(entity this); ACCUMULATE void spawnfunc_ ##id(entity this) { if (!__spawnfunc_first) { __spawnfunc_first = true; static_init_early(); } bool dospawn = true; if (__spawnfunc_expecting > 1) { __spawnfunc_expecting = 0; } else if (__spawnfunc_expecting) { if (!g_spawn_queue) g_spawn_queue_spawn(); __spawnfunc_expecting = 0; this = __spawnfunc_expect; __spawnfunc_expect = NULL; dospawn = false; } else { assert(this); } if (!this.sourceLoc) { this.sourceLoc = __FILE__":"STR(__LINE__); } this.classname = #id; if (!this.spawnfunc_checked) { if (__fullspawndata) { this.fullspawndata = __fullspawndata; } this.spawnfunc_checked = true; if (this) { this.think = func_null; this.nextthink = 0; __spawnfunc_defer(this, __spawnfunc_ ##id); } else { this.__spawnfunc_constructor = __spawnfunc_ ##id; } } if (dospawn) { __spawnfunc_ ##id(this); } if (__spawnfunc_unreachable_workaround) return; } void __spawnfunc_ ##id(entity this)
+#define QCC_SUPPORT_ALIAS 
+#define UPWARD_VELOCITY_CLEARS_ONGROUND(s) STAT(GAMEPLAYFIX_UPVELOCITYCLEARSONGROUND)
+#define WEP_CVAR_PRI(wepname,name) WEP_CVAR(wepname, primary_ ##name)
+#define IL_PEEK(this) (this.il_tail)
+#define USING(name,T) typedef T name
+#define EV_MonsterModel(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define __STDC_UTF_16__ 1
+#define FOREACH_ENTITY(cond,body) ORDERED(FOREACH_ENTITY)(cond, body)
+#define ORDERED(F) F ##_UNORDERED
+#define __FLT64X_DENORM_MIN__ 6.47517511943802511092443895822764655e-4966F64x
+#define CMD_Write_Alias(execute,command,description) CMD_Write(sprintf("alias %-20s \"%-13s %-20s ${* ?}\" // %s\n", command, execute, command, description))
+#define __INT_WIDTH__ 32
+#define __STDC_IEC_559__ 1
+#define __STDC_ISO_10646__ 201706L
+#define __PTRDIFF_WIDTH__ 64
+#define dprint2(msg) MACRO_BEGIN if (autocvar_developer > 1) dprint(msg); MACRO_END
+#define g_race IS_GAMETYPE(RACE)
+#define __DECIMAL_DIG__ 36
+#define __FLT64_EPSILON__ 2.22044604925031308084726333618164062e-16F64
+#define AUTOCVAR_5(file,archive,var,type,desc) __AUTOCVAR(file, archive, var, type, desc, default_ ##type)
+#define AUTOCVAR_6(file,archive,var,type,default,desc) __AUTOCVAR(file, archive, var, type, desc, default)
+#define _W_UPDATE(class,fld,T,wepname) { T it = _W_PROP_CVAR(wepname, fld); b.wepvar_ ##fld = this.wepvar_ ##fld; this.wepvar_ ##fld = it; }
+#define PlayerStats_GameReport_Event_Player(ent,eventid,val) PlayerStats_GameReport_Event(ent.playerstats_id, eventid, val)
+#define __LDBL_HAS_QUIET_NAN__ 1
+#define __GNUC__ 13
+#define PHYS_WALLJUMP_VELOCITY_XY_FACTOR(s) STAT(WALLJUMP_VELOCITY_XY_FACTOR, s)
+#define EXPECT_EQ(expected_,actual_) MACRO_BEGIN int expected = expected_; int actual = actual_; if ((expected) != (actual)) { ADD_FAILURE(sprintf( "Value of: " #actual_ "\n" "  Actual: %d\n" "Expected: %d\n", actual, expected )); } MACRO_END
+#define W_UPDATE(class,wepname,fld,T,m) W_UPDATE_ ##m(class, fld, T, wepname)
+#define DESTRUCTOR(cname) STATIC_METHOD(cname, dtorimpl, void(cname this)); METHOD(cname, dtor, void(cname this)) { METHOD_REFERENCE(cname, dtorimpl)(this); this.instanceOf ##cname = false; entity super = SUPER(cname); if (super != cname ##_vtbl) super.dtor(this); } STATIC_METHOD(cname, dtorimpl, void(cname this))
+#define EV_TurretThink(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EXPECT_GE(val1,val2) EXPECT_TRUE((val1) >= (val2))
+#define EXPECT_GT(val1,val2) EXPECT_TRUE((val1) > (val2))
+#define __BIGGEST_ALIGNMENT__ 16
+#define DIFF_TEAM(a,b) (teamplay ? (a.team != b.team) : (a != b))
+#define WINNINGCONDITIONHELPER_LOWERISBETTER_WORST 999999999
+#define GET(name) name ##get
+#define __INT_FAST8_MAX__ 0x7f
+#define PHYS_WARSOWBUNNY_AIRFORWARDACCEL(s) STAT(MOVEVARS_WARSOWBUNNY_AIRFORWARDACCEL, s)
+#define EV_WeaponModel(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define EXPECT_LE(val1,val2) EXPECT_TRUE((val1) <= (val2))
+#define EXPECT_LT(val1,val2) EXPECT_TRUE((val1) < (val2))
+#define MUTATOR_HOOKFUNCTION_2(mut,cb) MUTATOR_HOOKFUNCTION_3(mut, cb, CBC_ORDER_ANY)
+#define MUTATOR_HOOKFUNCTION_3(mut,cb,order) _MUTATOR_CALLBACK(mut ##_ ##cb, mut ##_ ##cb) ACCUMULATE bool MUTATORFUNC_ ##mut ##_hooks(int mode) { MUTATOR_HOOK(cb, mut ##_ ##cb, order); } bool mut ##_ ##cb() { return = false; } ACCUMULATE bool mut ##_ ##cb()
+#define ydec_single(stringiter,ret) MACRO_BEGIN int conv = STRING_ITERATOR_GET(stringiter); if (conv <= 0) { ret = -1; } else { if (conv == '=') { conv = STRING_ITERATOR_GET(stringiter); conv -= 64; } if (conv < 42) conv += 256; conv -= 42; ret = conv; } MACRO_END
+#define STRUCT_DECLARE(id,s) s(_STRUCT_DECLARE, id)
+#define EXPECT_NE(val1,val2) EXPECT_TRUE((val1) != (val2))
+#define MUTATOR_HOOKABLE(id,params) _MUTATOR_HOOKABLE(id, params)
+#define WPCOLOR_ENEMYFC(t) ((t) ? colormapPaletteColor(t - 1, false) * 0.75 : '1 1 1')
+#define __INTPTR_WIDTH__ 64
+#define CHIMPULSE(id,n) _CHIMPULSE(CHIMPULSE_ ##id, n)
+#define ENABLE_DEBUGDRAW 0
+#define _TR_CONFIG(class,fld,T,turname) if (#turname == this.netname) TUR_CONFIG_WRITE_CVARS(turname, fld, T);
+#define __LDBL_HAS_DENORM__ 1
+#define REGISTRY_NEXT enemy
+#define EV_ForbidRandomStartWeapons(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define PHYS_INPUT_BUTTON_BUTTON_PRYDON(s) (CS(s).cursor_active)
+#define W_PROP_NONE(class,fld,T,wepname) _W_PROP(class, fld, T, wepname)
+#define P99_IS_EMPTY(...) P00_ISEMPTY( P99_HAS_COMMA(__VA_ARGS__), P99_HAS_COMMA(P00_IS__EQ__ __VA_ARGS__), P99_HAS_COMMA(__VA_ARGS__ ( )), P99_HAS_COMMA(P00_IS__EQ__ __VA_ARGS__ ( )) )
+#define APPROXPASTTIME_MAX (16384 * APPROXPASTTIME_ACCURACY_REQUIREMENT)
+#define _IMPULSE(id) void id ##_handle(entity this); STATIC_INIT_LATE(id) { id.impulse_handle = id ##_handle; } void id ##_handle(entity this)
+#define __FLT64_MAX__ 1.79769313486231570814527423731704357e+308F64
+#define assert_once(expr,...) MACRO_BEGIN static bool __once; if (!__once) { assert(expr, __VA_ARGS__); __once = true; } MACRO_END
+#define __FLT16_DECIMAL_DIG__ 5
+#define MAP_2(f,it) f(it)
+#define MAP_3(f,it,...) f(it) MAP_2(f, __VA_ARGS__)
+#define MAP_4(f,it,...) f(it) MAP_3(f, __VA_ARGS__)
+#define MAP_6(f,it,...) f(it) MAP_5(f, __VA_ARGS__)
+#define MAP_7(f,it,...) f(it) MAP_6(f, __VA_ARGS__)
+#define MAP_8(f,it,...) f(it) MAP_7(f, __VA_ARGS__)
+#define MAP_9(f,it,...) f(it) MAP_8(f, __VA_ARGS__)
+#define LOG_HELPF(...) _LOG_HELP(sprintf(__VA_ARGS__))
+#define REGISTRY_CHECK(id) string REGISTRY_HASH(id); STATIC_INIT(Registry_check_ ##id) { string s = ""; FOREACH(id, true, s = strcat(s, ":", it.registered_id)); s = substring(s, 1, -1); string h = REGISTRY_HASH(id) = strzone(digest_hex("MD4", s)); LOG_DEBUGF(#id ": %s\n[%s]", h, s); } void Registry_check(string r, string sv) { if (r == #id) { string cl = REGISTRY_HASH(id); if (cl != sv) { LOG_FATALF("client/server mismatch (%s).\nCL: %s\nSV: %s", r, cl, sv); } } } void Registry_send_all() { Registry_send(#id, REGISTRY_HASH(id)); }
+#define MACRO_BEGIN if(1){
+#define INGAME(it) ((it).ingame)
+#define Write_float(to,f) WriteFloat(to, f)
+#define __SIZEOF_WINT_T__ 4
+#define GAMEQC 1
+#define ClipVelocity(in,normal,out,overbounce) (out = vec_epsilon(vec_reflect(in, normal, (overbounce) - 1), 0.1))
+#define __LONG_LONG_WIDTH__ 64
+#define FOREACH_ENTITY_CLASS(class,cond,body) ORDERED(FOREACH_ENTITY_CLASS)(class, cond, body)
+#define boolean(value) ((value) != 0)
+#define P00_IDENT(...) __VA_ARGS__
+#define __INT32_TYPE__ int
+#define DEATH_IS(t,dt) (DEATH_ISSPECIAL(t) && (REGISTRY_GET(Deathtypes, t - DT_FIRST)) == dt)
+#define w_getbestweapon(ent,wepent) REGISTRY_GET(Weapons, W_GetCycleWeapon(ent, CS_CVAR(ent).cvar_cl_weaponpriority, 0, -1, false, true, wepent))
+#define W_SetupProjVelocity_UP_PRE(ent,wepname,prefix) W_SetupProjVelocity_Explicit(ent, w_shotdir, v_up, WEP_CVAR(wepname, prefix ##speed), WEP_CVAR(wepname, prefix ##speed_up), WEP_CVAR(wepname, prefix ##speed_z), WEP_CVAR(wepname, prefix ##spread), false)
+#define W_SetupProjVelocity_UP_PRI(ent,wepname) W_SetupProjVelocity_Explicit(ent, w_shotdir, v_up, WEP_CVAR_PRI(wepname, speed), WEP_CVAR_PRI(wepname, speed_up), WEP_CVAR_PRI(wepname, speed_z), WEP_CVAR_PRI(wepname, spread), false)
+#define W_UPDATE_END() }
+#define Team_ColorName_Lower(teamid) strtolower(Team_ColorName(teamid))
+#define KEY_TEAM_1 CTX(_("KEY^Red"))
+#define KEY_TEAM_2 CTX(_("KEY^Blue"))
+#define KEY_TEAM_3 CTX(_("KEY^Yellow"))
+#define KEY_TEAM_4 CTX(_("KEY^Pink"))
+#define MUTATOR_RETURNVALUE CallbackChain_ReturnValue
+#define EV_PlayHitsound(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define FOREACH_ENTITY_UNORDERED(cond,body) _FOREACH_ENTITY_FIND_UNORDERED(all, entity, _FOREACH_ENTITY_fld, NULL, cond, body)
+#define __FLT64X_HAS_QUIET_NAN__ 1
+#define SPAWNFUNC_ITEM_COND(name,cond,item1,item2) SPAWNFUNC_ITEM(name, (cond ? item1 : item2))
+#define vec2(...) EVAL(OVERLOAD(vec2, __VA_ARGS__))
+#define vec3(_x,_y,_z) (_vec3.x = (_x), _vec3.y = (_y), _vec3.z = (_z), _vec3)
+#define ARRAY_INDEX(T,arr,idx) (reinterpret_cast(T ##_fld, reinterpret_cast(int, arr[0]) + FTOI(idx)))
+#define IMPULSE_ALIAS(alias,id) 
+#define _MUTATOR_HANDLE_PARAMS(type,id) , type in_ ##id
+#define __LP64__ 1
+#define __FLT_EVAL_METHOD_C99__ 0
+#define __FLT32X_EPSILON__ 2.22044604925031308084726333618164062e-16F32x
+#define autocvar_g_keyhunt_point_limit cvar("g_keyhunt_point_limit")
+#define __DECIMAL_BID_FORMAT__ 1
+#define __FLT64_MIN_EXP__ (-1021)
+#define STRUCT_PARAM(id,s) s(_STRUCT_PARAM, id)
+#define REPLICATE_INIT(type,name) .type name
+#define _W_PROP_CVAR(wepname,fld) autocvar_g_balance_ ##wepname ##_ ##fld
+#define EV_AccuracyTargetValid(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define __FLT16_MIN_10_EXP__ (-4)
+#define Static_Team_ColorName_Lower(teamid) strtolower(Static_Team_ColorName(teamid))
+#define spawn() __spawn("entity", __FILE__ ":" STR(__LINE__), false)
+#define __UINT16_MAX__ 0xffff
+#define EV_SetWeaponArena(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define _sound(e,c,s,v,a) MACRO_BEGIN entity __e = e; if (sound_allowed(MSG_BROADCAST, __e)) sound7(__e, c, s, v, a, 0, 0); MACRO_END
+#define MULTITEAM_ANNCE(prefix,defaultvalue,sound,channel,volume,position) NOTIF_ADD_AUTOCVAR(ANNCE_ ##prefix, defaultvalue) MSG_ANNCE_NOTIF_TEAM(NUM_TEAM_1, prefix ##_RED, prefix, defaultvalue, sprintf(sound, strtolower(STATIC_NAME_TEAM_1)), channel, volume, position) MSG_ANNCE_NOTIF_TEAM(NUM_TEAM_2, prefix ##_BLUE, prefix, defaultvalue, sprintf(sound, strtolower(STATIC_NAME_TEAM_2)), channel, volume, position) MSG_ANNCE_NOTIF_TEAM(NUM_TEAM_3, prefix ##_YELLOW, prefix, defaultvalue, sprintf(sound, strtolower(STATIC_NAME_TEAM_3)), channel, volume, position) MSG_ANNCE_NOTIF_TEAM(NUM_TEAM_4, prefix ##_PINK, prefix, defaultvalue, sprintf(sound, strtolower(STATIC_NAME_TEAM_4)), channel, volume, position)
+#define REGISTER_WEAPON_2(id,inst) REGISTER(Weapons, WEP, id, m_id, inst)
+#define Promise_then(this,handler,userdata) Promise_then_(this, Promise_new(), handler, userdata)
+#define EV_MonsterRespawn(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define stat_NAILS ammo_nails
+#define MAGIC_STATS_FIX_MANUAL(it,var,id) if (it.registered_id == "STAT_" #var) { --g_magic_stats_hole; it.m_id = id; } else
+#define PHYS_INPUT_BUTTON_BUTTON5(s) (CS(s).button5)
+#define IL_CEIL(n) IL_FLOOR((n) + 0.5)
+#define FOREACH_ENTITY_STRING_ORDERED(fld,match,body) _FOREACH_ENTITY_FIND_ORDERED(string, fld, match, true, body)
+#define MONSTER_SKILLMOD(mon) (0.5 + mon.monster_skill * ((1.2 - 0.3) / 10))
+#define PHYS_AIRSTRAFEACCEL_QW(s) STAT(MOVEVARS_AIRSTRAFEACCEL_QW, s)
+#define EV_ClientObituary(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(entity, MUTATOR_ARGV_2_entity) i(float, MUTATOR_ARGV_3_float) i(entity, MUTATOR_ARGV_4_entity) o(bool, MUTATOR_ARGV_5_bool)
+#define REGISTER_VOICEMSG(id,vt,listed) .string _playersound_ ##id; REGISTER(PlayerSounds, playersound, id, m_id, new_pure(VoiceMessage)) { this.instanceOfVoiceMessage = listed; this.m_playersoundstr = #id; this.m_playersoundfld = _playersound_ ##id; this.m_playersoundvt = vt; }
+#define __UINT64_C(c) c ## UL
+#define PHYS_DODGING_CLIENTSELECT autocvar_sv_dodging_clientselect
+#define autocvar_fraglimit_override cvar("fraglimit_override")
+#define BITXOR(a,b) (((a) | (b)) - ((a) & (b)))
+#define _STDC_PREDEF_H 1
+#define FLAG_TEAM_2 CTX(_("FLAG^Blue"))
+#define REGISTER_WAYPOINT(id,text,icon,color,blink) REGISTER_WAYPOINT_(id, NEW(Waypoint, #id, text, icon, color, blink))
+#define EVAL__AUTOCVAR(...) __VA_ARGS__
+#define SV_DAMAGETEXT_SPECTATORS_ONLY() (autocvar_sv_damagetext >= 1)
+#define _STRUCT_PASS(x,id,type,END) _STRUCT_PASS_ ##END(x, id, type)
+#define IS_DECREASING(x) ( !((x) & SFL_LOWER_IS_BETTER) )
+#define __GCC_ATOMIC_INT_LOCK_FREE 2
+#define __FLT128_MAX_EXP__ 16384
+#define EV_PlayerDied(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EV_PlayerDies(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(entity, MUTATOR_ARGV_2_entity) i(float, MUTATOR_ARGV_3_float) i(float, MUTATOR_ARGV_4_float) o(float, MUTATOR_ARGV_4_float)
+#define ATTRIB_STRZONE(cname,name,type,val) classfield(cname).type name; INIT(cname) { strcpy(this.name, val); }
+#define stat_ROCKETS ammo_rockets
+#define APPLY(f,...) f(__VA_ARGS__)
+#define REGISTER_WEAPON(...) EVAL_REGISTER_WEAPON(OVERLOAD(REGISTER_WEAPON, __VA_ARGS__))
+#define ASSERT_NO_FATAL_FAILURE(statement) EXPECT_NO_FATAL_FAILURE_(statement, { ++TEST_fatal; return; })
+#define SANDBOX_GETARG arg = argv(++argv_num);
+#define _SELFWRAP_SET(T,e,f) ((e).__ ##T = (f))
+#define BOT_EXEC_STATUS_IDLE 0
+#define NAME_TEAM _("Team")
+#define MSG_INFO_NOTIF_TEAM(teamnum,name,cvarname,defaultvalue,strnum,flnum,args,hudargs,icon,normal,gentle) MSG_INFO_NOTIF_(teamnum, INFO_ ##name, INFO_ ##cvarname, defaultvalue, strnum, flnum, args, hudargs, icon, normal, gentle)
+#define __FLT16_DIG__ 3
+#define EV_BotShouldAttack(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define LL_EACH(list,cond,body) MACRO_BEGIN noref int i = 0; for (entity _it = list.ll_head; _it; (_it = _it.ll_next, ++i)) { ITER_CONST noref entity it = _it.ll_data; if (cond) { body } } MACRO_END
+#define Read_int() ReadInt24_t()
+#define MUTATOR_ONROLLBACK_OR_REMOVE if (mode == MUTATOR_REMOVING || mode == MUTATOR_ROLLING_BACK)
+#define ORDINAL(it) (it)
+#define EVAL_REGISTER_WEAPON(...) __VA_ARGS__
+#define PHYS_AIRCONTROL(s) STAT(MOVEVARS_AIRCONTROL, s)
+#define colormapPaletteColor(c,isPants) colormapPaletteColor_(c, isPants, time)
+#define __UINT_LEAST16_TYPE__ short unsigned int
+#define P00_IS_EMPTY_CASE_0111 P00_IS_EMPTY_CASE_0111
+#define APP_NUM(num,prefix) ((num) ? APP_TEAM_NUM(num, prefix) : prefix ##_NEUTRAL)
+#define unix 1
+#define Team_ColoredFullName(teamid) strcat(Team_ColorCode(teamid), Team_ColorName(teamid), " ", NAME_TEAM, "^7")
+#define PHYS_AIRACCELERATE(s) STAT(MOVEVARS_AIRACCELERATE, s)
+#define PHYS_JETPACK_ANTIGRAVITY(s) STAT(JETPACK_ANTIGRAVITY, s)
+#define EV_WeaponSound(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define __INT16_MAX__ 0x7fff
+#define EV_ForbidPlayerScore_Clear(i,o) 
+#define __SIZE_TYPE__ long unsigned int
+#define __UINT64_MAX__ 0xffffffffffffffffUL
+#define __GNUC_WIDE_EXECUTION_CHARSET_NAME "UTF-32LE"
+#define Read_float() ReadFloat()
+#define ATTACK_FINISHED(ent,w) ATTACK_FINISHED_FOR(ent, ent.(w).m_weapon.m_id, weaponslot(w))
+#define ITER_CONST const
+#define __ARM_FEATURE_IDIV 1
+#define scores_flags(this) ((this).m_flags)
+#define SV_ParseClientCommand _SV_ParseClientCommand
+#define MURDER_FRAGGED2 BOLD(_("^K1%sYou were scored against by ^BG%s"))
+#define WARMUP_START_WEAPONS ((autocvar_g_warmup_allguns == 1) ? (warmup_start_weapons & (weaponsInMap | start_weapons)) : warmup_start_weapons)
+#define __DEC32_EPSILON__ 1E-6DF
+#define __ARM_ARCH_PROFILE 65
+#define __LDBL_EPSILON__ 1.92592994438723585305597794258492732e-34L
+#define W_NET_NONE(class,fld,T,wepname) _W_NET(class, fld, T, wepname)
+#define GlobalSound_string(this,def,chan,vol,voicetype) _GlobalSound(this, NULL, NULL, def, chan, vol, voicetype, false)
+#define MAKE_VECTORS(angles,forward,right,up) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "MAKE_VECTORS", #angles); _makevectors_hidden(angles); GET_V_GLOBALS(forward, right, up); CLEAR_V_GLOBALS(); MACRO_END
+#define APPROXPASTTIME_RANGE (64 * APPROXPASTTIME_ACCURACY_REQUIREMENT)
+#define PHYS_INPUT_BUTTON_JETPACK(s) PHYS_INPUT_BUTTON_BUTTON10(s)
+#define skel_get_bonerel DO_NOT_USE_GLOBALS
+#define M_PI 3.14159265358979323846
+#define READSKILL(f,w,r) MACRO_BEGIN if(argv(prio) != "") this.f = stof(argv(prio)) * w; else this.f = (!autocvar_g_campaign) * (2 * random() - 1) * r * w; prio++; MACRO_END
+#define COMPARE_INCREASING(to,from) (to < from ? from + to + 2 : to - from)
+#define Write_string(to,f) WriteString(to, f)
+#define ENTCS_PROP(id,ispublic,checkprop,checkprop_pl,setprop,svsend,clreceive) bool id ##_check(entity ent, entity player) { return (ent.(checkprop) != player.(checkprop_pl)); } _ENTCS_PROP(id, ispublic, checkprop, checkprop_pl, setprop, svsend, clreceive)
+#define _new(class,pure) __spawn(#class, __FILE__ ":" STR(__LINE__), pure)
+#define IL_NEW() NEW(IntrusiveList)
+#define VEHICLE_UPDATE_PLAYER_RESOURCE(ply,vehi,fld,vhname,res) ply.vehicle_ ##fld = (GetResource(vehi, res) / autocvar_g_vehicle_ ##vhname ##_ ##fld) * 100
+#define INGAME_STATUS_JOINED 1
+#define serialize_vector(stream,this) MACRO_BEGIN vector _v = this; serialize_float(stream, _v.x); serialize_float(stream, _v.y); serialize_float(stream, _v.z); this = _v; MACRO_END
+#define __FLT64_IS_IEC_60559__ 1
+#define __FLT32X_MIN_EXP__ (-1021)
+#define __INT_FAST16_MAX__ 0x7fffffffffffffffL
+#define REGISTER_TURRET(id,inst) REGISTER(Turrets, TUR, id, m_id, inst)
+#define PHYS_JUMPVELOCITY(s) STAT(MOVEVARS_JUMPVELOCITY, s)
+#define IL_DELETE(this) MACRO_BEGIN delete(this); this = NULL; MACRO_END
+#define WEPENT_SET_NORMAL(var,x) MACRO_BEGIN var = x; MACRO_END
+#define __FLT64_DIG__ 15
+#define PHYS_JETPACK_ACCEL_UP(s) STAT(JETPACK_ACCEL_UP, s)
+#define __GNUC_EXECUTION_CHARSET_NAME "UTF-8"
+#define IS_CLIENT(v) (v.flags & FL_CLIENT)
+#define FOREACH_ENTITY_FLOAT_UNORDERED(fld,match,body) _FOREACH_ENTITY_FIND_UNORDERED(, float, fld, match, true, body)
+#define __DEC64_MAX__ 9.999999999999999E384DD
+#define INGAME_STATUS_CLEAR(it) INGAME_STATUS_SET(it, INGAME_STATUS_NONE)
+#define EV_WP_Format(i,o) i(entity, MUTATOR_ARGV_0_entity) i(string, MUTATOR_ARGV_1_string) o(vector, MUTATOR_ARGV_2_vector) o(string, MUTATOR_ARGV_3_string) o(string, MUTATOR_ARGV_4_string)
+#define P00_IS__EQ__(...) ,
+#define __PRAGMA_REDEFINE_EXTNAME 1
+#define REGISTRY_END(id) ACCUMULATE void REGISTRY_END_(id) { noref void() f = Register ##id; } void REGISTRY_END_(id)
+#define __INT_LEAST16_MAX__ 0x7fff
+#define STRUCT_STORE(from,to,s) s(_STRUCT_STORE, (from, to))
+#define g_freezetag IS_GAMETYPE(FREEZETAG)
+#define __DEC64_MANT_DIG__ 16
+#define __SIG_ATOMIC_WIDTH__ 32
+#define __INT_LEAST64_TYPE__ long int
+#define EVAL(...) EVAL1(EVAL1(EVAL1(__VA_ARGS__)))
+#define EV_MonsterDropItem(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) o(entity, MUTATOR_ARGV_1_entity) i(entity, MUTATOR_ARGV_2_entity)
+#define REGISTER_NET_LINKED(id) const bool NET_ ##id ##_istemp = false; REGISTER(LinkedEntities, NET, id, m_id, new_pure(net_linked_packet)) { this.netname = #id; }
+#define EV_PlayerDamage_SplitHealthArmor(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(entity, MUTATOR_ARGV_2_entity) i(vector, MUTATOR_ARGV_3_vector) i(float, MUTATOR_ARGV_4_float) o(float, MUTATOR_ARGV_4_float) i(float, MUTATOR_ARGV_5_float) o(float, MUTATOR_ARGV_5_float) i(float, MUTATOR_ARGV_6_float) i(float, MUTATOR_ARGV_7_float)
+#define snd_flag_respawn noise3
+#define __FLT128_MAX__ 1.18973149535723176508575932662800702e+4932F128
+#define __INTPTR_MAX__ 0x7fffffffffffffffL
+#define devassert(...) MACRO_BEGIN if (autocvar_developer > 0) assert(__VA_ARGS__); MACRO_END
+#define SPAWNFUNC_WEAPON_COND(name,cond,wep1,wep2) SPAWNFUNC_WEAPON(name, (cond ? wep1 : wep2))
+#define SUPERBOT (skill > 100)
+#define PHYS_PL_MAX(s) STAT(PL_MAX, s)
+#define PHYS_WALLJUMP_DELAY(s) STAT(WALLJUMP_DELAY, s)
+#define __FLT32_MIN_10_EXP__ (-37)
+#define TAG_VIEWLOC_TYPE entity
+#define __FLT32X_DIG__ 15
+#define autocvar_slowmo cvar("slowmo")
+#define PHYS_MAXAIRSPEED(s) STAT(MOVEVARS_MAXAIRSPEED, s)
+#define GAMEPLAYFIX_STEPDOWN_MAXSPEED(s) STAT(GAMEPLAYFIX_STEPDOWN_MAXSPEED)
+#define __INT_FAST16_WIDTH__ 64
+#define __DBL_HAS_QUIET_NAN__ 1
+#define EV_BuildGameplayTipsString(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define EV_MonsterDies(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(float, MUTATOR_ARGV_2_float)
+#define TRANSMUTE(cname,this,...) MACRO_BEGIN entity _e = (this); if (_e.vtblbase != cname ##_vtbl) { _e.transmute = true; _e.classname = #cname; _TRANSMUTE(cname, _e, __VA_ARGS__); } MACRO_END
+#define INGAME_JOINING(it) ((it).ingame == INGAME_STATUS_JOINING)
+#define __WCHAR_TYPE__ unsigned int
+#define __SIZEOF_FLOAT__ 4
+#define EVAL2(...) EVAL3(EVAL3(EVAL3(__VA_ARGS__)))
+#define PHYS_PL_MIN(s) STAT(PL_MIN, s)
+#define __pic__ 2
+#define PHYS_PL_CROUCH_MAX(s) STAT(PL_CROUCH_MAX, s)
+#define __ARM_ARCH_8A 1
+#define EV_TurretFire(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EXPECT_FALSE(condition) EXPECT_EQ(false, condition)
+#define __FLT32_DECIMAL_DIG__ 9
+#define __DEC_EVAL_METHOD__ 2
+#define MAX_CHASE_DISTANCE 700
+#define __INT_FAST64_MAX__ 0x7fffffffffffffffL
+#define __FLT_MAX_10_EXP__ 38
+#define EV_VehicleExit(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define Static_Team_ColorName_Upper(teamid) strtoupper(Static_Team_ColorName(teamid))
+#define EV_AllowMobButcher(i,o) o(string, MUTATOR_ARGV_0_string)
+#define _CAT(a,b) a ## b
+#define fprintf(file,...) fputs(file, sprintf(__VA_ARGS__))
+#define BEGIN_CHEAT_FUNCTION() float cheating = 0, attempting = 0
+#define __FLT16_HAS_QUIET_NAN__ 1
+#define PHYS_PL_CROUCH_MIN(s) STAT(PL_CROUCH_MIN, s)
+#define MAX_IPBAN_URIS (URI_GET_IPBAN_END - URI_GET_IPBAN + 1)
+#define EVAL_REGISTER_STAT(...) __VA_ARGS__
+#define __INT_LEAST64_MAX__ 0x7fffffffffffffffL
+#define __DEC64_MIN__ 1E-383DD
+#define __UINT_LEAST32_TYPE__ unsigned int
+#define BAN_COMMANDS(request,arguments,command) BAN_COMMAND("ban", BanCommand_ban(request, arguments, command), "Ban an IP address or a range of addresses (like 1.2.3)") BAN_COMMAND("banlist", BanCommand_banlist(request), "List all existing bans") BAN_COMMAND("kickban", BanCommand_kickban(request, arguments, command), "Disconnect a client and ban it at the same time") BAN_COMMAND("mute", BanCommand_mute(request, arguments, command), "Disallow a client from talking by muting them") BAN_COMMAND("playban", BanCommand_playban(request, arguments, command), "Force to spectate a client permanently") BAN_COMMAND("unban", BanCommand_unban(request, arguments), "Remove an existing ban") BAN_COMMAND("unmute", BanCommand_unmute(request, arguments), "Unmute a client") BAN_COMMAND("unvoteban", BanCommand_unvoteban(request, arguments), "Remove an existing voting ban") BAN_COMMAND("unplayban", BanCommand_unplayban(request, arguments), "Remove an existing forced to spectate ban") BAN_COMMAND("voteban", BanCommand_voteban(request, arguments, command), "Disallow a client from voting")
+#define __LDBL_MIN_EXP__ (-16381)
+#define MAX_TUBANOTES 32
+#define GET_BAN_REASON(v,d) if (argc > reason_arg) v = substring(command, argv_start_index(reason_arg), strlen(command) - argv_start_index(reason_arg)); else v = d;
+#define LOG_WARN(...) _LOG_WARN(strcat1n(__VA_ARGS__))
+#define P99_CAT2(_1,_2) _1 ## _2
+#define VOTE_COMMANDS(request,caller,arguments,command) VOTE_COMMAND("abstain", VoteCommand_abstain(request, caller), "Abstain your vote in current vote", VC_ASGNMNT_CLIENTONLY) VOTE_COMMAND("call", VoteCommand_call(request, caller, arguments, command), "Create a new vote for players to decide on", VC_ASGNMNT_BOTH) VOTE_COMMAND("help", VoteCommand_macro_help(caller, arguments), "Shows this information", VC_ASGNMNT_BOTH) VOTE_COMMAND("master", VoteCommand_master(request, caller, arguments, command), "Full control over all voting and vote commands", VC_ASGNMNT_CLIENTONLY) VOTE_COMMAND("no", VoteCommand_no(request, caller), "Select no in current vote", VC_ASGNMNT_CLIENTONLY) VOTE_COMMAND("status", VoteCommand_status(request, caller), "Prints information about current vote", VC_ASGNMNT_BOTH) VOTE_COMMAND("stop", VoteCommand_stop(request, caller), "Immediately end a vote", VC_ASGNMNT_BOTH) VOTE_COMMAND("yes", VoteCommand_yes(request, caller), "Select yes in current vote", VC_ASGNMNT_CLIENTONLY)
+#define EV_PortalTeleport(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __INT_LEAST8_MAX__ 0x7f
+#define __FLT32X_MAX_10_EXP__ 308
+#define EV_TeamBalance_FindBestTeams(i,o) i(entity, MUTATOR_ARGV_0_entity) o(float, MUTATOR_ARGV_1_float)
+#define WriteVector(to,v) MACRO_BEGIN WriteFloat(to, v.x); WriteFloat(to, v.y); WriteFloat(to, v.z); MACRO_END
+#define vdist(v,cmp,f) (vlen2(v) cmp ((f) ** 2))
+#define __FLT128_MIN__ 3.36210314311209350626267781732175260e-4932F128
+#define GameRules_scoring_add_team(client,fld,value) _GameRules_scoring_add_team(client, SP_ ##fld, ST_ ##fld, value)
+#define _LP64 1
+#define get_monsterinfo(i) REGISTRY_GET(Monsters, i)
+#define PHYS_BUGRIGS_STEER(s) g_bugrigs_steer
+#define autocvar_sv_gravity cvar("sv_gravity")
+#define _CHIMPULSE(id,n) REGISTER(IMPULSES, id, m_id, new_pure(Impulse)) { this.impulse = n; }
+#define POSTGIVE_RESOURCE(e,f,t,snd_incr,snd_decr) GiveSound((e), save_ ##f, GetResource((e), (f)), t, snd_incr, snd_decr)
+#define PHYS_WARSOWBUNNY_TOPSPEED(s) STAT(MOVEVARS_WARSOWBUNNY_TOPSPEED, s)
+#define PHYS_INPUT_TIMELENGTH frametime
+#define PHYS_ENTGRAVITY(s) ((s).gravity)
+#define PHYS_AIRCONTROL_PENALTY(s) STAT(MOVEVARS_AIRCONTROL_PENALTY, s)
+#define P00_IS_1_EQ_1(...) ,
+#define FOREACH_COMPONENT(com,body) IL_EACH(g_components, it.com_ ##com, body)
+#define __FLT32_EPSILON__ 1.19209289550781250000000000000000000e-7F32
+#define DEATH_WEAPONOF(t) (DEATH_ISSPECIAL(t) ? WEP_Null : REGISTRY_GET(Weapons, (t) & DEATH_WEAPONMASK))
+#define __DBL_DECIMAL_DIG__ 17
+#define Promise_new() Promise_new_(new_pure(Promise))
+#define vec2_1(v) (_vec2 = (v), _vec2.z = 0, _vec2)
+#define __DBL_NORM_MAX__ ((double)1.79769313486231570814527423731704357e+308L)
+#define count_days(time) count_fill(time, _("CI_ZER^%d days"), _("CI_FIR^%d day"), _("CI_SEC^%d days"), _("CI_THI^%d days"), _("CI_MUL^%d days"))
+#define stat_HEALTH health
+#define HEXDIGIT_TO_DEC_RAW(d) (strstrofs(HEXDIGITS, (d), 0))
+#define count_weeks_decs(time,decs) sprintf(CTX(_("CI_DEC^%s weeks")), ftos_decimals(time, decs))
+#define TAG_ENTITY_NAME tag_entity
+#define __ORDER_BIG_ENDIAN__ 4321
+#define IS_INDEPENDENT_PLAYER(e) ((e).solid == SOLID_TRIGGER)
+#define str2chr _str2chr
+#define __UINT32_C(c) c ## U
+#define IS_SPEC(v) ((v).classname == STR_SPECTATOR)
+#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
+#define SKEL_GET_BONE_ABS(skel,bonenum,forward,right,up,origin) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "SKEL_GET_BONE_ABS", #skel, #bonenum); origin = _skel_get_boneabs_hidden(skel, bonenum) GET_V_GLOBALS(forward, right, up); CLEAR_V_GLOBALS(); MACRO_END
+#define PHYS_INPUT_BUTTON_CROUCH(s) PHYS_INPUT_BUTTON_BUTTON5(s)
+#define yenc_single(c,ret) MACRO_BEGIN int conv = c; conv += 42; if (conv >= 256) conv -= 256; switch (conv) { default: { string yenc_it = chr2str(conv); ret = yenc_it; break; } case 0: case '\n': case '\r': case '=': { conv += 64; string yenc_it = chr2str('=', conv); ret = yenc_it; break; } } MACRO_END
+#define IN_LIQUID(pos) (_content_type = pointcontents(pos), (_content_type == CONTENT_WATER || _content_type == CONTENT_LAVA || _content_type == CONTENT_SLIME))
+#define makevectors(angles) MACRO_BEGIN DEGLOB_LOG(DEGLOB_ORIGINAL, "makevectors", #angles); _makevectors_hidden(angles); MACRO_END
+#define QCC_SUPPORT_ACCUMULATE 
+#define EVAL_MUTATOR_HOOKFUNCTION(...) __VA_ARGS__
+#define strlen _strlen
+#define __SIZEOF_DOUBLE__ 8
+#define dotproduct(a,b) ((a) * (b))
+#define round_handler_CountdownRunning() (!round_handler.wait && round_handler.cnt)
+#define _assert(f,expr,then) MACRO_BEGIN if (!(expr)) { f(#expr); then; } MACRO_END
+#define PHYS_BUGRIGS_REVERSE_STOPPING(s) g_bugrigs_reverse_stopping
+#define __FLT32X_HAS_QUIET_NAN__ 1
+#define IL_FLOOR(n) ((n) | 0)
+#define ITEMS_STAT(s) ((s).items)
+#define __DBL_MAX_10_EXP__ 308
+#define STAT_2(id,cl) (cl)._STAT(id)
+#define FOREACH_ENTITY_ENT(fld,match,body) ORDERED(FOREACH_ENTITY_ENT)(fld, match, body)
+#define __ARM_ARCH_ISA_A64 1
+#define __FLT64_MAX_10_EXP__ 308
+#define __STDC__ 1
+#define __PTRDIFF_TYPE__ long int
+#define PREGIVE_WEAPONS(e) WepSet save_weapons; save_weapons = STAT(WEAPONS, e)
+#define EV_HelpMePing(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define autocvar_g_weapon_stay cvar("g_weapon_stay")
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_16 1
+#define EXACTTRIGGER_INIT WarpZoneLib_ExactTrigger_Init(this, true)
+#define FOR_EACH_TAG(v) float tagnum; Skeleton_SetBones(v); for(tagnum = 0; tagnum < v.skeleton_bones; tagnum++, gettaginfo(v, tagnum))
+#define NOTIF_ADD_AUTOCVAR(name,defaultvalue) float autocvar_notification_ ##name = defaultvalue;
+#define __UINTPTR_TYPE__ long unsigned int
+#define FOREACH_WORD(words,cond,body) MACRO_BEGIN string _words = words; int _i = 0; for (string _it; (_it = car(_words)); (_words = cdr(_words), ++_i)) { const noref int i = _i; const noref string it = _it; if (cond) { LAMBDA(body) } } MACRO_END
+#define MAKE_INDEPENDENT_PLAYER(e) (((e).solid = SOLID_TRIGGER), ((e).frags = FRAGS_PLAYER_OUT_OF_GAME))
+#define __DEC64_SUBNORMAL_MIN__ 0.000000000000001E-383DD
+#define PlayerPreThink _PlayerPreThink
+#define __LDBL_MIN_10_EXP__ (-4931)
+#define PHYS_FRICTION_ONLAND(s) STAT(MOVEVARS_FRICTION_ONLAND, s)
+#define EV_HavocBot_Aim(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define PHYS_AIRSTOPACCELERATE(s) STAT(MOVEVARS_AIRSTOPACCELERATE, s)
+#define angleofs(from,to) angleofs3(from.origin, from.angles, to.origin)
+#define STRING_ITERATOR_LOAD(this,n) MACRO_BEGIN this ##_i = n; MACRO_END
+#define LEGACY_IMPULSE(alias,id,new) STATIC_INIT(legacy_ ##alias) { string s = new; _impCheck(s, #alias); IMPULSE_ALIAS(alias, s); } SHUTDOWN(legacy_ ##alias) { IMPULSE_ALIAS(alias, "impulse " #id); }
+#define MULTITEAM_INFO(prefix,defaultvalue,strnum,flnum,args,hudargs,icon,normal,gentle,type) NOTIF_ADD_AUTOCVAR(INFO_ ##prefix, defaultvalue) MSG_INFO_NOTIF_TEAM(NUM_TEAM_1, prefix ##_RED, prefix, defaultvalue, strnum, flnum, args, hudargs, multiteam_info_sprintf(icon, strtolower(STATIC_NAME_TEAM_1)), TCR(normal, type, 1), TCR(gentle, type, 1)) MSG_INFO_NOTIF_TEAM(NUM_TEAM_2, prefix ##_BLUE, prefix, defaultvalue, strnum, flnum, args, hudargs, multiteam_info_sprintf(icon, strtolower(STATIC_NAME_TEAM_2)), TCR(normal, type, 2), TCR(gentle, type, 2)) MSG_INFO_NOTIF_TEAM(NUM_TEAM_3, prefix ##_YELLOW, prefix, defaultvalue, strnum, flnum, args, hudargs, multiteam_info_sprintf(icon, strtolower(STATIC_NAME_TEAM_3)), TCR(normal, type, 3), TCR(gentle, type, 3)) MSG_INFO_NOTIF_TEAM(NUM_TEAM_4, prefix ##_PINK, prefix, defaultvalue, strnum, flnum, args, hudargs, multiteam_info_sprintf(icon, strtolower(STATIC_NAME_TEAM_4)), TCR(normal, type, 4), TCR(gentle, type, 4))
+#define MSG_ANNCE_NOTIF(name,defaultvalue,sound,channel,volume,position,queuetime) NOTIF_ADD_AUTOCVAR(ANNCE_ ##name, defaultvalue) MSG_ANNCE_NOTIF_(0, ANNCE_ ##name, ANNCE_ ##name, defaultvalue, sound, channel, volume, position, queuetime)
+#define __LDBL_NORM_MAX__ 1.18973149535723176508575932662800702e+4932L
+#define PARSE_WEAPON_PRIORITIES(dist) MACRO_BEGIN if (bot_priority_ ##dist ##_prev != autocvar_bot_ai_custom_weapon_priority_ ##dist) { strcpy(bot_priority_ ##dist ##_prev, autocvar_bot_ai_custom_weapon_priority_ ##dist); tokens = tokenizebyseparator(W_NumberWeaponOrder(autocvar_bot_ai_custom_weapon_priority_ ##dist)," "); bot_weapons_ ##dist[0] = -1; c = 0; for(i = 0; i < tokens && c < REGISTRY_COUNT(Weapons); ++i) { w = stof(argv(i)); if (w >= WEP_FIRST && w <= WEP_LAST) { bot_weapons_ ##dist[c] = w; ++c; } } if (c < REGISTRY_COUNT(Weapons)) bot_weapons_ ##dist[c] = -1; } MACRO_END
+#define ITOF(i) ((i) / INTEGER_ONE)
+#define __UINT_FAST8_TYPE__ unsigned char
+#define stream_reading(stream) false
+#define count_minutes_decs(time,decs) sprintf(CTX(_("CI_DEC^%s minutes")), ftos_decimals(time, decs))
+#define P99_IF_EMPTY(...) P99_IF_EQ(1, P99_IS_EMPTY(__VA_ARGS__))
+#define particleeffectnum(e) _particleeffectnum(e.eent_eff_name)
+#define __ATOMIC_ACQ_REL 4
+#define EV_LockWeapon(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __ATOMIC_RELEASE 3
+#define VECTOR_VECTORS(forward_in,forward,right,up) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "VECTOR_VECTORS", #forward_in); _vectorvectors_hidden(forward_in); GET_V_GLOBALS(forward, right, up); CLEAR_V_GLOBALS(); MACRO_END
+#define NOTIF_HIT_MAX(count,funcname) MACRO_BEGIN if(sel_num == count) { backtrace(sprintf("%s: Hit maximum arguments!\n", funcname)); break; } MACRO_END
+#define IS_REAL_CLIENT(v) (clienttype(v) == CLIENTTYPE_REAL)
+#define Q3COMPAT_ARENA BIT(0)
+#define __FLT32X_MAX_EXP__ 1024
+#define LAMBDA(...) { __VA_ARGS__; }
+#define XPD(...) __VA_ARGS__
+#define setmodel(this,m) MACRO_BEGIN Model _setmodel_model = (m); string _setmodel_cached = _setmodel_model.model_str_; _setmodel((this), _setmodel_cached ? _setmodel_cached : _setmodel_model.model_str()); MACRO_END
+#define EV_PlayerPhysics_PostUpdateStats(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float)
+#define PHYS_STEPHEIGHT(s) STAT(MOVEVARS_STEPHEIGHT)
+#define TR_CONFIG_BEGIN(class) METHOD(class, tr_config, void(class this)) {
+#define __UINT_LEAST8_TYPE__ unsigned char
+#define NAME_TEAM_2 CTX(_("TEAM^Blue"))
+#define __BFLT16_DENORM_MIN__ 9.18354961579912115600575419704879436e-41BF16
+#define snd_flag_taken noise
+#define NAME_TEAM_4 CTX(_("TEAM^Pink"))
+#define setanim(...) anim_set(__VA_ARGS__)
+#define MSG_MULTI_NOTIF(name,defaultvalue,anncename,infoname,centername) NOTIF_ADD_AUTOCVAR(name, defaultvalue) REGISTER(Notifications, name, m_id, new_pure(msg_multi_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(name), MSG_MULTI, strtoupper(#name), 0); Create_Notification_Entity_Multi(this, ACVNN(name), strtoupper(#name), anncename, infoname, centername); }
+#define Write_int(to,f) WriteInt24_t(to, f)
+#define __FLT64X_MIN_10_EXP__ (-4931)
+#define NOTIF_HIT_UNKNOWN(token,funcname) { backtrace(sprintf("%s: Hit unknown token in selected string! '%s'\n", funcname, selected)); break; }
+#define CSQCPLAYER_FORCE_UPDATES 4
+#define __UINT8_MAX__ 0xff
+#define addstat_bool(id,fld) addstat(id, AS_INT, fld)
+#define PRECACHE(func) _STATIC_INIT(func ##_3, __static_init_3)
+#define MAP_10(f,it,...) f(it) MAP_9(f, __VA_ARGS__)
+#define VoiceMessage(this,def,msg) MACRO_BEGIN entity VM = def; int voicetype = VM.m_playersoundvt; bool ownteam = (voicetype == VOICETYPE_TEAMRADIO); int flood = Say(this, ownteam, NULL, msg, true); bool fake; if (IS_SPEC(this) || IS_OBSERVER(this) || flood < 0) fake = true; else if (flood > 0) fake = false; else break; _GlobalSound(this, NULL, VM, string_null, CH_VOICE, VOL_BASEVOICE, voicetype, fake); MACRO_END
+#define MAP_13(f,it,...) f(it) MAP_12(f, __VA_ARGS__)
+#define MAP_14(f,it,...) f(it) MAP_13(f, __VA_ARGS__)
+#define MAP_15(f,it,...) f(it) MAP_14(f, __VA_ARGS__)
+#define MAP_16(f,it,...) f(it) MAP_15(f, __VA_ARGS__)
+#define MAP_17(f,it,...) f(it) MAP_16(f, __VA_ARGS__)
+#define MAP_18(f,it,...) f(it) MAP_17(f, __VA_ARGS__)
+#define MAP_19(f,it,...) f(it) MAP_18(f, __VA_ARGS__)
+#define __FLT32_MIN_EXP__ (-125)
+#define stat_ARMOR armorvalue
+#define MAP_20(f,it,...) f(it) MAP_19(f, __VA_ARGS__)
+#define fixedvectoangles(a) (_fixedvectoangles = vectoangles(a), _fixedvectoangles.x *= -1, _fixedvectoangles)
+#define EV_BuffTouch(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) o(entity, MUTATOR_ARGV_1_entity)
+#define prandom_debug() 
+#define WEP_LAST (REGISTRY_COUNT(Weapons) - 1)
+#define PHYS_BUGRIGS_AIR_STEERING(s) g_bugrigs_air_steering
+#define __GCC_ATOMIC_CHAR_LOCK_FREE 2
+#define EV_GrappleHookThink(i,o) i(entity, MUTATOR_ARGV_0_entity) i(int, MUTATOR_ARGV_1_int) o(int, MUTATOR_ARGV_1_int) i(entity, MUTATOR_ARGV_2_entity) o(entity, MUTATOR_ARGV_2_entity) i(float, MUTATOR_ARGV_3_float) o(float, MUTATOR_ARGV_3_float)
+#define ZCTX(s) strzone(CTX(s))
+#define SV_DAMAGETEXT_PLAYERS() (autocvar_sv_damagetext >= 2)
+#define __FLT_EVAL_METHOD__ 0
+#define PHYS_INPUT_BUTTON_BACKWARD(s) (PHYS_INPUT_MOVEVALUES(s).x < 0)
+#define IMPULSE(id) _IMPULSE(IMP_ ##id)
+#define RandomSelection_AddEnt(e,weight,priority) RandomSelection_Add(e, 0, string_null, '0 0 0', weight, priority)
+#define __GCC_ATOMIC_CHAR32_T_LOCK_FREE 2
+#define ROCKETJUMP_DAMAGE() WEP_CVAR(devastator, damage) * 0.8 * ((StatusEffects_active(STATUSEFFECT_Strength, this)) ? autocvar_g_balance_powerup_strength_selfdamage : 1) * ((StatusEffects_active(STATUSEFFECT_Shield, this)) ? autocvar_g_balance_powerup_invincible_takedamage : 1)
+#define MUTEX_LOCK(this) MACRO_BEGIN if (this) LOG_SEVEREF("Loop mutex held by %s", this); this = __FUNC__; MACRO_END
+#define SPAWNFUNC_WEAPON(name,weapon) spawnfunc(name) { weapon_defaultspawnfunc(this, weapon); }
+#define PHYS_WORLD_ANGLES(s) ((s).angles)
+#define PHYS_JUMPSPEEDCAP_DISABLE_ONRAMPS(s) STAT(MOVEVARS_JUMPSPEEDCAP_DISABLE_ONRAMPS)
+#define PHYS_BUGRIGS_SPEED_POW(s) g_bugrigs_speed_pow
+#define MSG_CHOICE_NOTIF(name,defaultvalue,challow,chtype,optiona,optionb) NOTIF_ADD_AUTOCVAR(CHOICE_ ##name, defaultvalue) NOTIF_ADD_AUTOCVAR(CHOICE_ ##name ##_ALLOWED, challow) MSG_CHOICE_NOTIF_(0, CHOICE_ ##name, CHOICE_ ##name, defaultvalue, challow, chtype, optiona, optionb)
+#define MUTATOR_REMOVE(name) Mutator_Remove(MUTATOR_ ##name)
+#define REGISTRY_HASH(id) Registry_hash_ ##id
+#define WEPENT_NETPROPS(PROP) PROP(false, sv_entnum, WEPENT_SET_NORMAL, {}, {}) PROP(false, m_switchweapon, WEPENT_SET_NORMAL, { WriteByte(chan, this.m_switchweapon.m_id); }, { (viewmodels[this.m_wepent_slot]).switchweapon = REGISTRY_GET(Weapons, ReadByte()); }) PROP(false, m_switchingweapon, WEPENT_SET_NORMAL, { WriteByte(chan, this.m_switchingweapon.m_id); }, { (viewmodels[this.m_wepent_slot]).switchingweapon = REGISTRY_GET(Weapons, ReadByte()); }) PROP(false, m_weapon, WEPENT_SET_NORMAL, { WriteByte(chan, this.m_weapon.m_id); }, { (viewmodels[this.m_wepent_slot]).activeweapon = REGISTRY_GET(Weapons, ReadByte()); }) PROP(false, m_alpha, WEPENT_SET_NORMAL, { WriteByte(chan, rint(bound(-1, 254 * this.m_alpha, 254) - -1)); }, { (viewmodels[this.m_wepent_slot]).m_alpha = (ReadByte() + -1) / 254; }) PROP(false, vortex_charge, WEPENT_SET_NORMAL, { WriteByte(chan, this.vortex_charge * 255); }, { (viewmodels[this.m_wepent_slot]).vortex_charge = ReadByte() / 255; }) PROP(false, oknex_charge, WEPENT_SET_NORMAL, { WriteByte(chan, this.oknex_charge * 16); }, { (viewmodels[this.m_wepent_slot]).oknex_charge = ReadByte() / 16; }) PROP(false, m_gunalign, WEPENT_SET_NORMAL, { WriteByte(chan, this.m_gunalign); }, { (viewmodels[this.m_wepent_slot]).m_gunalign = ReadByte(); }) PROP(false, porto_v_angle_held, WEPENT_SET_NORMAL, { WriteByte(chan, this.porto_v_angle_held); if(this.porto_v_angle_held) { WriteAngleVector2D(chan, this.owner.porto_v_angle); } }, { (viewmodels[this.m_wepent_slot]).angles_held_status = ReadByte(); if((viewmodels[this.m_wepent_slot]).angles_held_status) { (viewmodels[this.m_wepent_slot]).angles_held = ReadAngleVector2D(); } else { (viewmodels[this.m_wepent_slot]).angles_held = '0 0 0'; } }) PROP(false, tuba_instrument, WEPENT_SET_NORMAL, { WriteByte(chan, this.tuba_instrument); }, { (viewmodels[this.m_wepent_slot]).tuba_instrument = ReadByte(); }) PROP(false, hagar_load, WEPENT_SET_NORMAL, { WriteByte(chan, this.hagar_load); }, { (viewmodels[this.m_wepent_slot]).hagar_load = ReadByte(); }) PROP(false, minelayer_mines, WEPENT_SET_NORMAL, { WriteByte(chan, this.minelayer_mines); }, { (viewmodels[this.m_wepent_slot]).minelayer_mines = ReadByte(); }) PROP(false, arc_heat_percent, WEPENT_SET_NORMAL, { WriteByte(chan, this.arc_heat_percent * 255); }, { (viewmodels[this.m_wepent_slot]).arc_heat_percent = ReadByte() / 255; }) PROP(false, vortex_chargepool_ammo, WEPENT_SET_NORMAL, { WriteByte(chan, this.vortex_chargepool_ammo * 16); }, { (viewmodels[this.m_wepent_slot]).vortex_chargepool_ammo = ReadByte() / 16; }) PROP(false, oknex_chargepool_ammo, WEPENT_SET_NORMAL, { WriteByte(chan, this.oknex_chargepool_ammo * 16); }, { (viewmodels[this.m_wepent_slot]).oknex_chargepool_ammo = ReadByte() / 16; }) PROP(false, clip_load, WEPENT_SET_NORMAL, { WriteShort(chan, this.clip_load); }, { (viewmodels[this.m_wepent_slot]).clip_load = ReadShort(); }) PROP(false, clip_size, WEPENT_SET_NORMAL, { WriteShort(chan, this.clip_size); }, { (viewmodels[this.m_wepent_slot]).clip_size = ReadShort(); }) PROP(false, skin, WEPENT_SET_NORMAL, { WriteShort(chan, this.skin); }, { (viewmodels[this.m_wepent_slot]).m_skin = ReadShort(); })
+#define PHYS_INPUT_BUTTON_DODGE(s) PHYS_INPUT_BUTTON_BUTTON11(s)
+#define LL_EMPTY(ll) (ll.ll_head == NULL)
+#define RECURSE_FROM_CHOICE(ent,action) MACRO_BEGIN if (notif.nent_challow_var && (warmup_stage || (notif.nent_challow_var == 2))) { switch (CS_CVAR(ent).msg_choice_choices[net_name.nent_choice_idx]) { case 1: found_choice = notif.nent_optiona; break; case 2: found_choice = notif.nent_optionb; break; default: action; } } else { found_choice = notif.nent_optiona; } Send_Notification_WOVA( NOTIF_ONE_ONLY, ent, found_choice.nent_type, found_choice, found_choice.nent_stringcount, found_choice.nent_floatcount, s1, s2, s3, s4, f1, f2, f3, f4); MACRO_END
+#define QCC_SUPPORT_ERASEABLE 
+#define HM_DELETE(this) db_close(this)
+#define PHYS_WALLJUMP(s) STAT(WALLJUMP, s)
+#define __DBL_DENORM_MIN__ ((double)4.94065645841246544176568792868221372e-324L)
+#define DEFER(id) id EMPTY()
+#define PHYS_MULTIJUMP(s) STAT(MULTIJUMP, s)
+#define ASSERT_GT(val1,val2) _TEST_ASSERT(EXPECT_GT(val1, val2))
+#define __FLT128_MANT_DIG__ 113
+#define __INT8_C(c) c
+#define REGISTRY_BEGIN_(id) Register ##id ##_First()
+#define string_null nil
+#define reinterpret_cast(T,it) _unsafe_cast_ ##T(0, it)
+#define __FLT64X_MAX_10_EXP__ 4932
+#define EV_Race_FinalCheckpoint(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define PHYS_DODGING_PRESSED_KEYS(s) CS(s).pressedkeys
+#define EV_CalculateRespawnTime(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define ADD_CHEATS(e,n) cheatcount_total += n; e.cheatcount += n
+#define __FLT128_DENORM_MIN__ 6.47517511943802511092443895822764655e-4966F128
+#define IDENTITY(it) it
+#define ALIAS(var) [[alias(var)]]
+#define __BFLT16_DECIMAL_DIG__ 4
+#define STAT(...) EVAL_STAT(OVERLOAD_(STAT, __VA_ARGS__))
+#define FOREACH_ARRAY(arr,start,end,cond,body) MACRO_BEGIN for (int _i = start; _i < end; ++_i) { const noref int i = _i; ITER_CONST noref entity it = arr[i]; if (cond) { LAMBDA(body) } } MACRO_END
+#define EV_TakeResourceWithLimit(i,o) i(entity, MUTATOR_ARGV_7_entity) i(entity, MUTATOR_ARGV_8_entity) o(entity, MUTATOR_ARGV_8_entity) i(float, MUTATOR_ARGV_9_float) o(float, MUTATOR_ARGV_9_float) i(float, MUTATOR_ARGV_10_float) o(float, MUTATOR_ARGV_10_float)
+#define EV_ForbidSpawn(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define NET_HANDLE(id,param) bool Net_Handle_ ##id(entity this, entity sender, param)
+#define PHYS_INPUT_BUTTON_INFO(s) PHYS_INPUT_BUTTON_BUTTON7(s)
+#define PHYS_WARSOWBUNNY_ACCEL(s) STAT(MOVEVARS_WARSOWBUNNY_ACCEL, s)
+#define __LDBL_MAX_EXP__ 16384
+#define PHYS_BUGRIGS_FRICTION_BRAKE(s) g_bugrigs_friction_brake
+#define EV_ForbidWeaponUse(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define buf_create _buf_create
+#define __linux__ 1
+#define __FLT32X_IS_IEC_60559__ 1
+#define IN_REVIVING_RANGE(player,it,revive_extra_size) (it != player && !IS_DEAD(it) && SAME_TEAM(it, player) && boxesoverlap(player.absmin - revive_extra_size, player.absmax + revive_extra_size, it.absmin, it.absmax))
+#define Team_FullName(teamid) strcat(Team_ColorName(teamid), " ", NAME_TEAM, "^7")
+#define REPLICATE_float(fld,var,func) REPLICATE_7(fld, float, var, func, { field = stof(it); }, , )
+#define EIGHT_VARS_TO_VARARGS_VARLIST VARITEM(1, 0, s1) VARITEM(2, 0, XPD(s1, s2)) VARITEM(3, 0, XPD(s1, s2, s3)) VARITEM(4, 0, XPD(s1, s2, s3, s4)) VARITEM(0, 1, f1) VARITEM(1, 1, XPD(s1, f1)) VARITEM(2, 1, XPD(s1, s2, f1)) VARITEM(3, 1, XPD(s1, s2, s3, f1)) VARITEM(4, 1, XPD(s1, s2, s3, s4, f1)) VARITEM(0, 2, XPD(f1, f2)) VARITEM(1, 2, XPD(s1, f1, f2)) VARITEM(2, 2, XPD(s1, s2, f1, f2)) VARITEM(3, 2, XPD(s1, s2, s3, f1, f2)) VARITEM(4, 2, XPD(s1, s2, s3, s4, f1, f2)) VARITEM(0, 3, XPD(f1, f2, f3)) VARITEM(1, 3, XPD(s1, f1, f2, f3)) VARITEM(2, 3, XPD(s1, s2, f1, f2, f3)) VARITEM(3, 3, XPD(s1, s2, s3, f1, f2, f3)) VARITEM(4, 3, XPD(s1, s2, s3, s4, f1, f2, f3)) VARITEM(0, 4, XPD(f1, f2, f3, f4)) VARITEM(1, 4, XPD(s1, f1, f2, f3, f4)) VARITEM(2, 4, XPD(s1, s2, f1, f2, f3, f4)) VARITEM(3, 4, XPD(s1, s2, s3, f1, f2, f3, f4)) VARITEM(4, 4, XPD(s1, s2, s3, s4, f1, f2, f3, f4))
+#define mmssth(tm,compact) clockedtime_tostring(tm, true, compact)
+#define SELFWRAP_SET(T,e,f) (_selftemp = (e), _selftemp.__ ##T = ((f) ? T ##_self : func_null), _selftemp.self ##T = (f))
+#define PHYS_FRICTION_SLICK(s) STAT(MOVEVARS_FRICTION_SLICK, s)
+#define count_years(time) count_fill(time, _("CI_ZER^%d years"), _("CI_FIR^%d year"), _("CI_SEC^%d years"), _("CI_THI^%d years"), _("CI_MUL^%d years"))
+#define EV_BuffModel_Customize(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define IL_LISTS_PER_BIT IL_CEIL(IL_MAX / (3 * 24))
+#define W_SetupProjVelocity_UP_SEC(ent,wepname) W_SetupProjVelocity_Explicit(ent, w_shotdir, v_up, WEP_CVAR_SEC(wepname, speed), WEP_CVAR_SEC(wepname, speed_up), WEP_CVAR_SEC(wepname, speed_z), WEP_CVAR_SEC(wepname, spread), false)
+#define EV_ResourceWasted(i,o) i(entity, MUTATOR_ARGV_7_entity) i(entity, MUTATOR_ARGV_8_entity) i(float, MUTATOR_ARGV_9_float)
+#define REGISTRY_GET(id,i) id ##_from(i)
+#define WriteAngleVector2D(to,v) MACRO_BEGIN WriteAngle(to, v.x); WriteAngle(to, v.y); MACRO_END
+#define FOREACH_CLIENTSLOT(cond,body) MACRO_BEGIN for(int _i = 1; _i <= maxclients; ++_i) { const noref int i = _i; ITER_CONST noref entity it = ftoe(i); if(cond) { LAMBDA(body) } } MACRO_END
+#define __FLT64X_EPSILON__ 1.92592994438723585305597794258492732e-34F64x
+#define W_UPDATE_BOTH(class,fld,T,wepname) W_UPDATE_PRI(class, fld, T, wepname) W_UPDATE_SEC(class, fld, T, wepname)
+#define waypoint_fixorigin(position,tracetest_ent) waypoint_fixorigin_down_dir(position, tracetest_ent, '0 0 -1')
+#define DAMAGETEXT_SHORT_LIMIT 256
+#define _TRANSMUTE(cname,this,...) OVERLOAD_(spawn ##cname, this P99_IF_EMPTY(__VA_ARGS__)()(, __VA_ARGS__))
+#define EXPECT_TRUE(condition) EXPECT_EQ(true, condition)
+#define DEGLOB_LOGGING 1
+#define steerlib_push(ent,point) normalize((ent).origin - point)
+#define LOG_FATAL(...) _LOG_FATAL(strcat1n(__VA_ARGS__))
+#define __SHRT_WIDTH__ 16
+#define _STR(it) #it
+#define BIT(n) (1 << (n))
+#define PHYS_BUGRIGS_PLANAR_MOVEMENT(s) g_bugrigs_planar_movement
+#define ENUMCLASS_END(id) };
+#define _SELFWRAP_GET(T,e) (RVALUE, (e).__ ##T)
+#define SUBMERGED_UNDEFINED 0
+#define REGISTER_GAMETYPE(NAME,inst) REGISTER(Gametypes, MAPINFO_TYPE, NAME, m_id, inst)
+#define NET_GUARD(id) bool Net_Handle_ ##id ##_guard(entity this, entity sender, bool isNew) { bool valid = false; serialize_marker(to, valid); if (!valid) LOG_FATALF("Last message not fully parsed: %s", _net_prevmsgstr); _net_prevmsgstr = #id; return Net_Handle_ ##id(this, sender, isNew); }
+#define __unix__ 1
+#define __SIZEOF_LONG__ 8
+#define GMQCC 1
+#define __UINT16_C(c) c
+#define repr_cvar_string(x) (x)
+#define REPLICATE_bool(fld,var,func) REPLICATE_7(fld, bool, var, func, { field = boolean(stoi(it)); }, , )
+#define PHYS_AIRSPEEDLIMIT_NONQW(s) STAT(MOVEVARS_AIRSPEEDLIMIT_NONQW, s)
+#define autocvar_g_invasion_point_limit cvar("g_invasion_point_limit")
+#define EVAL_LL_CLEAR(...) __VA_ARGS__
+#define FOREACH_ENTITY_STRING(fld,match,body) ORDERED(FOREACH_ENTITY_STRING)(fld, match, body)
+#define TR_PROPS(L,class,prefix) L(TR_CONFIG_BEGIN, TR_CONFIG, TR_CONFIG_END, class, prefix)
+#define __gnu_linux__ 1
+#define FOREACH_ENTITY_ENT_ORDERED(fld,match,body) _FOREACH_ENTITY_FIND_ORDERED(entity, fld, match, true, body)
+#define strncmp _strncmp
+#define SND_ONS_GENERATOR_ALARM SND_KH_ALARM
+#define ATTACK_FINISHED_FOR(ent,w,slot) ((ent).(attack_finished_for[((w) - WEP_FIRST) * MAX_WEAPONSLOTS + (slot)]))
+#define __FLT16_MIN_EXP__ (-13)
+#define WEPSET(id) (WEP_ ##id.m_wepset)
+#define __pie__ 2
+#define checkclient(e,...) (__self = (e), builtin_checkclient(__VA_ARGS__))
+#define _REGISTER_REGISTRY(id,str) ACCUMULATE_FUNCTION(__static_init_1, Register ##id) CLASS(id ##Registry, Object) ATTRIB(id ##Registry, m_name, string, str); ATTRIB(id ##Registry, REGISTRY_NEXT, entity, id ##_first); METHOD(id ##Registry, m_reload, void()); ENDCLASS(id ##Registry) REGISTER(Registries, REGISTRY, id, m_id, NEW(id ##Registry)); METHOD(id ##Registry, m_reload, void()) { id ##_state = 0; Register ##id(); }
+#define EV_W_DecreaseAmmo(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(float, MUTATOR_ARGV_2_float) o(float, MUTATOR_ARGV_2_float)
+#define __FLT_HAS_DENORM__ 1
+#define _LOG_HEADER(level) "^9[::^7"PROGNAME"^9::"level"^9] ", __SOURCELOC__
+#define REGISTER_GLOBALSOUND(id,str) REGISTER(GlobalSounds, GS, id, m_id, new_pure(GlobalSound)) { this.m_globalsoundstr = str; }
+#define EV_BuildMutatorsPrettyString(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define _INIT_STATIC(cname) ACCUMULATE void spawn ##cname ##_static(cname this)
+#define GAMEPLAYFIX_NOAIRBORNCORPSE(s) STAT(GAMEPLAYFIX_NOAIRBORNCORPSE)
+#define hud_panel_itemstime_hidebig false
+#define MUTATOR_HOOK(cb,func,order) MACRO_BEGIN MUTATOR_ONADD { if (!CallbackChain_Add(HOOK_ ##cb, CB_ ##func, order)) { _mutPrintFail(#cb, #func); return true; } } MUTATOR_ONROLLBACK_OR_REMOVE { CallbackChain_Remove(HOOK_ ##cb, CB_ ##func); } MACRO_END
+#define KILL_SPREE_LIST SPREE_ITEM(3, 03, _("TRIPLE FRAG! "), _("%s^K1 made a TRIPLE FRAG! %s^BG"), _("%s^K1 made a TRIPLE SCORE! %s^BG")) SPREE_ITEM(5, 05, _("RAGE! "), _("%s^K1 unlocked RAGE! %s^BG"), _("%s^K1 made FIVE SCORES IN A ROW! %s^BG")) SPREE_ITEM(10, 10, _("MASSACRE! "), _("%s^K1 started a MASSACRE! %s^BG"), _("%s^K1 made TEN SCORES IN A ROW! %s^BG")) SPREE_ITEM(15, 15, _("MAYHEM! "), _("%s^K1 executed MAYHEM! %s^BG"), _("%s^K1 made FIFTEEN SCORES IN A ROW! %s^BG")) SPREE_ITEM(20, 20, _("BERSERKER! "), _("%s^K1 is a BERSERKER! %s^BG"), _("%s^K1 made TWENTY SCORES IN A ROW! %s^BG")) SPREE_ITEM(25, 25, _("CARNAGE! "), _("%s^K1 inflicts CARNAGE! %s^BG"), _("%s^K1 made TWENTY FIVE SCORES IN A ROW! %s^BG")) SPREE_ITEM(30, 30, _("ARMAGEDDON! "), _("%s^K1 unleashes ARMAGEDDON! %s^BG"), _("%s^K1 made THIRTY SCORES IN A ROW! %s^BG"))
+#define REGISTER_MONSTER(id,inst) REGISTER(Monsters, MON, id, monsterid, inst)
+#define P00_IS_EMPTY_CASE_0001 ,
+#define serialize_float(stream,this) MACRO_BEGIN WriteCoord(stream, this); MACRO_END
+#define OVERLOAD_(F,...) P99_IF_EMPTY(__VA_ARGS__)(P99_PASTE2(F, _00)())(P99_PASTE3(F, _, P00_NARG(__VA_ARGS__))(__VA_ARGS__))
+#define new_pure(class) _new(class, true)
+#define REGISTRY_COUNT(id) id ##_COUNT
+#define debug_text_3d_2(pos,msg) debug_text_3d_3(pos, msg, cvar("debug_text_3d_default_align"))
+#define debug_text_3d_3(pos,msg,align) debug_text_3d_4(pos, msg, align, cvar("debug_text_3d_default_duration"))
+#define debug_text_3d_4(pos,msg,align,dur) debug_text_3d_5(pos, msg, align, dur, stov(cvar_string("debug_text_3d_default_velocity")))
+#define debug_text_3d_5(pos,msg,align,dur,vel) debug_text_3d_fn(pos, msg, align, dur, vel)
+#define P00_IS_EMPTY_CASE_0010 P00_IS_EMPTY_CASE_0010
+#define P00_IS_EMPTY_CASE_0011 P00_IS_EMPTY_CASE_0011
+#define EV_OnEntityPreSpawn(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EV_ClientCommand_Spectate(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define MUTATOR_ONREMOVE if (mode == MUTATOR_REMOVING)
+#define EV_MonsterCheckBossFlag(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __DBL_MAX__ ((double)1.79769313486231570814527423731704357e+308L)
+#define MAX_SCORE 64
+#define FAIL(msg) _TEST_ASSERT(ADD_FAILURE(msg))
+#define CASE(class,id) class ##_ ##id,
+#define __HAVE_SPECULATION_SAFE_VALUE 1
+#define REGISTER_BUFF(id,inst) REGISTER(StatusEffect, BUFF_ ##id, m_id, inst)
+#define EV_AbortSpeedrun(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define PHYS_INPUT_BUTTON_CHAT(s) PHYS_INPUT_BUTTON_BUTTON_CHAT(s)
+#define __FLT32X_HAS_DENORM__ 1
+#define MSG_CHOICE_NOTIF_(teamnum,name,cvarname,defaultvalue,challow,chtype,optiona,optionb) REGISTER(Notifications, name, m_id, new_pure(msg_choice_notification)) { this.nent_choice_idx = nent_choice_count; if (!teamnum || teamnum == NUM_TEAM_4) nent_choice_count++; Create_Notification_Entity (this, defaultvalue, ACVNN(cvarname), MSG_CHOICE, strtoupper(#name), teamnum); Create_Notification_Entity_Choice(this, ACVNN(cvarname), strtoupper(#name), challow, autocvar_notification_ ##cvarname ##_ALLOWED, chtype, optiona, optionb); }
+#define gettouch(e) SELFWRAP_GET(touch, e)
+#define IS_CHEAT(ent,i,argc,fr) if((++attempting, !CheatsAllowed(ent,i,argc,fr))) break
+#define REGISTRY_RESERVE(registry,fld,id,suffix) MACRO_BEGIN entity e = new_pure(registry_reserved); e.registered_id = #id "/" #suffix; REGISTRY_PUSH(registry, fld, e); MACRO_END
+#define CS(this) (this._cs)
+#define SPAWNFUNC_ITEM(name,item) spawnfunc(name) { SPAWNFUNC_BODY(item) }
+#define objerror_safe(e) make_safe_for_remove(e)
+#define CENTER_OR_VIEWOFS(ent) (ent.origin + (IS_PLAYER(ent) ? ent.view_ofs : ((ent.mins + ent.maxs) * 0.5)))
+#define __FLT32_MAX__ 3.40282346638528859811704183484516925e+38F32
+#define __DEC128_EPSILON__ 1E-33DL
+#define FOREACH_ENTITY_ORDERED(cond,body) MACRO_BEGIN int _i = 0; for (entity _it = NULL; (_it = nextent(_it)); ++_i) { const noref int i = _i; ITER_CONST noref entity it = _it; if (cond) LAMBDA(body) } MACRO_END
+#define WEAPONSTATS_GETINDEX(awep,abot,vwep,vbot) (((vwep) + (awep) * (WEP_LAST - WEP_FIRST + 1) - (WEP_FIRST + WEP_FIRST * (WEP_LAST - WEP_FIRST + 1))) * 4 + (abot) * 2 + (vbot))
+#define TELEPORT_USED(pl,tele_wp) boxesoverlap(tele_wp.absmin, tele_wp.absmax, pl.lastteleport_origin + STAT(PL_MIN, pl), pl.lastteleport_origin + STAT(PL_MAX, pl))
+#define PlayerStats_GameReport_Event_Team(team,eventid,val) PlayerStats_GameReport_Event(sprintf("team#%d", team), eventid, val)
+#define MSG_INFO_NOTIF_(teamnum,name,cvarname,defaultvalue,strnum,flnum,args,hudargs,icon,normal,gentle) REGISTER(Notifications, name, m_id, new_pure(msg_info_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(cvarname), MSG_INFO, strtoupper(#name), teamnum); Create_Notification_Entity_InfoCenter(this, ACVNN(cvarname), strtoupper(#name), strnum, flnum, args, hudargs, icon, CPID_Null, "", normal, gentle); }
+#define MURDER_FRAG_FREEZE2 BOLD(_("^K3%sYou scored against ^BG%s"))
+#define REGISTER_SP(id) REGISTER(Scores, SP, id, m_id, new_pure(PlayerScoreField))
+#define getcefc(e) SELFWRAP_GET(customizeentityforclient, e)
+#define __ARM_SIZEOF_WCHAR_T 4
+#define __SIZEOF_SIZE_T__ 8
+#define count_years_decs(time,decs) sprintf(CTX(_("CI_DEC^%s years")), ftos_decimals(time, decs))
+#define RACE_RECORD "/race100record/"
+#define __DEC128_MANT_DIG__ 34
+#define FOREACH_LIST(list,next,cond,body) MACRO_BEGIN int _i = 0; for (entity _it = list ##_first, _next = NULL; _it; (_it = _next, ++_i)) { const noref int i = _i; ITER_CONST noref entity it = _it; _next = _it.next; if (cond) { LAMBDA(body) } } MACRO_END
+#define _STRUCT_PARAM_(x,id,type) type x ##_ ##id,
+#define endsWith(this,suffix) (_endsWith_suffix = suffix, substring(this, -strlen(_endsWith_suffix), -1) == _endsWith_suffix)
+#define IS_TURRET(v) (v.turret_flags & TUR_FLAG_ISTURRET)
+#define __FLT64X_MIN_EXP__ (-16381)
+#define movelib_move_simple_gravity(e,newdir,velo,blendrate) if(IS_ONGROUND(e)) movelib_move_simple(e,newdir,velo,blendrate)
+#define autocvar_skill cvar("skill")
+#define _spawnfunc_checktypes(fld) 
+#define _LOG_WARN(s) _LOG(print, "^3WARNING", s)
+#define G_SHOOTFROMFIXEDORIGIN autocvar_g_shootfromfixedorigin
+#define self (RVALUE, this)
+#define __FLT32_MAX_EXP__ 128
+#define EV_MonsterSpawn(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define IS_JUMP_HELD(s) (!((s).flags & FL_JUMPRELEASED))
+#define __ARM_FP16_FORMAT_IEEE 1
+#define DEC_TO_HEXDIGIT(d) (substring(HEXDIGITS_MINSET, (d), 1))
+#define EV_Item_ScheduleRespawn(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float)
+#define ENDCLASS(cname) INIT(cname) { return this; }
+#define SND(id) Sound_fixpath(SND_ ##id)
+#define EV_ItemTouched(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define REGISTRY_PUSH(registry,fld,it) MACRO_BEGIN it.fld = registry ##_COUNT; _R_SET(_ ##registry, registry ##_COUNT, it); ++registry ##_COUNT; if (!registry ##_first) registry ##_first = it; if (registry ##_last) registry ##_last.REGISTRY_NEXT = it; registry ##_last = it; MACRO_END
+#define CS_CVAR(this) (this)
+#define __FLT64_DENORM_MIN__ 4.94065645841246544176568792868221372e-324F64
+#define __FLT64X_NORM_MAX__ 1.18973149535723176508575932662800702e+4932F64x
+#define __SIZEOF_POINTER__ 8
+#define METHOD_REFERENCE(cname,name) cname ##_ ##name
+#define PHYS_INPUT_BUTTON_JUMP(s) PHYS_INPUT_BUTTON_BUTTON2(s)
+#define ROLL(v) ((v).z)
+#define EV_FusionReactor_ValidTarget(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define HM_NEW(this) (this = db_create())
+#define __aarch64__ 1
+#define _LOG_SEVERE(s) _LOG(backtrace, "^1SEVERE", s)
+#define __ARM_FP16_ARGS 1
+#define W_UPDATE_NONE(class,fld,T,wepname) _W_UPDATE(class, fld, T, wepname)
+#define WEP_CVAR_BOTH(wepname,isprimary,name) ((isprimary) ? WEP_CVAR_PRI(wepname, name) : WEP_CVAR_SEC(wepname, name))
+#define __FLT64X_DECIMAL_DIG__ 36
+#define count_hours(time) count_fill(time, _("CI_ZER^%d hours"), _("CI_FIR^%d hour"), _("CI_SEC^%d hours"), _("CI_THI^%d hours"), _("CI_MUL^%d hours"))
+#define SPAWNFUNC_Q3(weapon_classname,ammo_classname,xonwep) SPAWNFUNC_WEAPON(weapon_classname, xonwep) SPAWNFUNC_Q3AMMO(ammo_classname, xonwep)
+#define __DBL_HAS_DENORM__ 1
+#define autocvar_g_domination_point_limit cvar("g_domination_point_limit")
+#define TARGET_TELEPORTER_KEEP_SPEED BIT(0)
+#define __FLT32_MIN__ 1.17549435082228750796873653722224568e-38F32
+#define __UINT8_TYPE__ unsigned char
+#define PHYS_INPUT_BUTTON_LEFT(s) (PHYS_INPUT_MOVEVALUES(s).y < 0)
+#define LOG_WARNF(...) _LOG_WARN(sprintf(__VA_ARGS__))
+#define etof(e) num_for_edict(e)
+#define EV_WeaponRateFactor(i,o) i(float, MUTATOR_ARGV_0_float) o(float, MUTATOR_ARGV_0_float) i(entity, MUTATOR_ARGV_1_entity)
+#define autocvar_timelimit cvar("timelimit")
+#define __FLT_NORM_MAX__ 3.40282346638528859811704183484516925e+38F
+#define getSendEntity(e) SELFWRAP_GET(SendEntity, e)
+#define PHYS_AIRACCEL_SIDEWAYS_FRICTION(s) STAT(MOVEVARS_AIRACCEL_SIDEWAYS_FRICTION, s)
+#define stuffcmd(cl,...) MACRO_BEGIN entity _cl = (cl); if (IS_REAL_CLIENT(_cl)) stuffcmd(_cl, __VA_ARGS__); MACRO_END
+#define IS_PLAYER(v) ((v).classname == STR_PLAYER)
+#define EV_PlayerPhysics_UpdateStats(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define WepSet_FromWeapon(it) ((it).m_wepset)
+#define REGISTRY_END_(id) Register ##id ##_Done()
+#define stob(s) stof(s)
+#define stoi(s) stof(s)
+#define __spawnfunc_spawn_all() MACRO_BEGIN g_map_entities = IL_NEW(); IL_EACH(g_spawn_queue, true, __spawnfunc_spawn(it)); MACRO_END
+#define PHYS_INPUT_BUTTON_ZOOM(s) PHYS_INPUT_BUTTON_BUTTON4(s)
+#define PHYS_WALLFRICTION(s) STAT(MOVEVARS_WALLFRICTION)
+#define __FLOAT_WORD_ORDER__ __ORDER_LITTLE_ENDIAN__
+#define CTX_CACHE 1
+#define SPAWNFUNC_Q3AMMO_COND(ammo_classname,cond,xonwep1,xonwep0) SPAWNFUNC_Q3AMMO(ammo_classname, (cond ? xonwep1 : xonwep0))
+#define FOREACH_ENTITY_RADIUS_ORDERED(org,dist,cond,body) MACRO_BEGIN entity _rev_first = NULL; _FOREACH_ENTITY_FIND_UNORDERED(tmp, radius, org, dist, cond, (it._FOREACH_ENTITY_FIND_radius_nexttmp = _rev_first, _rev_first = it)); MUTEX_LOCK(_FOREACH_ENTITY_FIND_radius_tmpmutex); FOREACH_LIST(_rev, _FOREACH_ENTITY_FIND_radius_nexttmp, true, body); MUTEX_UNLOCK(_FOREACH_ENTITY_FIND_radius_tmpmutex); MACRO_END
+#define WPCOLOR_FLAGCARRIER(t) ((t) ? colormapPaletteColor(t - 1, false) * 0.75 : '1 1 1')
+#define REGISTRY_DEPENDS(id,dep) void Register ##dep(); void REGISTRY_DEPENDS_(id) { Register ##dep(); }
+#define skel_set_bone(skel,bonenum,org) MACRO_BEGIN DEGLOB_LOG(DEGLOB_ORIGINAL, "skel_set_bone", #skel, #bonenum, #org); _skel_set_bone_hidden(skel, bonenum, org); MACRO_END
+#define __STDC_IEC_559_COMPLEX__ 1
+#define PHYS_DODGING_HORIZ_SPEED_MAX autocvar_sv_dodging_horiz_speed_max
+#define IL_EACH(this,cond,body) MACRO_BEGIN IntrusiveList _il = this; assert(_il); .entity il_next = _il.il_nextfld; noref int i = 0; entity il_loop_item_save = this.il_loop_item; this.il_loop_item = NULL; for (entity _next, _it = _il.il_head; _it; (_it = _next, ++i)) { const noref entity it = _it; this.il_loop_item = it; _next = it.(il_next); if (cond) { LAMBDA(body) } if (this.il_loop_item != it) _next = this.il_loop_item; else _next = it.(il_next); } this.il_loop_item = il_loop_item_save; MACRO_END
+#define PHYS_INPUT_BUTTON_ZOOMSCRIPT(s) PHYS_INPUT_BUTTON_BUTTON9(s)
+#define REGISTER_ITEM(id,class) REGISTER(Items, ITEM, id, m_id, NEW(class))
+#define ERASEABLE [[eraseable]]
+#define __FLT128_DIG__ 33
+#define MULTITEAM_CENTER(prefix,defaultvalue,strnum,flnum,args,cpid,durcnt,normal,gentle,type) NOTIF_ADD_AUTOCVAR(CENTER_ ##prefix, defaultvalue) MSG_CENTER_NOTIF_TEAM(NUM_TEAM_1, prefix ##_RED, prefix, defaultvalue, strnum, flnum, args, cpid, durcnt, TCR(normal, type, 1), TCR(gentle, type, 1)) MSG_CENTER_NOTIF_TEAM(NUM_TEAM_2, prefix ##_BLUE, prefix, defaultvalue, strnum, flnum, args, cpid, durcnt, TCR(normal, type, 2), TCR(gentle, type, 2)) MSG_CENTER_NOTIF_TEAM(NUM_TEAM_3, prefix ##_YELLOW, prefix, defaultvalue, strnum, flnum, args, cpid, durcnt, TCR(normal, type, 3), TCR(gentle, type, 3)) MSG_CENTER_NOTIF_TEAM(NUM_TEAM_4, prefix ##_PINK, prefix, defaultvalue, strnum, flnum, args, cpid, durcnt, TCR(normal, type, 4), TCR(gentle, type, 4))
+#define __DEC128_MIN_EXP__ (-6142)
+#define PHYS_DODGING_HORIZ_FORCE_SLOWEST autocvar_sv_dodging_horiz_force_slowest
+#define entityclass(...) EVAL_entityclass(OVERLOAD_(entityclass, __VA_ARGS__))
+#define REGISTER_4(registry,id,fld,inst) entity id; REGISTER_INIT(id) {} void Register_ ##id() { entity this = id; if (this == NULL) { _regCheck(registry ##_COUNT, registry ##_MAX); this = id = inst; this.registered_id = #id; REGISTRY_PUSH(registry, fld, this); } Register_ ##id ##_init(this); } ACCUMULATE_FUNCTION(_Register ##registry, Register_ ##id) REGISTER_INIT(id)
+#define REGISTER_5(registry,ns,id,fld,inst) REGISTER_4(registry, ns ##_ ##id, fld, inst)
+#define CHAT_NOSPECTATORS() ((autocvar_g_chat_nospectators == 1) || (autocvar_g_chat_nospectators == 2 && !warmup_stage))
+#define PHYS_AIRACCEL_QW_STRETCHFACTOR(s) STAT(MOVEVARS_AIRACCEL_QW_STRETCHFACTOR, s)
+#define func_null nil
+#define W_PROP_PRI(class,fld,T,wepname) _W_PROP(class, primary_ ##fld, T, wepname)
+#define REGISTER_WEAPON_3(id,sname,inst) REGISTER_WEAPON_2(id, inst); [[alias("WEP_" #id)]] Weapon _wep_ ##sname
+#define P00_IS_EMPTY_CASE_0100 P00_IS_EMPTY_CASE_0100
+#define P00_IS_EMPTY_CASE_0101 P00_IS_EMPTY_CASE_0101
+#define END_CHEAT_FUNCTION() ADD_CHEATS(this, cheating); return attempting
+#define PHYS_DODGING_HORIZ_SPEED_MIN autocvar_sv_dodging_horiz_speed_min
+#define __UINT_FAST64_MAX__ 0xffffffffffffffffUL
+#define UNWORDS(...) MAP(IDENTITY, __VA_ARGS__)
+#define _R_DEL(r) AL_DELETE(r)
+#define POSTGIVE_BIT(e,f,b,snd_incr,snd_decr) GiveSound((e), save_ ##f & (b), (e).f & (b), 0, snd_incr, snd_decr)
+#define P00_IS_EMPTY_CASE_0110 P00_IS_EMPTY_CASE_0110
+#define __INT8_TYPE__ signed char
+#define __ELF__ 1
+#define __GCC_ASM_FLAG_OUTPUTS__ 1
+#define LOG_INFOF(...) _LOG_INFO(sprintf(__VA_ARGS__))
+#define __FLT128_DECIMAL_DIG__ 36
+#define PHYS_BUGRIGS_SPEED_REF(s) g_bugrigs_speed_ref
+#define __FP_FAST_FMA 1
+#define count_seconds(time) count_fill(time, _("CI_ZER^%d seconds"), _("CI_FIR^%d second"), _("CI_SEC^%d seconds"), _("CI_THI^%d seconds"), _("CI_MUL^%d seconds"))
+#define __FLT_RADIX__ 2
+#define __INT_LEAST16_TYPE__ short int
+#define PREGIVE_RESOURCE(e,f) float save_ ##f = GetResource((e), (f))
+#define W_CONFIG_PRI(class,fld,T,wepname) _W_CONFIG(class, primary_ ##fld, T, wepname)
+#define TAG_ENTITY_TYPE entity
+#define GAMEPLAYFIX_Q2AIRACCELERATE autocvar_sv_gameplayfix_q2airaccelerate
+#define __ARM_PCS_AAPCS64 1
+#define WriteHeader(to,id) MACRO_BEGIN if (NET_ ##id ##_istemp) WriteByte(to, SVC_TEMPENTITY); WriteByte(to, NET_ ##id.m_id); bool _net_valid = false; serialize_marker(to, _net_valid); MACRO_END
+#define _MUTATOR_HANDLE_NOP(type,id) 
+#define ASSERT_NE(val1,val2) _TEST_ASSERT(EXPECT_NE(val1, val2))
+#define ASSERT_TRUE(condition) ASSERT_EQ(true, condition)
+#define round_handler_AwaitingNextRound() (round_handler.wait)
+#define serialize(T,stream,...) MACRO_BEGIN noref Stream _stream = stream; serialize_ ##T(_stream, __VA_ARGS__); MACRO_END
+#define strncasecmp _strncasecmp
+#define EV_ItemTouch(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) o(entity, MUTATOR_ARGV_1_entity)
+#define PHYS_DODGING_WALL autocvar_sv_dodging_wall_dodging
+#define __FLT16_IS_IEC_60559__ 1
+#define __FLT16_MAX_EXP__ 16
+#define EMPTY() 
+#define EVAL_REPLICATE(...) __VA_ARGS__
+#define CMD_Write(s) fputs(fh, s)
+#define PROJECTILE_MAKETRIGGER(e) (e).solid = SOLID_CORPSE; (e).dphitcontentsmask = DPCONTENTS_SOLID | DPCONTENTS_BODY | DPCONTENTS_CORPSE
+#define IL_EMPTY(this) (this.il_head == NULL)
+#define __GCC_CONSTRUCTIVE_SIZE 64
+#define BADSUFFIX_COND(s) (substring(k, -strlen(s), -1) == s)
+#define __UINT_FAST32_MAX__ 0xffffffffffffffffUL
+#define entityclass_1(name) entityclass_2(name, Object)
+#define entityclass_2(name,base) USING(name, entity)
+#define __INT_FAST8_TYPE__ signed char
+#define REPLICATE_string(fld,var,func) REPLICATE_7(fld, string, var, , { strcpy(field, it); }, { strfree(field); }, { string s = func(this, strcat1(field)); if (s != field) { strcpy(field, s); } })
+#define GAMEPLAYFIX_DOWNTRACEONGROUND(s) STAT(GAMEPLAYFIX_DOWNTRACEONGROUND)
+#define __FLT64X_HAS_DENORM__ 1
+#define PHYS_DODGING_FROZEN(s) STAT(DODGING_FROZEN, s)
+#define _FOREACH_ENTITY_FIND_ORDERED(T,fld,match,cond,body) MACRO_BEGIN int _i = 0; for (entity _it = NULL; (_it = _find ##T(_it, fld, match)); ++_i) { const noref int i = _i; ITER_CONST noref entity it = _it; if (cond) LAMBDA(body) } MACRO_END
+#define EV_Item_RespawnCountdown(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define PHYS_DODGING_HORIZ_FORCE_FROZEN autocvar_sv_dodging_horiz_force_frozen
+#define IS_BOT_CLIENT(v) (clienttype(v) == CLIENTTYPE_BOT)
+#define PHYS_SLICK_APPLYGRAVITY(s) STAT(SLICK_APPLYGRAVITY)
+#define IS_NOT_A_CLIENT(v) (!IS_CLIENT(v))
+#define _STRUCT_DECLARE(x,id,type,END) noref type x ##_ ##id;
+#define SV_DAMAGETEXT_DISABLED() (autocvar_sv_damagetext <= 0)
+#define __FLT16_NORM_MAX__ 6.55040000000000000000000000000000000e+4F16
+#define MSG_ANNCE_NOTIF_TEAM(teamnum,name,cvarname,defaultvalue,sound,channel,volume,position,queuetime) MSG_ANNCE_NOTIF_(teamnum, ANNCE_ ##name, ANNCE_ ##cvarname, defaultvalue, sound, channel, volume, position, queuetime)
+#define __UINT_LEAST32_MAX__ 0xffffffffU
+#define __GCC_ATOMIC_LONG_LOCK_FREE 2
+#define LOG_SEVEREF(...) _LOG_SEVERE(sprintf(__VA_ARGS__))
+#define EVAL_ATTRIB(...) __VA_ARGS__
+#define __INT_LEAST8_TYPE__ signed char
+#define RandomSelection_AddVec(v,weight,priority) RandomSelection_Add(NULL, 0, string_null, v, weight, priority)
+#define _R_SET(r,i,e) AL_sete(r, i, e)
+#define EV_MonsterRemove(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define autocvar_g_race_laps_limit cvar("g_race_laps_limit")
+#define BUFF_SPAWNFUNC(e,b,t) spawnfunc(item_buff_ ##e) { this.buffdef = b; if(teamplay) this.team_forced = t; buff_Init(this); }
+#define W_NET(class,wepname,fld,T,m) W_NET_ ##m(class, fld, T, wepname)
+#define autocvar_g_lms_lives_override cvar("g_lms_lives_override")
+#define __FLT64_HAS_QUIET_NAN__ 1
+#define skel_mul_bone DO_NOT_USE_GLOBALS
+#define PHYS_FRICTION(s) STAT(MOVEVARS_FRICTION, s)
+#define EV_TeamBalance_GetTeamCount(i,o) i(float, MUTATOR_ARGV_0_float) i(entity, MUTATOR_ARGV_1_entity) o(float, MUTATOR_ARGV_2_float) o(float, MUTATOR_ARGV_3_float)
+#define BITSET_ASSIGN(a,b) ((a) |= (b))
+#define CSQCPLAYER_HOOK_POSTCAMERASETUP() viewloc_SetViewLocation()
+#define REGISTRY_DEFINE_GET(id,null) entity id ##_from(int i) { if (i >= 0 && i < id ##_COUNT) { entity e = _R_GET(_ ##id, i); if (e) return e; } return null; }
+#define AUTOCVAR(...) _AUTOCVAR(false, __VA_ARGS__)
+#define __LDBL_MANT_DIG__ 113
+#define _LOG_FATAL(s) _LOG(error, "^1FATAL", s)
+#define PHYS_DODGING_DISTANCE_THRESHOLD autocvar_sv_dodging_wall_distance_threshold
+#define pointinsidebox(point,bmins,bmaxs) boxinsidebox(point, point, bmins, bmaxs)
+#define ALLMONSTERSOUNDS _MSOUND(death) _MSOUND(sight) _MSOUND(ranged) _MSOUND(melee) _MSOUND(pain) _MSOUND(spawn) _MSOUND(idle) _MSOUND(attack)
+#define MINIGAME_SIMPLELINKED_ENTITIES MSLE(minigame_board_piece,FIELD(MINIG_SF_CREATE,Byte,team) FIELD(MINIG_SF_UPDATE, Short, minigame_flags) FIELD(MINIG_SF_UPDATE, Vector2D,origin)) MSLE(pong_paddle,FIELD(MINIG_SF_CREATE,Byte,team) FIELD(MINIG_SF_CREATE,Float,pong_length) FIELD(MINIG_SF_UPDATE,Vector2D,origin)) MSLE(pong_ball,FIELD(MINIG_SF_CREATE,Float,pong_length) FIELD(PONG_SF_BALLTEAM,Byte,team) FIELD(MINIG_SF_UPDATE, Vector2D, velocity) FIELD(MINIG_SF_UPDATE, Vector2D, origin)) MSLE(pong_ai, FIELD(MINIG_SF_CREATE,Byte,team) FIELD(PONG_SF_PLAYERSCORE, Long, pong_score))
+#define PHYS_BUGRIGS_ACCEL(s) g_bugrigs_accel
+#define WEP_CONFIG_WRITE_PROPS_string(wepname,name) { W_Config_Queue( sprintf("set g_balance_%s_%s \"%s\"\n", #wepname, #name, cvar_string(sprintf("g_balance_%s_%s", #wepname, #name)))); }
+#define MURDER_TYPEFRAGGED2 BOLD(_("^K1%sYou were scored against by ^BG%s^K1 while typing"))
+#define WriteVector2D(to,v) MACRO_BEGIN WriteFloat(to, v.x); WriteFloat(to, v.y); MACRO_END
+#define RESURFACE_LIMITED(org,lim) org = resurface_limited(org, lim, m1)
+#define APP_TEAM_NUM(num,prefix) ((num == NUM_TEAM_1) ? prefix ##_RED : ((num == NUM_TEAM_2) ? prefix ##_BLUE : ((num == NUM_TEAM_3) ? prefix ##_YELLOW : prefix ##_PINK)))
+#define GAMEPLAYFIX_GRENADEBOUNCESLOPES(s) STAT(GAMEPLAYFIX_GRENADEBOUNCESLOPES)
+#define EV_VehicleTouch(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define SUBMERGED(pos) IN_LIQUID(pos + autocvar_sv_player_viewoffset)
+#define P00__IF_CLAUSE(A,B,C,...) C
+#define power2of(e) (2 ** e)
+#define __GCC_ATOMIC_TEST_AND_SET_TRUEVAL 1
+#define PHYS_MULTIJUMP_DODGING(s) STAT(MULTIJUMP_DODGING, s)
+#define __FLT32_HAS_INFINITY__ 1
+#define EV_IsFlying(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __FLT64X_MAX_EXP__ 16384
+#define __UINT_FAST64_TYPE__ long unsigned int
+#define devdemand(...) MACRO_BEGIN if (autocvar_developer > 0) demand(__VA_ARGS__); MACRO_END
+#define XONOTIC 1
+#define TELEPORT_KEEP_SPEED BIT(1)
+#define __GCC_ATOMIC_WCHAR_T_LOCK_FREE 2
+#define normal_or_gentle(normal,gentle) ((GENTLE && (gentle != "")) ? gentle : normal)
+#define __INT64_TYPE__ long int
+#define EV_DropSpecialItems(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define GENERIC_COMMAND(id,description,menubased) CLASS(genericcommand_ ##id, Command) ATTRIB(genericcommand_ ##id, m_name, string, #id); ATTRIB(genericcommand_ ##id, m_description, string, description); ATTRIB(genericcommand_ ##id, m_menubased, bool, menubased); ENDCLASS(genericcommand_ ##id) REGISTER(GENERIC_COMMANDS, CMD_G, id, m_id, NEW(genericcommand_ ##id)); METHOD(genericcommand_ ##id, m_invokecmd, void(genericcommand_ ##id this, int request, entity caller, int arguments, string command))
+#define MURDER_FRAG BOLD(_("^K3%sYou fragged ^BG%s"))
+#define __FP_FAST_FMAF32 1
+#define EVAL_CLASS(...) __VA_ARGS__
+#define __FLT32_NORM_MAX__ 3.40282346638528859811704183484516925e+38F32
+#define SHUTDOWN(func) _STATIC_INIT(func ##_shutdown, __shutdown)
+#define __GCC_ATOMIC_BOOL_LOCK_FREE 2
+#define int float
+#define CMD_STATUS_ERROR 2
+#define __FP_FAST_FMAF64 1
+#define CTS_RECORD "/cts100record/"
+#define ITEM_DAMAGE_NEEDKILL(dt) (((dt) == DEATH_HURTTRIGGER.m_id) || ((dt) == DEATH_SLIME.m_id) || ((dt) == DEATH_LAVA.m_id) || ((dt) == DEATH_SWAMP.m_id))
+#define GROUNDENTITY_NAME groundentity
+#define __ATOMIC_RELAXED 0
+#define __DBL_EPSILON__ ((double)2.22044604925031308084726333618164062e-16L)
+#define move_out_of_solid(e) WarpZoneLib_MoveOutOfSolid(e)
+#define W_UPDATE_BEGIN(class) METHOD(class, wr_update, void(class this)) { noref entity b = this.baseline; if (!b) { b = this.baseline = new_pure(baseline); b.baseline_target = this; }
+#define EV_Damage_Calculate(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(entity, MUTATOR_ARGV_2_entity) i(float, MUTATOR_ARGV_3_float) i(float, MUTATOR_ARGV_4_float) o(float, MUTATOR_ARGV_4_float) i(float, MUTATOR_ARGV_5_float) o(float, MUTATOR_ARGV_5_float) i(vector, MUTATOR_ARGV_6_vector) o(vector, MUTATOR_ARGV_6_vector) i(entity, MUTATOR_ARGV_7_entity)
+#define __INT_LEAST32_TYPE__ int
+#define PHYS_JETPACK_ACCEL_SIDE(s) STAT(JETPACK_ACCEL_SIDE, s)
+#define PROGNAME "SVQC"
+#define gettaginfo(ent,tagindex) ( deglob_log(DEGLOB_ORIGINAL, "gettaginfo", __FILE__, __LINE__, __FUNC__, #ent ", " #tagindex), _gettaginfo_hidden(ent, tagindex) )
+#define BITXOR_ASSIGN(a,b) ((a) = ((a) | (b)) - ((a) & (b)))
+#define objerror(this,msg) MACRO_BEGIN LOG_WARN("======OBJECT ERROR======"); entity _e = (this); eprint(_e); objerror_safe(_e); delete(_e); LOG_WARNF("%s OBJECT ERROR in %s:\n%s\nTip: read above for entity information", PROGNAME, __FUNC__, msg); MACRO_END
+#define PHYS_ACCELERATE(s) STAT(MOVEVARS_ACCELERATE, s)
+#define _STRUCT_PARAM_END(x,id,type) type x ##_ ##id
+#define PHYS_DODGING_FROZEN_DOUBLETAP autocvar_sv_dodging_frozen_doubletap
+#define ENABLE_DEBUGTRACE 0
+#define FOREACH(list,cond,body) FOREACH_LIST(list, enemy, cond, body)
+#define MSG_ANNCE_NOTIF_(teamnum,name,cvarname,defaultvalue,sound,channel,volume,position,queuetime) REGISTER(Notifications, name, m_id, new_pure(msg_annce_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(cvarname), MSG_ANNCE, strtoupper(#name), teamnum); Create_Notification_Entity_Annce(this, ACVNN(cvarname), strtoupper(#name), channel, sound, volume, position, queuetime); }
+#define IS_INCREASING(x) ( (x) & SFL_LOWER_IS_BETTER )
+#define ENABLE_EFFECTINFO 0
+#define yinvert(v) (_yinvert = (v), _yinvert.y = 1 - _yinvert.y, _yinvert)
+#define setblocked(e,f) SELFWRAP_SET(blocked, e, f)
+#define LL_DELETE_1(this) LL_DELETE_2(this, LAMBDA())
+#define LL_DELETE_2(this,dtor) MACRO_BEGIN LL_CLEAR_2(this, dtor); delete(this); this = NULL; MACRO_END
+#define __GCC_DESTRUCTIVE_SIZE 256
+#define PHYS_AIRACCEL_QW(s) STAT(MOVEVARS_AIRACCEL_QW, s)
+#define AUTOCVAR_SAVE(...) _AUTOCVAR(true, __VA_ARGS__)
+#define __INTMAX_MAX__ 0x7fffffffffffffffL
+#define EV_MonsterMove(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) o(float, MUTATOR_ARGV_1_float) i(float, MUTATOR_ARGV_2_float) o(float, MUTATOR_ARGV_2_float) i(entity, MUTATOR_ARGV_3_entity) o(entity, MUTATOR_ARGV_3_entity)
+#define USE_PRANDOM 
+#define IS_SVQC 1
+#define __LONG_WIDTH__ 64
+#define __DBL_MIN__ ((double)2.22507385850720138309023271733240406e-308L)
+#define SELFWRAP_GET(T,e) (RVALUE, (e).self ##T)
+#define EV_ClientConnect(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EV_W_PlayStrengthSound(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __BFLT16_MAX_10_EXP__ 38
+#define GlobalSound(this,def,chan,vol,voicetype) _GlobalSound(this, def, NULL, string_null, chan, vol, voicetype, false)
+#define static_init() CALL_ACCUMULATED_FUNCTION(__static_init_1)
+#define PHYS_JUMPVELOCITY_CROUCH(s) STAT(MOVEVARS_JUMPVELOCITY_CROUCH, s)
+#define BUFF_SPAWNFUNCS(e,b) BUFF_SPAWNFUNC(e, b, 0) BUFF_SPAWNFUNC(e ##_team1, b, NUM_TEAM_1) BUFF_SPAWNFUNC(e ##_team2, b, NUM_TEAM_2) BUFF_SPAWNFUNC(e ##_team3, b, NUM_TEAM_3) BUFF_SPAWNFUNC(e ##_team4, b, NUM_TEAM_4)
+#define EV_AllowMobSpawning(i,o) i(entity, MUTATOR_ARGV_0_entity) o(string, MUTATOR_ARGV_1_string)
+#define REPLICATE_int(fld,var,func) REPLICATE_7(fld, int, var, func, { field = stoi(it); }, , )
+#define __FLT_DENORM_MIN__ 1.40129846432481707092372958328991613e-45F
+#define Q3COMPAT_DEFI BIT(1)
+#define __INTMAX_TYPE__ long int
+#define _CONCAT3(a,b,c) _CONCAT3_(a, b, c)
+#define __DEC128_MAX_EXP__ 6145
+#define TUR_CONFIG_WRITE_PROPS_float(turname,name) { T_Config_Queue( sprintf("set g_turrets_unit_%s_%s %g\n", #turname, #name, cvar(sprintf("g_turrets_unit_%s_%s", #turname, #name)))); }
+#define MURDER_TYPEFRAG2 BOLD(_("^K1%sYou scored against ^BG%s^K1 while they were typing"))
+#define P00_NARG(...) P00_ARG(__VA_ARGS__, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, )
+#define MAP(f,...) EVAL(OVERLOAD(MAP, f, __VA_ARGS__))
+#define argv_start_index _argv_start_index
+#define TICRATE sys_frametime
+#define g_nexball IS_GAMETYPE(NEXBALL)
+#define fixedmakevectors makevectors
+#define __ATOMIC_SEQ_CST 5
+#define itos(i) ftos(i)
+#define W_CONFIG_NONE(class,fld,T,wepname) _W_CONFIG(class, fld, T, wepname)
+#define __FLT32X_MIN_10_EXP__ (-307)
+#define _W_NET(class,fld,T,wepname) { ++i; T it = this.wepvar_ ##fld; if (chan == MSG_ONE || it != this.baseline.wepvar_ ##fld) { if (!commit) { commit = true; WriteHeader(chan, WeaponUpdate); WriteByte(chan, this.m_id); } WriteByte(chan, i); Write_ ##T(chan, it); } }
+#define stat_CELLS ammo_cells
+#define round_handler_IsActive() (round_handler != NULL)
+#define IS_VEHICLE(v) (v.vehicle_flags & VHF_ISVEHICLE)
+#define P00_IF_CLAUSE(EXP) P00__IF_CLAUSE(EXP, P00_CLAUSE1, P00_CLAUSE2, ~)
+#define MODEL(name,path) string MDL_ ##name ##_get() { return path; } REGISTER(Models, MDL, name, m_id, NEW(Model, MDL_ ##name ##_get))
+#define PREGIVE(e,f) float save_ ##f; save_ ##f = (e).f
+#define SPAWN_PURE 0
+#define static_init_early() CALL_ACCUMULATED_FUNCTION(__static_init_0)
+#define EV_PlayerJump(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) o(float, MUTATOR_ARGV_1_float) i(bool, MUTATOR_ARGV_2_bool) o(bool, MUTATOR_ARGV_2_bool)
+#define __GCC_ATOMIC_SHORT_LOCK_FREE 2
+#define EV_GiveResourceWithLimit(i,o) i(entity, MUTATOR_ARGV_7_entity) i(entity, MUTATOR_ARGV_8_entity) o(entity, MUTATOR_ARGV_8_entity) i(float, MUTATOR_ARGV_9_float) o(float, MUTATOR_ARGV_9_float) i(float, MUTATOR_ARGV_10_float) o(float, MUTATOR_ARGV_10_float)
+#define P00_IS_EMPTY_CASE_1000 P00_IS_EMPTY_CASE_1000
+#define P00_IS_EMPTY_CASE_1001 P00_IS_EMPTY_CASE_1001
+#define MAPINFO_SETTEMP_ACL_SYSTEM "-g_mapinfo_* -rcon_* -_* -g_ban* +*"
+#define PITCH(v) ((v).x)
+#define _CONCAT3_(a,b,c) a ##b ##c
+#define __DBL_MIN_EXP__ (-1021)
+#define heapify(_count) MACRO_BEGIN for (int start = floor(((_count) - 2) / 2); start >= 0; --start) { siftdown(start, (_count) - 1); } MACRO_END
+#define PHYS_STOPSPEED(s) STAT(MOVEVARS_STOPSPEED, s)
+#define SYSTEM(sys,frameLimit,minfps) void sys_ ##sys ##_update(entity this, float dt); noref float autocvar_xon_sys_ ##sys ##_dt = ((frameLimit) ? (1 / (frameLimit)) : 0); noref float autocvar_xon_sys_ ##sys ##_minfps = (1 / (1 / (minfps)))
+#define adddynamiclight(org,radius,lightcolours) MACRO_BEGIN DEGLOB_LOG(DEGLOB_ORIGINAL, "adddynamiclight", #org, #radius, #lightcolours); _adddynamiclight_hidden(org, radius, lightcolours); MACRO_END
+#define __FLT128_MAX_10_EXP__ 4932
+#define EV_FilterItem(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define PHYS_TRACK_CANJUMP(s) STAT(MOVEVARS_TRACK_CANJUMP, s)
+#define STATIC_ATTRIB(cname,name,type,val) type cname ##_ ##name; _INIT_STATIC(cname) { noref bool strzone; cname ##_ ##name = val; }
+#define INGAME_JOINED(it) ((it).ingame == INGAME_STATUS_JOINED)
+#define W_SetupProjVelocity_UP_BOTH(ent,wepname,isprimary) if(isprimary) { W_SetupProjVelocity_UP_PRI(ent, wepname); } else { W_SetupProjVelocity_UP_SEC(ent, wepname); }
+#define WEP_IMPULSE_BEGIN 230
+#define __CHAR_BIT__ 8
+#define count_minutes(time) count_fill(time, _("CI_ZER^%d minutes"), _("CI_FIR^%d minute"), _("CI_SEC^%d minutes"), _("CI_THI^%d minutes"), _("CI_MUL^%d minutes"))
+#define WAS_ONGROUND(s) boolean((s).lastflags & FL_ONGROUND)
+#define PHYS_JETPACK_FUEL(s) STAT(JETPACK_FUEL, s)
+#define NOTIF_WRITE_ENTITY_CHOICE(e,descriptiona,descriptionb) NOTIF_WRITE(sprintf( "seta notification_%s \"%d\" \"%s\"\n" "seta notification_%s_ALLOWED \"%d\" \"%s\"\n", Get_Notif_CvarName(e), e.nent_default, descriptiona, Get_Notif_CvarName(e), e.nent_challow_def, descriptionb ))
+#define MSG_CHOICE_NOTIF_TEAM(teamnum,name,cvarname,defaultvalue,challow,chtype,optiona,optionb) MSG_CHOICE_NOTIF_(teamnum, CHOICE_ ##name, CHOICE_ ##cvarname, defaultvalue, challow, chtype, optiona, optionb)
+#define RPFLOAT(a) (a=rint(a/PFLOAT)*PFLOAT)
+#define MOVE_NOTHING -1
+#define DAYS_UP_TO_EPOCH 719469
+#define STAT_1(id) (RVALUE, STAT_2(id, STATS))
+#define __ORDER_LITTLE_ENDIAN__ 1234
+#define makestatic DO_NOT_USE_GLOBALS
+#define W_NET_PRI(class,fld,T,wepname) _W_NET(class, primary_ ##fld, T, wepname)
+#define autocvar_g_maplist_votable cvar("g_maplist_votable")
+#define GameRules_scoring_add(client,fld,value) _GameRules_scoring_add(client, SP_ ##fld, value)
+#define PHYS_WARSOWBUNNY_TURNACCEL(s) STAT(MOVEVARS_WARSOWBUNNY_TURNACCEL, s)
+#define TELEPORT_FLAGS_PORTAL (TELEPORT_FLAG_SOUND | TELEPORT_FLAG_PARTICLES | TELEPORT_FLAG_TDEATH | TELEPORT_FLAG_FORCE_TDEATH)
+#define EVAL_LL_DELETE(...) __VA_ARGS__
+#define EV_MonsterValidTarget(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define YAW(v) ((v).y)
+#define PHYS_DODGING_AIR autocvar_sv_dodging_air_dodging
+#define MSG_CENTER_NOTIF_TEAM(teamnum,name,cvarname,defaultvalue,strnum,flnum,args,cpid,durcnt,normal,gentle) MSG_CENTER_NOTIF_(teamnum, CENTER_ ##name, CENTER_ ##cvarname, defaultvalue, strnum, flnum, args, cpid, durcnt, normal, gentle)
+#define strcasecmp _strcasecmp
+#define Read_string() ReadString()
+#define ClientDisconnect _ClientDisconnect
+#define __SIG_ATOMIC_TYPE__ int
+#define NAV_SWIM_UNDERWATER 2
+#define __DBL_MIN_10_EXP__ (-307)
+#define ATTRIBARRAY(cname,name,type,cnt) classfield(cname) .type name[cnt]
+#define WATERMARK "xonotic-v0.8.6-duel-v10-authoritative-actions"
+#define __GNUC_PATCHLEVEL__ 0
+#define W_CONFIG_END() }
+#define __UINT_FAST8_MAX__ 0xff
+#define PHYS_INPUT_BUTTON_PRYDON(s) PHYS_INPUT_BUTTON_BUTTON_PRYDON(s)
+#define ITEM_KEY_MAX 24
+#define __INT_LEAST8_WIDTH__ 8
+#define MULTIICON_INFO(name,defaultvalue,strnum,flnum,args,hudargs,iconargs,icon,normal,gentle) MULTIICON_INFO_(INFO_ ##name, defaultvalue, strnum, flnum, args, hudargs, iconargs, icon, normal, gentle)
+#define MUTATOR_ADD(name) Mutator_Add(MUTATOR_ ##name)
+#define PHYS_MULTIJUMP_MAXSPEED(s) STAT(MULTIJUMP_MAXSPEED, s)
+#define REGISTER_WAYPOINT_(id,init) REGISTER(Waypoints, WP, id, m_id, init)
+#define ENUMCAST(T,it) (it)
+#define AVAILABLE_TEAMS teamplay
+#define __ARM_FP 14
+#define __FLT64X_IS_IEC_60559__ 1
+#define FOREACH_ENTITY_FLAGS(fld,match,body) ORDERED(FOREACH_ENTITY_FLAGS)(fld, match, body)
+#define BITS(n) (BIT(n) - 1)
+#define navigation_item_iswalkablelink(to_item,from_wp) (waypoint_get_assigned_link_cost(to_item, from_wp) < 999)
+#define PHYS_HIGHSPEED(s) STAT(MOVEVARS_HIGHSPEED, s)
+#define __CHAR32_TYPE__ unsigned int
+#define UNSET_ONGROUND(s) ((s).flags &= ~FL_ONGROUND)
+#define __unix 1
+#define __UINT32_MAX__ 0xffffffffU
+#define SUBMERGED_YES 2
+#define main _main
+#define NULL (RVALUE, world)
+#define strstrofs _strstrofs
+#define AS_ROUND_DELAY 5
+#define navigation_item_initlinks_ifneeded(e) MACRO_BEGIN if (!e.wp00) waypoint_clearlinks(e); MACRO_END
+#define LOG_SEVERE(...) _LOG_SEVERE(strcat1n(__VA_ARGS__))
+#define STRING_ITERATOR_SET(this,s,i) MACRO_BEGIN this ##_s = s; this ##_i = i; MACRO_END
+#define __INT64_C(c) c ## L
+#define EV_RandomItems_GetRandomItemClassName(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_1_string)
+#define POSTGIVE_VALUE(e,f,t,snd_incr,snd_decr) GiveSound((e), save_ ##f, (e).f, t, snd_incr, snd_decr)
+#define spectators_allowed (!autocvar_sv_vote_nospectators || (autocvar_sv_vote_nospectators == 1 && (warmup_stage || intermission_running)))
+#define MAGIC_STATS_FIX(it) it.m_id += g_magic_stats_hole; MAGIC_STATS(MAGIC_STATS_FIX_MANUAL, it) { MAGIC_STATS(MAGIC_STATS_FIX_AUTO, it) }
+#define PHYS_DODGING_HEIGHT_THRESHOLD autocvar_sv_dodging_height_threshold
+#define tokenizebyseparator _tokenizebyseparator
+#define __FLT64X_MANT_DIG__ 113
+#define TUR_CONFIG_WRITE_CVARS(turname,name,T) TUR_CONFIG_WRITE_PROPS_ ##T(turname, name)
+#define HM_sets(this,key,val) db_put(this, key, val)
+#define _MUTATOR_CALLHOOK(id,...) APPLY(__Mutator_Send_ ##id, 0 P99_IF_EMPTY(__VA_ARGS__)()(, __VA_ARGS__))
+#define PHYS_INPUT_BUTTON_BUTTON10(s) (CS(s).button10)
+#define PHYS_INPUT_BUTTON_BUTTON11(s) (CS(s).button11)
+#define PHYS_INPUT_BUTTON_BUTTON12(s) (CS(s).button12)
+#define PHYS_INPUT_BUTTON_BUTTON14(s) (CS(s).button14)
+#define PHYS_INPUT_BUTTON_BUTTON15(s) (CS(s).button15)
+#define PHYS_INPUT_BUTTON_BUTTON16(s) (CS(s).button16)
+#define __BFLT16_MANT_DIG__ 8
+#define REGISTRY(id,max) void Register ##id(); ACCUMULATE void REGISTRY_DEPENDS_(id) {} REGISTRY_BEGIN(id) {} REGISTRY_END(id) {} void _Register ##id() {} int id ##_state = 0; void Register ##id() { if (id ##_state) return; id ##_state = 1; REGISTRY_DEPENDS_(id); REGISTRY_BEGIN_(id); _Register ##id(); id ##_state = 2; REGISTRY_END_(id); } const int id ##_MAX = max; int id ##_COUNT; noref entity id ##_first, id ##_last; _R_MAP(_ ##id, id ##_MAX); SHUTDOWN(id) { _R_DEL(_ ##id); }
+#define STATIC_INIT(func) _STATIC_INIT(func ##_1, __static_init_1)
+#define MEAN_ACCUMULATE(s,prefix,v,w) mean_accumulate(s, prefix ##_accumulator, prefix ##_count, prefix ##_mean, v, w)
+#define addstat_float(id,fld) addstat(id, AS_FLOAT, fld)
+#define NDEBUG 1
+#define Team_ColorName_Upper(teamid) strtoupper(Team_ColorName(teamid))
+#define PHYS_FIXANGLE(s) ((s).fixangle)
+#define EV_PreFormatMessage(i,o) i(entity, MUTATOR_ARGV_0_entity) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define EXPECT_NO_FATAL_FAILURE_(statement,then) EXPECT_NO_FATAL_FAILURE__(statement, { LOG_WARNF( "  Actual: %d fatal failures\n" "Expected: no fatal failures\n", TEST_fatal - TEST_prevfatal ); LAMBDA(then); })
+#define REGISTER_STAT_2(id,T) .T _STAT(id); REGISTER(Stats, STAT_ ##id, m_id, new_pure(stat)) { if (#T == "vector" || #T == "vectori") { REGISTRY_RESERVE(Stats, m_id, STAT_ ##id, y); REGISTRY_RESERVE(Stats, m_id, STAT_ ##id, z); } } ACCUMULATE void stats_add() { .T fld = _STAT(id); addstat_ ##T(STAT_ ##id.m_id, fld); }
+#define REGISTER_STAT_3(id,T,expr) REGISTER_STAT_2(id, T); ACCUMULATE void GlobalStats_update(entity this) { STAT(id, this) = (expr); } ACCUMULATE void GlobalStats_updateglobal() { entity this = STATS; STAT(id, this) = (expr); } STATIC_INIT(worldstat_ ##id) { entity this = STATS; STAT(id, this) = (expr); }
+#define EV_Turret_CheckFire(i,o) i(entity, MUTATOR_ARGV_0_entity) o(bool, MUTATOR_ARGV_1_bool)
+#define __ARM_ALIGN_MAX_STACK_PWR 16
+#define IS_DIGIT(d) (strstrofs(DIGITS, (d), 0) >= 0)
+#define GAMEPLAYFIX_DELAYPROJECTILES(s) STAT(GAMEPLAYFIX_DELAYPROJECTILES)
+#define VEHICLE_UPDATE_PLAYER(ply,vehi,fld,vhname) ply.vehicle_ ##fld = (vehi.vehicle_ ##fld / autocvar_g_vehicle_ ##vhname ##_ ##fld) * 100
+#define REGISTER_NET_TEMP(id) const bool NET_ ##id ##_istemp = true; REGISTER(TempEntities, NET, id, m_id, new_pure(net_temp_packet)) { this.netname = #id; }
+#define EV_VehicleEnter(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define round_handler_GetEndTime() (round_handler.round_endtime)
+#define __FLT32_DIG__ 6
+#define __FLT16_EPSILON__ 9.76562500000000000000000000000000000e-4F16
+#define IS_ONGROUND(s) boolean((s).flags & FL_ONGROUND)
+#define __FLT_EPSILON__ 1.19209289550781250000000000000000000e-7F
+#define JETPACK_JUMP(s) CS_CVAR(s).cvar_cl_jetpack_jump
+#define _STRUCT_PARAM(x,id,type,isend) _STRUCT_PARAM_ ##isend(x, id, type)
+#define gettagindex _gettagindex
+#define SOUND(name,path) string SND_ ##name ##_get() { return path; } REGISTER(Sounds, SND, name, m_id, NEW(Sound, SND_ ##name ##_get))
+#define PHYS_INVEHICLE(s) (boolean((s).vehicle != NULL))
+#define GAMEPLAYFIX_GRAVITYUNAFFECTEDBYTICRATE autocvar_sv_gameplayfix_gravityunaffectedbyticrate
+#define __DBL_IS_IEC_60559__ 1
+#define MSG_CENTER_NOTIF_(teamnum,name,cvarname,defaultvalue,strnum,flnum,args,cpid,durcnt,normal,gentle) REGISTER(Notifications, name, m_id, new_pure(msg_center_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(cvarname), MSG_CENTER, strtoupper(#name), teamnum); Create_Notification_Entity_InfoCenter(this, ACVNN(cvarname), strtoupper(#name), strnum, flnum, args, "", "", cpid, durcnt, normal, gentle); }
+#define GAMEPLAYFIX_STEPDOWN(s) STAT(GAMEPLAYFIX_STEPDOWN)
+#define __DEC32_MAX__ 9.999999E96DF
+#define SV_DAMAGETEXT_ALL() (autocvar_sv_damagetext >= 3)
+#define PHYS_GRAVITY(s) autocvar_sv_gravity
+#define FOREACH_ENTITY_FLOAT_ORDERED(fld,match,body) _FOREACH_ENTITY_FIND_ORDERED(float, fld, match, true, body)
+#define __ARM_SIZEOF_MINIMAL_ENUM 4
+#define W_SetupShot_Dir(ent,wepent,s_forward,antilag,recoil,snd,chan,maxdamage,deathtype) W_SetupShot_Dir_ProjectileSize(ent, wepent, s_forward, '0 0 0', '0 0 0', antilag, recoil, snd, chan, maxdamage, deathtype)
+#define STRUCT_PASS(id,s) s(_STRUCT_PASS, id)
+#define LL_CLEAR_1(this) LL_CLEAR_2(this, LAMBDA())
+#define WriteAnimation(to,it) WriteRegistered(Animations, to, it)
+#define WEP_CONFIG_WRITE_PROPS_float(wepname,name) { W_Config_Queue( sprintf("set g_balance_%s_%s %g\n", #wepname, #name, cvar(sprintf("g_balance_%s_%s", #wepname, #name)))); }
+#define __FLT32X_HAS_INFINITY__ 1
+#define UNSET_DUCKED(s) ((s).flags &= ~FL_DUCKED)
+#define __INT32_MAX__ 0x7fffffff
+#define __SIZE_WIDTH__ 64
+#define BITCLR(a,b) ((a) - ((a) & (b)))
+#define Q3COMPAT_COMMON q3compat
+#define siftdown(_start,_end) MACRO_BEGIN for (int root = (_start); root * 2 + 1 <= (_end); ) { int child = root * 2 + 1; if (child < (_end) && cmp(child, child + 1, pass) < 0) child += 1; if (cmp(root, child, pass) >= 0) break; swap(root, child, pass); root = child; } MACRO_END
+#define ClientConnect _ClientConnect
+#define __FLT128_IS_IEC_60559__ 1
+#define EVAL3(...) EVAL4(EVAL4(EVAL4(__VA_ARGS__)))
+#define EVAL4(...) EVAL5(EVAL5(EVAL5(__VA_ARGS__)))
+#define EVAL5(...) __VA_ARGS__
+#define PHYS_JETPACK_REVERSE_THRUST(s) STAT(JETPACK_REVERSE_THRUST, s)
+#define GET_V_GLOBALS(forward,right,up) MACRO_BEGIN forward = v_forward; right = v_right; up = v_up; MACRO_END
+#define vectorvectors DO_NOT_USE_GLOBALS_PREFER_VECTOR_VECTORS_MACRO_INSTEAD
+#define Write_byte(to,f) WriteByte(to, f)
+#define fixedvectoangles2(a,b) (_fixedvectoangles2 = vectoangles2(a, b), _fixedvectoangles2.x *= -1, _fixedvectoangles2)
+#define teamscores_flags(i) _teamscores_flags[i]
+#define STRUCT(id,...) 
+#define WARN_COND (!autocvar_g_mapinfo_ignore_warnings && MapInfo_Map_bspname == mi_shortname)
+#define addstat_int(id,fld) addstat(id, AS_INT, fld)
+#define demand(expr,...) _assert(print_assertfailed_fatal, expr, __VA_ARGS__)
+#define FOREACH_ENTITY_CLASS_UNORDERED(class,cond,body) _FOREACH_ENTITY_FIND_UNORDERED(clazz, string, classname, class, cond, body)
+#define setpredraw(e,f) SELFWRAP_SET(predraw, e, f)
+#define CONSTRUCTOR(cname,...) cname OVERLOAD(spawn ##cname, cname this, __VA_ARGS__) { return = this; } ACCUMULATE cname OVERLOAD(spawn ##cname, cname this, __VA_ARGS__)
+#define VERBOSE_MURDER(type) strcat(MURDER_ ##type, "^BG%s")
+#define IL_CLEAR(this) MACRO_BEGIN IntrusiveList _il = this; assert(_il); .entity il_prev = _il.il_prevfld; .entity il_next = _il.il_nextfld; noref int i = 0; for (entity _next, _it = _il.il_head; _it; (_it = _next, ++i)) { _next = _it.(il_next); _it.(il_next) = _it.(il_prev) = NULL; } _il.il_head = _il.il_tail = NULL; MACRO_END
+#define repr_cvar_int(x) (ftos(x))
+#define EV_ClientKill(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) o(float, MUTATOR_ARGV_1_float)
+#define REGISTER_DEATHTYPE(id,msg_death,msg_death_by,extra) REGISTER(Deathtypes, DEATH, id, m_id, new_pure(deathtype)) { this.m_id += DT_FIRST; this.nent_name = #id; this.death_msgextra = extra; this.death_msgself = msg_death; this.death_msgmurder = msg_death_by; }
+#define __INT_FAST32_MAX__ 0x7fffffffffffffffL
+#define DEGLOB_CLEAR 1
+#define _AUTOCVAR(...) EVAL__AUTOCVAR(OVERLOAD(AUTOCVAR, __FILE__, __VA_ARGS__))
+#define P00_IS_EMPTY_CASE_0000 P00_IS_EMPTY_CASE_0000
+#define stat_VIEWHEIGHT view_ofs_z
+#define PHYS_INPUT_BUTTON_FORWARD(s) (PHYS_INPUT_MOVEVALUES(s).x > 0)
+#define is_pure(e) ((e).pure_data && (e).solid == SOLID_NOT)
+#define GetProgramCommandPrefix() "sv_cmd"
+#define PHYS_DODGING_DELAY autocvar_sv_dodging_delay
+#define EV_Bot_FixCount(i,o) i(int, MUTATOR_ARGV_0_int) o(int, MUTATOR_ARGV_0_int) i(int, MUTATOR_ARGV_1_int) o(int, MUTATOR_ARGV_1_int)
+#define TELEPORT_OBSERVERS_ONLY BIT(0)
+#define BOT_EXEC_STATUS_PAUSED 1
+#define DEATH_ISSPECIAL(t) (t >= DT_FIRST)
+#define W_PROP_SEC(class,fld,T,wepname) _W_PROP(class, secondary_ ##fld, T, wepname)
+#define g_duel IS_GAMETYPE(DUEL)
+#define __INT_LEAST32_MAX__ 0x7fffffff
+#define __DEC32_MIN__ 1E-95DF
+#define _STATIC_INIT(func,where) ACCUMULATE void _static_ ##func(); ACCUMULATE_FUNCTION(where, _static_ ##func) void _static_ ##func()
+#define PlayerScore_Get(player,scorefield) PlayerScore_Add(player, scorefield, 0)
+#define EV_NO_ARGS(i,o) 
+#define INGAME_STATUS_NONE 0
+#define __WCHAR_WIDTH__ 32
+#define REGISTER_NADE(id) REGISTER(Nades, NADE_TYPE, id, m_id, NEW(Nade))
+#define __FLT_DECIMAL_DIG__ 9
+#define W_CONFIG_SEC(class,fld,T,wepname) _W_CONFIG(class, secondary_ ##fld, T, wepname)
+#define LOG_FATALF(...) _LOG_FATAL(sprintf(__VA_ARGS__))
+#define AL_gete(this,idx) al_ftoe(AL_getf(this, idx))
+#define AL_getf(this,idx) al_stof(AL_gets(this, idx))
+#define AL_gets(this,idx) bufstr_get(this.al_buf, idx)
+#define PORTALS_ARE_NOT_SOLID 
+#define GAMETYPE_DEFAULTED_SETTING(str) ((gametype_setting_tmp = cvar(strcat("g_", GetGametype(), "_" #str))), (gametype_setting_tmp < 0) ? 0 : (gametype_setting_tmp == 0 || autocvar_g_respawn_delay_forced) ? max(0, autocvar_g_ ##str) : gametype_setting_tmp)
+#define ColorByTeam(number) Team_IndexToTeam(number + 1)
+#define HasFatalFailure() (TEST_fatal > 0)
+#define RVALUE 0
+#define __LONG_LONG_MAX__ 0x7fffffffffffffffLL
+#define EV_Player_ChangedTeam(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) i(float, MUTATOR_ARGV_2_float)
+#define count_weeks(time) count_fill(time, _("CI_ZER^%d weeks"), _("CI_FIR^%d week"), _("CI_SEC^%d weeks"), _("CI_THI^%d weeks"), _("CI_MUL^%d weeks"))
+#define __ARM_ALIGN_MAX_PWR 28
+#define RandomSelection_AddString(s,weight,priority) RandomSelection_Add(NULL, 0, s, '0 0 0', weight, priority)
+#define __BFLT16_HAS_INFINITY__ 1
+#define pointparticles(effect,org,vel,howmany) Send_Effect(effect, org, vel, howmany)
+#define _R_GET(r,i) AL_gete(r, i)
+#define EV_GetRecords(i,o) i(int, MUTATOR_ARGV_0_int) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define TUR_LAST (REGISTRY_COUNT(Turrets) - 1)
+#define __FLT_MIN_EXP__ (-125)
+#define setcamera_transform(e,f) SELFWRAP_SET(camera_transform, e, f)
+#define tokenize_console _tokenize_console
+#define WEP_HARDCODED_IMPULSES 20
+#define EXPECT_NO_FATAL_FAILURE(statement) EXPECT_NO_FATAL_FAILURE_(statement, { })
+#define WEP_IMPULSE_END bound(WEP_IMPULSE_BEGIN, WEP_IMPULSE_BEGIN + (REGISTRY_COUNT(Weapons) - 1) - 1, 253)
+#define NOTIF_ARGUMENT_LIST ARG_CASE(ARG_CS_SV_HA, "s1", s1) ARG_CASE(ARG_CS_SV_HA, "s2", s2) ARG_CASE(ARG_CS_SV_HA, "s3", s3) ARG_CASE(ARG_CS_SV_HA, "s4", s4) ARG_CASE(ARG_CS_SV, "s2loc", ((autocvar_notification_show_location && (s2 != "")) ? sprintf(( ((tmp_s = autocvar_notification_show_location_string) != "") ? tmp_s : _(" (near %s)") ), s2) : "")) ARG_CASE(ARG_CS_SV, "s3loc", ((autocvar_notification_show_location && (s3 != "")) ? sprintf(( ((tmp_s = autocvar_notification_show_location_string) != "") ? tmp_s : _(" (near %s)") ), s3) : "")) ARG_CASE(ARG_CS_SV_DC, "f1", ftos(f1)) ARG_CASE(ARG_CS_SV_DC, "f2", ftos(f2)) ARG_CASE(ARG_CS_SV, "f3", ftos(f3)) ARG_CASE(ARG_CS_SV, "f4", ftos(f4)) ARG_CASE(ARG_CS_SV, "f1dtime", ftos_decimals(TIME_DECODE(f1), 2)) ARG_CASE(ARG_CS_SV, "f2dtime", ftos_decimals(TIME_DECODE(f2), 2)) ARG_CASE(ARG_CS, "f2primsec", (f2 ? _("secondary") : _("primary"))) ARG_CASE(ARG_CS, "f3primsec", (f3 ? _("secondary") : _("primary"))) ARG_CASE(ARG_CS, "f1secs", count_seconds(f1)) ARG_CASE(ARG_CS, "f1points", (f1 == 1 ? _("point") : _("points"))) ARG_CASE(ARG_CS_SV, "f1ord", count_ordinal(f1)) ARG_CASE(ARG_CS_SV, "f1time", process_time(2, f1)) ARG_CASE(ARG_CS_SV_HA, "f1race_time", TIME_ENCODED_TOSTRING(f1, true)) ARG_CASE(ARG_CS_SV_HA, "f2race_time", TIME_ENCODED_TOSTRING(f2, true)) ARG_CASE(ARG_CS_SV_HA, "f3race_time", TIME_ENCODED_TOSTRING(f3, true)) ARG_CASE(ARG_CS_SV, "race_col", CCR(((f1 == 1) ? "^F1" : "^F2"))) ARG_CASE(ARG_CS_SV, "race_diff", ((f2 > f3) ? sprintf(CCR("^1[+%s]"), TIME_ENCODED_TOSTRING(f2 - f3, true)) : sprintf(CCR("^2[-%s]"), TIME_ENCODED_TOSTRING(f3 - f2, true)))) ARG_CASE(ARG_CS, "missing_teams", notif_arg_missing_teams(f1)) ARG_CASE(ARG_CS, "pass_key", getcommandkey(_("drop flag"), "+use")) ARG_CASE(ARG_CS, "nade_key", getcommandkey(_("throw nade"), "dropweapon")) ARG_CASE(ARG_CS, "join_key", getcommandkey(_("jump"), "+jump")) ARG_CASE(ARG_CS, "frag_ping", notif_arg_frag_ping(true, f2)) ARG_CASE(ARG_CS, "frag_stats", notif_arg_frag_stats(f2, f3, f4)) ARG_CASE(ARG_CS, "spree_cen", (autocvar_notification_show_sprees ? notif_arg_spree_cen(f1) : "")) ARG_CASE(ARG_CS_SV, "spree_inf", (autocvar_notification_show_sprees ? notif_arg_spree_inf(1, input, s2, f2) : "")) ARG_CASE(ARG_CS_SV, "spree_end", (autocvar_notification_show_sprees ? notif_arg_spree_inf(-1, "", "", f1) : "")) ARG_CASE(ARG_CS_SV, "spree_lost", (autocvar_notification_show_sprees ? notif_arg_spree_inf(-2, "", "", f1) : "")) ARG_CASE(ARG_CS_SV, "item_wepname", REGISTRY_GET(Weapons, f1).m_name) ARG_CASE(ARG_CS_SV, "item_buffname", BUFF_NAME(f1)) ARG_CASE(ARG_CS_SV, "f3buffname", BUFF_NAME(f3)) ARG_CASE(ARG_CS_SV, "item_wepammo", (f2 > 0 ? notif_arg_item_wepammo(f1, f2) : "")) ARG_CASE(ARG_DC, "item_centime", ftos(autocvar_notification_item_centerprinttime)) ARG_CASE(ARG_SV, "death_team", Team_ColoredFullName(f1)) ARG_CASE(ARG_CS, "death_team", Team_ColoredFullName(f1 - 1)) ARG_CASE(ARG_CS_SV_HA, "minigame1_name",find(NULL,netname,s1).descriptor.message) ARG_CASE(ARG_CS_SV_HA, "minigame1_d", find(NULL,netname,s1).descriptor.netname)
+#define __WINT_WIDTH__ 32
+#define GENERATOR_TEAM_4 CTX(_("GENERATOR^Pink"))
+#define __INT_FAST64_TYPE__ long int
+#define __BFLT16_MAX__ 3.38953138925153547590470800371487867e+38BF16
+#define TIME_ENCODE(t) TIME_TO_NTHS(t, TIME_FACTOR)
+#define __FP_FAST_FMAF 1
+#define __FLT128_NORM_MAX__ 1.18973149535723176508575932662800702e+4932F128
+#define _MUTATOR_HANDLE_PUSHOUT(type,id) type out_ ##id = id;
+#define __BFLT16_HAS_DENORM__ 1
+#define PHYS_INPUT_BUTTON_DRAG(s) PHYS_INPUT_BUTTON_BUTTON8(s)
+#define __ARM_FEATURE_CLZ 1
+#define __FLT16_DENORM_MIN__ 5.96046447753906250000000000000000000e-8F16
+#define EV_ForbidThrowCurrentWeapon(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define _AL_type__e() entity
+#define _AL_type__f() float
+#define _AL_type__s() string
+#define PHYS_PL_CROUCH_VIEWOFS(s) STAT(PL_CROUCH_VIEW_OFS, s)
+#define ATTRIB(...) EVAL_ATTRIB(OVERLOAD_(ATTRIB, __VA_ARGS__))
+#define EV_ClientKill_Now(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define _STAT(id) stat_ ##id
+#define FOR_EACH_KH_KEY(v) for(v = kh_worldkeylist; v; v = v.kh_worldkeynext )
+#define TIME_ENCODED_TOSTRING(n,compact) mmssth(n, compact)
+#define NADE_PROJECTILE(i,projectile,trail) MACRO_BEGIN this.m_projectile[i] = projectile; this.m_trail[i] = trail; MACRO_END
+#define __REGISTER_PREFIX__ 
+#define REGISTER(...) EVAL_REGISTER(OVERLOAD_(REGISTER, __VA_ARGS__))
+#define strcmp _strcmp
+#define g_ctf IS_GAMETYPE(CTF)
+#define g_cts IS_GAMETYPE(CTS)
+#define TR_PROPS_COMMON(P,class,prefix) P(class, prefix, aim_firetolerance_dist, float) P(class, prefix, aim_maxpitch, float) P(class, prefix, aim_maxrot, float) P(class, prefix, aim_speed, float) P(class, prefix, ammo_max, float) P(class, prefix, ammo_recharge, float) P(class, prefix, health, float) P(class, prefix, respawntime, float) P(class, prefix, shot_dmg, float) P(class, prefix, shot_force, float) P(class, prefix, shot_radius, float) P(class, prefix, shot_refire, float) P(class, prefix, shot_speed, float) P(class, prefix, shot_spread, float) P(class, prefix, shot_volly, float) P(class, prefix, shot_volly_refire, float) P(class, prefix, target_range, float) P(class, prefix, target_range_min, float) P(class, prefix, target_range_optimal, float) P(class, prefix, target_select_anglebias, float) P(class, prefix, target_select_missilebias, float) P(class, prefix, target_select_playerbias, float) P(class, prefix, target_select_rangebias, float) P(class, prefix, target_select_samebias, float) P(class, prefix, track_accel_pitch, float) P(class, prefix, track_accel_rot, float) P(class, prefix, track_blendrate, float) P(class, prefix, track_type, float)
+#define SET_ONGROUND(s) ((s).flags |= FL_ONGROUND)
+#define DEGLOB_LOG(kind,name,...) deglob_log(kind, name, __FILE__, __LINE__, __FUNC__, #__VA_ARGS__)
+#define strcpy(this,s) MACRO_BEGIN if (this) { strunzone(this); } this = strzone(s); MACRO_END
+#define strfree(this) MACRO_BEGIN if (this) { strunzone(this); } this = string_null; MACRO_END
+#define MURDER_TYPEFRAG BOLD(_("^K1%sYou typefragged ^BG%s"))
+#define skel_mul_bones DO_NOT_USE_GLOBALS
+#define IS_DEAD(s) ((s).deadflag != DEAD_NO)
+#define __FLT_MANT_DIG__ 24
+#define TIME_TO_NTHS(t,n) floor((t) * (n) + 0.5)
+#define scores_label(this) ((this).m_name)
+#define __VERSION__ "13.3.0"
+#define MURDER_FRAGGED_FIRE BOLD(_("^K1%sYou were burned by ^BG%s"))
+#define EV_CustomizeWaypoint(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define make_impure(e) (e).pure_data = false;
+#define CSQCMODEL_AUTOUPDATE(e) CSQCModel_CheckUpdate(e)
+#define STRING_ITERATOR_SAVE(this) this ##_i
+#define LABEL(id) :id
+#define TELEPORT_FLAGS_WARPZONE 0
+#define BITCLR_ASSIGN(a,b) ((a) = (a) - ((a) & (b)))
+#define FLAG_SPAWN_OFFSET ('0 0 1' * (PL_MAX_CONST.z - 13))
+#define LOG_HELP(...) _LOG_HELP(strcat1n(__VA_ARGS__))
+#define DID_CHEAT() ++cheating
+#define __ARM_FEATURE_FMA 1
+#define MAGIC_STATS_FIX_AUTO(it,var,id) if (it.m_id == id) { ++g_magic_stats_hole; ++it.m_id; }
+#define PHYS_BUGRIGS_REVERSE_SPEEDING(s) g_bugrigs_reverse_speeding
+#define SELFWRAP(T,R,oldargs,args,forward) .R oldargs T; noref .R oldargs __ ##T = T; .R args self ##T; R T ##_self oldargs { ENGINE_EVENT(); return this.self ##T forward; }
+#define P00_IGNORE(...) 
+#define __SOURCELOC__ (sprintf("^7%s^9(^9%s^7:^9%s^7)", __FUNC__, __FILE__, STR(__LINE__)))
+#define __FLT32_MANT_DIG__ 24
+#define EVAL_REGISTRY_SORT(...) __VA_ARGS__
+#define __STDC_IEC_60559_BFP__ 201404L
+#define IS_FAKE_CLIENT(v) (clienttype(v) == CLIENTTYPE_NOTACLIENT)
+#define CLEAR_V_GLOBALS() MACRO_BEGIN if (autocvar_debug_deglobalization_clear) { v_forward = VEC_NAN; v_right = VEC_NAN; v_up = VEC_NAN } MACRO_END
+#define vlen2(v) (_vlen2 = (v), dotproduct(_vlen2, _vlen2))
+#define __STDC_IEC_60559_COMPLEX__ 201404L
+#define __FLT64_NORM_MAX__ 1.79769313486231570814527423731704357e+308F64
+#define W_PROP_END() 
+#define __BFLT16_MIN__ 1.17549435082228750796873653722224568e-38BF16
+#define _STRUCT_PASS_END(x,id,type) x ##_ ##id
+#define EV_SV_ParseServerCommand(i,o) i(string, MUTATOR_ARGV_0_string) i(int, MUTATOR_ARGV_1_int) i(string, MUTATOR_ARGV_2_string)
+#define __FLT128_HAS_DENORM__ 1
+#define GENTLE autocvar_sv_gentle
+#define FTOI(f) ((f) * INTEGER_ONE)
+#define PHYS_MULTIJUMP_CLIENT(s) CS_CVAR(s).cvar_cl_multijump
+#define EV_PlayerRegen(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) o(float, MUTATOR_ARGV_1_float) i(float, MUTATOR_ARGV_2_float) o(float, MUTATOR_ARGV_2_float) i(float, MUTATOR_ARGV_3_float) o(float, MUTATOR_ARGV_3_float) i(float, MUTATOR_ARGV_4_float) o(float, MUTATOR_ARGV_4_float) i(float, MUTATOR_ARGV_5_float) o(float, MUTATOR_ARGV_5_float) i(float, MUTATOR_ARGV_6_float) o(float, MUTATOR_ARGV_6_float) i(float, MUTATOR_ARGV_7_float) o(float, MUTATOR_ARGV_7_float) i(float, MUTATOR_ARGV_8_float) o(float, MUTATOR_ARGV_8_float) i(float, MUTATOR_ARGV_9_float) o(float, MUTATOR_ARGV_9_float) i(float, MUTATOR_ARGV_10_float) o(float, MUTATOR_ARGV_10_float)
+#define __INT32_C(c) c
+#define _ISLOCAL(ent) ((edict_num(1) == (ent)) ? true : false)
+#define __DEC64_EPSILON__ 1E-15DD
+#define __ORDER_PDP_ENDIAN__ 3412
+#define EVAL_STAT(...) __VA_ARGS__
+#define IS_DUCKED(s) (boolean((s).flags & FL_DUCKED))
+#define _MUTATOR_HANDLE_POPOUT(type,id) id = out_ ##id;
+#define PHYS_BUGRIGS_FRICTION_FLOOR(s) g_bugrigs_friction_floor
+#define _STRUCT_PASS_(x,id,type) x ##_ ##id,
+#define __FLT_IS_IEC_60559__ 1
+#define POSITIVE_PITCH_IS_DOWN 1
+#define EV_PlayerCanCrouch(i,o) i(entity, MUTATOR_ARGV_0_entity) i(bool, MUTATOR_ARGV_1_bool) o(bool, MUTATOR_ARGV_1_bool)
+#define EV_Unfreeze(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define emit(T,...) MACRO_BEGIN IL_EACH(g_events, it.evt_ ##T ##_listener, it.evt_ ##T(__VA_ARGS__)); MACRO_END
+#define P00_ARG(_01,_02,_03,_04,_05,_06,_07,_08,_09,_10,_11,_12,_13,_14,_15,_16,_00,...) _00
+#define WEP_CVAR(wepname,name) (_wep_ ##wepname.wepvar_ ##name)
+#define EV_TeamBalance_GetPlayerForTeamSwitch(i,o) i(int, MUTATOR_ARGV_0_int) i(int, MUTATOR_ARGV_1_int) i(bool, MUTATOR_ARGV_2_bool) o(entity, MUTATOR_ARGV_3_entity)
+#define MURDER_FRAGGED_FREEZE BOLD(_("^K1%sYou were frozen by ^BG%s"))
+#define W_CONFIG_BEGIN(class) METHOD(class, wr_config, void(class this)) {
+#define FOREACH_ENTITY_RADIUS(org,dist,cond,body) ORDERED(FOREACH_ENTITY_RADIUS)(org, dist, cond, body)
+#define serialize_byte(stream,this) MACRO_BEGIN WriteByte(stream, this); MACRO_END
+#define STATIC_INIT_LATE(func) _STATIC_INIT(func ##_2, __static_init_2)
+#define EFMASK_CHEAP (EF_ADDITIVE | EF_DOUBLESIDED | EF_FULLBRIGHT | EF_NODEPTHTEST | EF_NODRAW | EF_NOGUNBOB | EF_NOSHADOW | EF_LOWPRECISION | EF_SELECTABLE | EF_TELEPORT_BIT)
+#define __BFLT16_HAS_QUIET_NAN__ 1
+#define __UINTMAX_C(c) c ## UL
+#define REGISTER_REGISTRY(id) _REGISTER_REGISTRY(id, #id)
+#define DEATH_ENT(t) (DEATH_ISSPECIAL(t) ? (REGISTRY_GET(Deathtypes, t - DT_FIRST)) : NULL)
+#define SYSTEM_UPDATE(sys) MACRO_BEGIN static float t = 0; float dt = autocvar_xon_sys_ ##sys ##_dt; float minfps = autocvar_xon_sys_ ##sys ##_minfps; static float accumulator = 0; float a = 0; if (dt) { accumulator += min(frametime, 1 / (minfps)); } else { accumulator += frametime; dt = accumulator; a = 1; } while (accumulator >= dt) { time = t; FOREACH_COMPONENT(sys, sys_ ##sys ##_update(it, dt)); t += dt; accumulator -= dt; } if (!a) a = accumulator / dt; FOREACH_COMPONENT(sys, com_ ##sys ##_interpolate(it, a)); MACRO_END
+#define NOAIRBORNCORPSE_ALLOWSUSPENDED(s) STAT(NOAIRBORNCORPSE_ALLOWSUSPENDED)
+#define spawn_pure() _spawn()
+#define MURDER_FRAG_FREEZE BOLD(_("^K3%sYou froze ^BG%s"))
+#define BITSET(var,mask,flag) (flag ? (var) | (mask) : (var) & ~(mask))
+#define STRING_ITERATOR_PEEK(this) str2chr(this ##_s, this ##_i)
+#define PHYS_AIRCONTROL_BACKWARDS(s) STAT(MOVEVARS_AIRCONTROL_BACKWARDS, s)
+#define EV_ForbidDropCurrentWeapon(i,o) i(entity, MUTATOR_ARGV_0_entity) i(int, MUTATOR_ARGV_1_int)
+#define PHYS_WALLCLIP(s) STAT(MOVEVARS_WALLCLIP)
+#define __AARCH64EL__ 1
+#define __DEC32_SUBNORMAL_MIN__ 0.000001E-95DF
+#define PROPERTY(type,name) type name; GETTER(type, name)
+#define count_days_decs(time,decs) sprintf(CTX(_("CI_DEC^%s days")), ftos_decimals(time, decs))
+#define MSG_CENTER_NOTIF(name,defaultvalue,strnum,flnum,args,cpid,durcnt,normal,gentle) NOTIF_ADD_AUTOCVAR(CENTER_ ##name, defaultvalue) MSG_CENTER_NOTIF_(0, CENTER_ ##name, CENTER_ ##name, defaultvalue, strnum, flnum, args, cpid, durcnt, normal, gentle)
+#define ADD_DYNAMIC_LIGHT(org,radius,lightcolours,forward,right,up) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "ADD_DYNAMIC_LIGHT", #org, #radius, #lightcolours); SET_V_GLOBALS(forward, right, up); _adddynamiclight_hidden(org, radius, lightcolours); CLEAR_V_GLOBALS(); MACRO_END
+#define AL_sete(this,idx,val) AL_setf(this, idx, al_etof(val))
+#define AL_setf(this,idx,val) AL_sets(this, idx, al_ftos(val))
+#define AL_sets(this,idx,val) bufstr_set(this.al_buf, idx, val)
+#define VEC_NAN vec3(FLOAT_NAN, FLOAT_NAN, FLOAT_NAN);
+#define __LONG_MAX__ 0x7fffffffffffffffL
+#define __DEC128_SUBNORMAL_MIN__ 0.000000000000000000000000000000001E-6143DL
+#define PHYS_WALLJUMP_FORCE(s) STAT(WALLJUMP_FORCE, s)
+#define EV_GetResourceLimit(i,o) i(entity, MUTATOR_ARGV_7_entity) i(entity, MUTATOR_ARGV_8_entity) i(float, MUTATOR_ARGV_9_float) o(float, MUTATOR_ARGV_9_float)
+#define MULTITEAM_CHOICE(prefix,defaultvalue,challow,chtype,optiona,optionb) NOTIF_ADD_AUTOCVAR(CHOICE_ ##prefix, defaultvalue) NOTIF_ADD_AUTOCVAR(CHOICE_ ##prefix ##_ALLOWED, challow) MSG_CHOICE_NOTIF_TEAM(NUM_TEAM_1, prefix ##_RED, prefix, defaultvalue, challow, chtype, optiona ##_RED, optionb ##_RED) MSG_CHOICE_NOTIF_TEAM(NUM_TEAM_2, prefix ##_BLUE, prefix, defaultvalue, challow, chtype, optiona ##_BLUE, optionb ##_BLUE) MSG_CHOICE_NOTIF_TEAM(NUM_TEAM_3, prefix ##_YELLOW, prefix, defaultvalue, challow, chtype, optiona ##_YELLOW, optionb ##_YELLOW) MSG_CHOICE_NOTIF_TEAM(NUM_TEAM_4, prefix ##_PINK, prefix, defaultvalue, challow, chtype, optiona ##_PINK, optionb ##_PINK)
+#define _REGISTER_IMPULSE(id,alias,n) REGISTER(IMPULSES, id, m_id, new_pure(Impulse)) { this.impulse = n; IMPULSE_ALIAS(alias, "impulse " #n); }
+#define __UINT_FAST16_TYPE__ long unsigned int
+#define SUBMERGED_NO 1
+#define W_SetupShot_ProjectileSize(ent,wepent,mi,ma,antilag,recoil,snd,chan,maxdamage,deathtype) W_SetupShot_Dir_ProjectileSize(ent, wepent, v_forward, mi, ma, antilag, recoil, snd, chan, maxdamage, deathtype)
+#define __FLT32_DENORM_MIN__ 1.40129846432481707092372958328991613e-45F32
+#define PHYS_JETPACK_MAXSPEED_SIDE(s) STAT(JETPACK_MAXSPEED_SIDE, s)
+#define bprintf(...) bprint(sprintf(__VA_ARGS__))
+#define ALLPROPERTIES ALLPROPERTIES_COMMON
+#define ASSERT_FALSE(condition) ASSERT_EQ(false, condition)
+#define __INT16_TYPE__ short int
+#define REPLICATE_APPLYCHANGE(var,ApplyChange_code) void ReplicateVars_ApplyChange(entity this, entity store, string thisname, int i) { if (thisname == var) { ApplyChange_code } }
+#define W_SetupShot_Dir_ProjectileSize(ent,wepent,s_forward,mi,ma,antilag,recoil,snd,chan,maxdamage,deathtype) W_SetupShot_Dir_ProjectileSize_Range(ent, wepent, s_forward, mi, ma, antilag, recoil, snd, chan, maxdamage, max_shot_distance, deathtype)
+#define GET_BAN_ARG(v,d) if (argc > reason_arg) { if ((v = stof(argv(reason_arg))) != 0) ++reason_arg; else v = d; } else { v = d; }
+#define IL_FIRST(this) (this.il_head)
+#define SET_V_GLOBALS(forward,right,up) MACRO_BEGIN v_forward = forward; v_right = right; v_up = up; MACRO_END
+#define AL_DELETE(this) MACRO_BEGIN buf_del(this.al_buf); delete(this); this = NULL; MACRO_END
+#define EV_SetModname(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define linux 1
+#define MAPINFO_SETTEMP_ACL_USER cvar_string("g_mapinfo_settemp_acl")
+#define vmul(a,b) (_vmul_a = (a), _vmul_b = (b), '1 0 0' * (_vmul_a.x * _vmul_b.x) + '0 1 0' * (_vmul_a.y * _vmul_b.y) + '0 0 1' * (_vmul_a.z * _vmul_b.z))
+#define steerlib_pull(ent,point) normalize(point - (ent).origin)
+#define REGISTER_PLAYERSOUND(id) .string _playersound_ ##id; REGISTER(PlayerSounds, playersound, id, m_id, new_pure(PlayerSound)) { this.m_playersoundstr = #id; this.m_playersoundfld = _playersound_ ##id; }
+#define FOREACH_ENTITY_ENT_UNORDERED(fld,match,body) _FOREACH_ENTITY_FIND_UNORDERED(, entity, fld, match, true, body)
+#define EV_reset_map_players(i,o) 
+#define adddynamiclight2 DO_NOT_USE_GLOBALS
+#define SetChangeParms _SetChangeParms
+#define trailparticles(e,effect,org,vel) ((!e) ? Send_Effect(effect, org, vel, 0) : __trailparticles(e, particleeffectnum(effect), org, vel))
+#define SKEL_SET_BONE(skel,bonenum,org,forward,right,up) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "SKEL_SET_BONE", #skel, #bonenum, #org); SET_V_GLOBALS(forward, right, up); _skel_set_bone_hidden(skel, bonenum, org); CLEAR_V_GLOBALS(); MACRO_END
+#define DAMAGETEXT_PRECISION_MULTIPLIER 128
+#define EV_Player_ChangeTeam(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) i(float, MUTATOR_ARGV_2_float)
+#define __FLT64X_MAX__ 1.18973149535723176508575932662800702e+4932F64x
+#define __FLT16_HAS_INFINITY__ 1
+#define scores(this) _scores[(this).m_id]
+#define PHYS_JUMPSPEEDCAP_MAX autocvar_sv_jumpspeedcap_max
+#define __PTRDIFF_MAX__ 0x7fffffffffffffffL
+#define MAP_5(f,it,...) f(it) MAP_4(f, __VA_ARGS__)
+#define __INTPTR_TYPE__ long int
+#define EV_GiveFragsForKill(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(float, MUTATOR_ARGV_2_float) o(float, MUTATOR_ARGV_2_float) i(float, MUTATOR_ARGV_3_float) i(entity, MUTATOR_ARGV_4_entity)
+#define MUTATOR_ONADD if (mode == MUTATOR_ADDING)
+#define IS_GAMETYPE(NAME) (MapInfo_LoadedGametype == MAPINFO_TYPE_ ##NAME)
+#define __DEC64_MIN_EXP__ (-382)
+#define ITEM_HANDLE(signal,...) __Item_Send_ ##signal(__VA_ARGS__)
+#define EV_PlayerPowerups(i,o) i(entity, MUTATOR_ARGV_0_entity) i(int, MUTATOR_ARGV_1_int)
+#define PHYS_BUGRIGS_FRICTION_AIR(s) g_bugrigs_friction_air
+#define GAMEPLAYFIX_SLIDEMOVEPROJECTILES(s) STAT(GAMEPLAYFIX_SLIDEMOVEPROJECTILES)
+#define _backtrace() builtin_remove(NULL)
+#define EV_Player_ChangeTeamKill(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define CTF_DIFFTEAM(a,b) ((autocvar_g_ctf_reverse || (ctf_oneflag && autocvar_g_ctf_oneflag_reverse)) ? SAME_TEAM(a,b) : DIFF_TEAM(a,b))
+#define DEATH_ISWEAPON(t,w) (DEATH_WEAPONOF(t) == (w))
+#define REGISTRY_MAX(id) id ##_MAX
+#define STRING_ITERATOR_UNGET(this) MACRO_BEGIN --this ##_i; MACRO_END
+#define PHYS_JUMPSPEEDCAP_MIN autocvar_sv_jumpspeedcap_min
+#define PHYS_DODGING_HORIZ_FORCE_FASTEST autocvar_sv_dodging_horiz_force_fastest
+#define STATIC_METHOD(cname,name,prototype) prototype METHOD_REFERENCE(cname, name)
+#define crandom() (2 * (random() - 0.5))
+#define W_SetupProjVelocity_PRE(ent,wepname,prefix) W_SetupProjVelocity_Explicit(ent, w_shotdir, v_up, WEP_CVAR(wepname, prefix ##speed), 0, 0, WEP_CVAR(wepname, prefix ##spread), false)
+#define W_SetupProjVelocity_PRI(ent,wepname) W_SetupProjVelocity_Explicit(ent, w_shotdir, v_up, WEP_CVAR_PRI(wepname, speed), 0, 0, WEP_CVAR_PRI(wepname, spread), false)
+#define PHYS_WARSOWBUNNY_BACKTOSIDERATIO(s) STAT(MOVEVARS_WARSOWBUNNY_BACKTOSIDERATIO, s)
+#define TeamByColor(teamid) (Team_TeamToIndex(teamid) - 1)
+#define __FLT64_MAX_EXP__ 1024
+#define PHYS_AIRCONTROL_POWER(s) STAT(MOVEVARS_AIRCONTROL_POWER, s)
+#define __FLT_MAX_EXP__ 128
+#define FOREACH_CLIENT_RANDOM(cond,body) MACRO_BEGIN if (_FCR_entered) LOG_FATAL("FOREACH_CLIENT_RANDOM must not be nested"); _FCR_entered = true; int _cnt = 0; FOREACH_CLIENT(cond, { int _j = floor(random() * (_cnt + 1)); if (_j != _cnt) _FCR_clients[_cnt] = _FCR_clients[_j]; _FCR_clients[_j] = it; ++_cnt; }); for (int _i = 0; _i < _cnt; ++_i) { const noref int i = _i; ITER_CONST noref entity it = _FCR_clients[i]; if (cond) { LAMBDA(body) } } _FCR_entered = false; MACRO_END
+#define FOREACH_ENTITY_FLAGS_ORDERED(fld,match,body) _FOREACH_ENTITY_FIND_ORDERED(flags, fld, match, true, body)
+#define __DBL_MANT_DIG__ 53
+#define MAP_11(f,it,...) f(it) MAP_10(f, __VA_ARGS__)
+#define SV_Shutdown _SV_Shutdown
+#define MAP_12(f,it,...) f(it) MAP_11(f, __VA_ARGS__)
+#define PHYS_FROZEN(s) STAT(FROZEN, s)
+#define ATTRIB_3(cname,name,type) classfield(cname) .type name
+#define ATTRIB_4(cname,name,type,val) ATTRIB_3(cname, name, type); INIT(cname) { noref bool strzone; this.name = val; } ATTRIB_3(cname, name, type)
+#define __DBL_MAX_EXP__ 1024
+#define Sound_fixpath(this) ( _Sound_fixpath_this = (this), _Sound_fixpath_cached = _Sound_fixpath_this.sound_str_, _Sound_fixpath_cached ? _Sound_fixpath_cached : _Sound_fixpath(_Sound_fixpath_this.sound_str()) )
+#define CPGEN_SPAWN_OFFSET ('0 0 1' * (PL_MAX_CONST.z - 13))
+#define PHYS_MULTIJUMP_CLIENTDEFAULT(s) STAT(MULTIJUMP_CLIENT, s)
+#define __AUTOCVAR(file,archive,var,type,desc,default) ACCUMULATE void RegisterCvars(void(string, string, string, bool, string) f) { f( #var, repr_cvar_ ##type(default), desc, archive, file); } type autocvar_ ##var = default
+#define __UINT8_C(c) c
+#define PHYS_MULTIJUMP_ADD(s) STAT(MULTIJUMP_ADD, s)
+#define LL_NEW() NEW(LinkedList)
+#define __UINT64_TYPE__ long unsigned int
+#define __ARM_NEON 1
+#define EXACTTRIGGER_TOUCH(e,t) if(!WarpZoneLib_ExactTrigger_Touch((e), (t), true)) return
+#define _ENTCS_PROP(id,ispublic,checkprop,checkprop_pl,setprop,svsend,clreceive) void id ##_set(entity ent, entity player) { setprop(ent.(checkprop), player.(checkprop_pl)); } void id ##_send(int chan, entity ent) { LAMBDA(svsend); } REGISTER(EntCSProps, ENTCS_PROP, id, m_id, new_pure(entcs_prop)) { this.m_public = ispublic; this.m_check = id ##_check; this.m_set = id ##_set; this.m_send = id ##_send; }
+#define skel_find_bone _skel_find_bone
+#define PHYS_INPUT_BUTTON_RIGHT(s) (PHYS_INPUT_MOVEVALUES(s).y > 0)
+#define P99_HAS_COMMA(...) P00_ARG(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0)
+#define autocvar_timelimit_override cvar("timelimit_override")
+#define W_PROP(class,wepname,fld,T,m) W_PROP_ ##m(class, fld, T, wepname)
+#define __FLT128_HAS_QUIET_NAN__ 1
+#define cross(a,b) ((a) >< (b))
+#define repr_cvar_bool(x) ((x) ? "1" : "0")
+#define __FLT64X_MIN__ 3.36210314311209350626267781732175260e-4932F64x
+#define PHYS_VIEWHEIGHT(s) STAT(VIEWHEIGHT, s)
+#define stat_SHELLS ammo_shells
+#define EV_Freeze(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) i(int, MUTATOR_ARGV_2_int)
+#define Team_IndexToFullName(index) Team_FullName(Team_IndexToTeam(index))
+#define __GNUC_STDC_INLINE__ 1
+#define __FLT64_HAS_DENORM__ 1
+#define EV_MakePlayerObserver(i,o) i(entity, MUTATOR_ARGV_0_entity) i(bool, MUTATOR_ARGV_1_bool)
+#define REGISTRY_SORT(...) EVAL_REGISTRY_SORT(OVERLOAD(REGISTRY_SORT, __VA_ARGS__))
+#define IN_LAVA(pos) (_content_type = pointcontents(pos), (_content_type == CONTENT_LAVA || _content_type == CONTENT_SLIME))
+#define WriteFloat(to,f) WriteCoord(to, f)
+#define EVAL_entityclass(...) __VA_ARGS__
+#define __UINTPTR_MAX__ 0xffffffffffffffffUL
+#define setSendEntity(e,f) SELFWRAP_SET(SendEntity, e, f)
+#define __INTMAX_WIDTH__ 64
+#define ENTCS_PROP_CODED(id,ispublic,checkprop,checkprop_pl,setprop,decfactor,svsend,clreceive) bool id ##_check(entity ent, entity player) { return (floor(ent.(checkprop)) / decfactor != floor(player.(checkprop_pl)) / decfactor); } _ENTCS_PROP(id, ispublic, checkprop, checkprop_pl, setprop, svsend, clreceive)
+#define DEATH_ISTURRET(t) (DEATH_ISSPECIAL(t) && (REGISTRY_GET(Deathtypes, t - DT_FIRST)).death_msgextra == "turret")
+#define CLASS(...) EVAL_CLASS(OVERLOAD__(CLASS, __VA_ARGS__))
+#define __FLT32X_MIN__ 2.22507385850720138309023271733240406e-308F32x
+#define ftoe(i) edict_num(i)
+#define WEP_CVAR_SEC(wepname,name) WEP_CVAR(wepname, secondary_ ##name)
+#define MSG_INFO_NOTIF(name,defaultvalue,strnum,flnum,args,hudargs,icon,normal,gentle) NOTIF_ADD_AUTOCVAR(INFO_ ##name, defaultvalue) MSG_INFO_NOTIF_(0, INFO_ ##name, INFO_ ##name, defaultvalue, strnum, flnum, args, hudargs, icon, normal, gentle)
+#define __INT8_MAX__ 0x7f
+#define stream_writing(stream) true
+#define __PIC__ 2
+#define __UINT_FAST32_TYPE__ long unsigned int
+#define MULTIICON_INFO_(name,defaultvalue,strnum,flnum,args,hudargs,iconargs,icon,normal,gentle) NOTIF_ADD_AUTOCVAR(name, defaultvalue) REGISTER(Notifications, name, m_id, new_pure(msg_info_notification)) { Create_Notification_Entity (this, defaultvalue, ACVNN(name), MSG_INFO, strtoupper(#name), 0); Create_Notification_Entity_InfoCenter(this, ACVNN(name), strtoupper(#name), strnum, flnum, args, hudargs, icon, CPID_Null, "", normal, gentle); this.nent_iconargs = iconargs; }
+#define __FLT32X_NORM_MAX__ 1.79769313486231570814527423731704357e+308F32x
+#define PHYS_BUGRIGS_CAR_JUMPING(s) g_bugrigs_planar_movement_car_jumping
+#define __FLT_MAX__ 3.40282346638528859811704183484516925e+38F
+#define __ARM_FEATURE_NUMERIC_MAXMIN 1
+#define MEAN_EVALUATE(s,prefix) mean_evaluate(s, prefix ##_accumulator, prefix ##_count, prefix ##_mean)
+#define PROJECTILE_TOUCH(e,t) MACRO_BEGIN if (WarpZone_Projectile_Touch(e,t)) return; MACRO_END
+#define IS_SMALL(def) ((def.instanceOfHealth && def == ITEM_HealthSmall) || (def.instanceOfArmor && def == ITEM_ArmorSmall))
+#define __INT_LEAST32_WIDTH__ 32
+#define EV_PlayerPhysics(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float)
+#define PHYS_INPUT_BUTTON_ATCK2(s) PHYS_INPUT_BUTTON_BUTTON3(s)
+#define LOG_DEBUGF(...) _LOG_DEBUG(sprintf(__VA_ARGS__))
+#define __FLT128_EPSILON__ 1.92592994438723585305597794258492732e-34F128
+#define REPLICATE_3(fld,type,var) REPLICATE_4(fld, type, var, )
+#define REPLICATE_4(fld,type,var,func) REPLICATE_ ##type(fld, var, func)
+#define REPLICATE_7(fld,type,var,func,create,destroy,after) void ReplicateVars(entity this, entity store, string thisname, int i) { type field = store.fld; if (i < 0) { destroy } else { string it = func(argv(i + 1)); bool current = thisname == var; if (i > 0) { if (current) { create } } else { stuffcmd(this, strcat("cl_cmd sendcvar ", var, "\n")); } if (current) { after } } store.fld = field; }
+#define EV_TeamBalance_CheckAllowedTeams(i,o) i(float, MUTATOR_ARGV_0_float) o(float, MUTATOR_ARGV_0_float) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string) i(entity, MUTATOR_ARGV_2_entity)
+#define OVERLOAD(F,...) P99_IF_EMPTY(__VA_ARGS__)(P99_PASTE2(F, _00)())(P99_PASTE3(F, _, P00_NARG(__VA_ARGS__))(__VA_ARGS__))
+#define __UINTMAX_MAX__ 0xffffffffffffffffUL
+#define pow(a,b) ((a) ** (b))
+#define startsWith(haystack,needle) (strstrofs(haystack, needle, 0) == 0)
+#define __LDBL_DENORM_MIN__ 6.47517511943802511092443895822764655e-4966L
+#define devassert_once(...) MACRO_BEGIN if (autocvar_developer > 0) assert_once(__VA_ARGS__); MACRO_END
+#define __INT16_C(c) c
+#define REGISTER_NET_C2S(id) NET_HANDLE(id, bool); REGISTER(C2S_Protocol, NET, id, m_id, new_pure(net_c2s_packet)) { this.netname = #id; this.m_read = Net_Handle_ ##id; }
+#define AnnouncerFilename(snd) sprintf("announcer/%s/%s.wav", AnnouncerOption(), snd)
+#define PHYS_PL_VIEWOFS(s) STAT(PL_VIEW_OFS, s)
+#define W_NET_SEC(class,fld,T,wepname) _W_NET(class, secondary_ ##fld, T, wepname)
+#define __STDC_HOSTED__ 1
+#define SUPER(cname) (cname ##_vtbl.vtblbase)
+#define stat_ITEMS items
+#define __GCC_ATOMIC_LLONG_LOCK_FREE 2
+#define __FLT_MIN_10_EXP__ (-37)
+#define __INT_LEAST64_WIDTH__ 64
+#define SPAWNFUNC_Q3_COND(weapon_classname,ammo_classname,cond,xonwep1,xonwep0) SPAWNFUNC_WEAPON_COND(weapon_classname, cond, xonwep1, xonwep0) SPAWNFUNC_Q3AMMO_COND(ammo_classname, cond, xonwep1, xonwep0)
+#define SET_JUMP_HELD(s) ((s).flags &= ~FL_JUMPRELEASED)
+#define P00_IS_EMPTY_CASE_1110 P00_IS_EMPTY_CASE_1110
+#define FIXED_MAKE_VECTORS MAKE_VECTORS
+#define ANNCE_DEFTIME 2
+#define PHYS_DODGING_RAMP_TIME autocvar_sv_dodging_ramp_time
+#define __ATOMIC_ACQUIRE 2
+#define PHYS_BUGRIGS(s) g_bugrigs
+#define GAMEPLAYFIX_UNSTICKPLAYERS(s) STAT(GAMEPLAYFIX_UNSTICKPLAYERS)
+#define __FLT_MIN__ 1.17549435082228750796873653722224568e-38F
+#define __GCC_IEC_559_COMPLEX 2
+#define FOREACH_ENTITY_CLASS_ORDERED(class,cond,body) _FOREACH_ENTITY_FIND_ORDERED(string, classname, class, cond, body)
+#define EV_LogDeath_AppendItemCodes(i,o) i(entity, MUTATOR_ARGV_0_entity) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define CSQCMODEL_EF_RESPAWNGHOST EF_SELECTABLE
+#define repr_cvar_float(x) (ftos(x))
+#define backtrace(msg) MACRO_BEGIN int dev = autocvar_developer; bool war = autocvar_prvm_backtraceforwarnings; cvar_set("developer", "1"); cvar_set("prvm_backtraceforwarnings", "1"); print("\n--- CUT HERE ---\n", msg); _backtrace(); print("\n--- CUT UNTIL HERE ---\n"); cvar_set("developer", ftos(dev)); cvar_set("prvm_backtraceforwarnings", ftos(war)); MACRO_END
+#define W_SetupProjVelocity_Basic(ent,pspeed,pspread) W_SetupProjVelocity_Explicit(ent, w_shotdir, v_up, pspeed, 0, 0, pspread, false)
+#define __INTMAX_C(c) c ## L
+#define EV_ClientDisconnect(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define W_NET_END() if (commit) WriteByte(chan, 0); }
+#define MAGIC_STATS(_,x) _(x, MOVEVARS_AIRACCEL_QW_STRETCHFACTOR, 220) _(x, MOVEVARS_AIRCONTROL_PENALTY, 221) _(x, MOVEVARS_AIRSPEEDLIMIT_NONQW, 222) _(x, MOVEVARS_AIRSTRAFEACCEL_QW, 223) _(x, MOVEVARS_AIRCONTROL_POWER, 224) _(x, MOVEFLAGS, 225) _(x, MOVEVARS_WARSOWBUNNY_AIRFORWARDACCEL, 226) _(x, MOVEVARS_WARSOWBUNNY_ACCEL, 227) _(x, MOVEVARS_WARSOWBUNNY_TOPSPEED, 228) _(x, MOVEVARS_WARSOWBUNNY_TURNACCEL, 229) _(x, MOVEVARS_WARSOWBUNNY_BACKTOSIDERATIO, 230) _(x, MOVEVARS_AIRSTOPACCELERATE, 231) _(x, MOVEVARS_AIRSTRAFEACCELERATE, 232) _(x, MOVEVARS_MAXAIRSTRAFESPEED, 233) _(x, MOVEVARS_AIRCONTROL, 234) _(x, FRAGLIMIT, 235) _(x, TIMELIMIT, 236) _(x, MOVEVARS_WALLFRICTION, 237) _(x, MOVEVARS_FRICTION, 238) _(x, MOVEVARS_WATERFRICTION, 239) _(x, MOVEVARS_TICRATE, 240) _(x, MOVEVARS_TIMESCALE, 241) _(x, MOVEVARS_GRAVITY, 242) _(x, MOVEVARS_STOPSPEED, 243) _(x, MOVEVARS_MAXSPEED, 244) _(x, MOVEVARS_SPECTATORMAXSPEED, 245) _(x, MOVEVARS_ACCELERATE, 246) _(x, MOVEVARS_AIRACCELERATE, 247) _(x, MOVEVARS_WATERACCELERATE, 248) _(x, MOVEVARS_ENTGRAVITY, 249) _(x, MOVEVARS_JUMPVELOCITY, 250) _(x, MOVEVARS_EDGEFRICTION, 251) _(x, MOVEVARS_MAXAIRSPEED, 252) _(x, MOVEVARS_STEPHEIGHT, 253) _(x, MOVEVARS_AIRACCEL_QW, 254) _(x, MOVEVARS_AIRACCEL_SIDEWAYS_FRICTION, 255)
+#define FOREACH_ENTITY_FLOAT(fld,match,body) ORDERED(FOREACH_ENTITY_FLOAT)(fld, match, body)
+#define __WINT_MAX__ 0xffffffffU
+#define STATIC_INIT_EARLY(func) _STATIC_INIT(func ##_0, __static_init_0)
+#define snd_flag_returned noise1
+#define __BFLT16_MIN_10_EXP__ (-37)
+#define GROUNDENTITY_TYPE entity
+#define __SIZE_MAX__ 0xffffffffffffffffUL
+#define EV_ChatMessage(i,o) i(entity, MUTATOR_ARGV_0_entity) i(int, MUTATOR_ARGV_1_int) o(int, MUTATOR_ARGV_1_int)
+#define __WCHAR_MAX__ 0xffffffffU
+#define autocvar_g_weaponarena cvar_string("g_weaponarena")
+#define PHYS_MAXAIRSTRAFESPEED(s) STAT(MOVEVARS_MAXAIRSTRAFESPEED, s)
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_1 1
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_2 1
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4 1
+#define __GCC_HAVE_SYNC_COMPARE_AND_SWAP_8 1
+#define FOREACH_ENTITY_FLAGS_UNORDERED(fld,match,body) _FOREACH_ENTITY_FIND_UNORDERED(, flags, fld, match, true, body)
+#define __GCC_IEC_559 2
+#define MEAN_DECLARE(prefix,m) float prefix ##_mean = m; .float prefix ##_count, prefix ##_accumulator
+#define PHYS_INPUT_BUTTON_MASK(s) ( (BIT(0) * PHYS_INPUT_BUTTON_ATCK(s)) | (BIT(1) * PHYS_INPUT_BUTTON_JUMP(s)) | (BIT(2) * PHYS_INPUT_BUTTON_ATCK2(s)) | (BIT(3) * PHYS_INPUT_BUTTON_ZOOM(s)) | (BIT(4) * PHYS_INPUT_BUTTON_CROUCH(s)) | (BIT(5) * PHYS_INPUT_BUTTON_HOOK(s)) | (BIT(6) * PHYS_INPUT_BUTTON_USE(s)) | (BIT(7) * PHYS_INPUT_BUTTON_BACKWARD(s)) | (BIT(8) * PHYS_INPUT_BUTTON_FORWARD(s)) | (BIT(9) * PHYS_INPUT_BUTTON_LEFT(s)) | (BIT(10) * PHYS_INPUT_BUTTON_RIGHT(s)) )
+#define snd_flag_capture noise2
+#define g_tdm IS_GAMETYPE(TEAM_DEATHMATCH)
+#define EV_PutClientInServer(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EV_TurretSpawn(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define IL_TEST_BUILD() s = il_test_build(il_test, ent1, ent2, ent3, ent4, ent5)
+#define ALPHA alpha
+#define __FINITE_MATH_ONLY__ 0
+#define CSQCMODEL_EXTRAPROPERTIES CSQCMODEL_PROPERTY(BIT(0), int, ReadShort, WriteShort, colormap) CSQCMODEL_PROPERTY(BIT(1), int, ReadInt24_t, WriteInt24_t, effects) CSQCMODEL_PROPERTY(BIT(2), int, ReadByte, WriteByte, modelflags) CSQCMODEL_PROPERTY(BIT(2), int, ReadByte, WriteByte, skin) CSQCMODEL_PROPERTY(BIT(2), int, ReadByte, WriteByte, traileffect) CSQCMODEL_PROPERTY(BIT(3), int, ReadByte, WriteByte, move_movetype) CSQCMODEL_PROPERTY_SCALED(BIT(3), float, ReadByte, WriteByte, ALPHA, 254, -1, 254) CSQCMODEL_PROPERTY(BIT(3), float, ReadByte, WriteByte, solid) CSQCMODEL_PROPERTY(BIT(4), int, ReadByte, WriteByte, multijump_count) CSQCMODEL_PROPERTY(BIT(4), int, ReadByte, WriteByte, clipgroup) CSQCMODEL_PROPERTY(BIT(5), float, ReadApproxPastTime, WriteApproxPastTime, death_time) CSQCMODEL_IF(isplayer) CSQCMODEL_PROPERTY(BIT(6), GROUNDENTITY_TYPE, ReadShort, WriteEntity, GROUNDENTITY_NAME) CSQCMODEL_ENDIF CSQCMODEL_IF(!isplayer) CSQCMODEL_PROPERTY(BIT(7), TAG_ENTITY_TYPE, ReadShort, WriteEntity, TAG_ENTITY_NAME) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, glowmod_x, 254, -1, 254) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, glowmod_y, 254, -1, 254) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, glowmod_z, 254, -1, 254) CSQCMODEL_ENDIF CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, colormod_x, 16, 0, 255) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, colormod_y, 16, 0, 255) CSQCMODEL_PROPERTY_SCALED(BIT(8), float, ReadByte, WriteByte, colormod_z, 16, 0, 255) CSQCMODEL_IF(isplayer) CSQCMODEL_PROPERTY(BIT(7), int, ReadByte, WriteByte, anim_state) CSQCMODEL_PROPERTY(BIT(7), float, ReadApproxPastTime, WriteApproxPastTime, anim_time) CSQCMODEL_IF(!islocalplayer) CSQCMODEL_PROPERTY(BIT(8), float, ReadChar, WriteChar, anim_lower_action) CSQCMODEL_PROPERTY(BIT(8), float, ReadApproxPastTime, WriteApproxPastTime, anim_lower_time) CSQCMODEL_ENDIF CSQCMODEL_PROPERTY(BIT(9), float, ReadChar, WriteChar, anim_upper_action) CSQCMODEL_PROPERTY(BIT(9), float, ReadApproxPastTime, WriteApproxPastTime, anim_upper_time) CSQCMODEL_ENDIF CSQCMODEL_PROPERTY(BIT(10), float, ReadAngle, WriteAngle, v_angle_x) CSQCMODEL_PROPERTY(BIT(11), TAG_VIEWLOC_TYPE, ReadShort, WriteEntity, TAG_VIEWLOC_NAME) CSQCMODEL_PROPERTY(BIT(12), float, ReadCoord, WriteCoord, scale) CSQCMODEL_PROPERTY(BIT(13), int, ReadInt24_t, WriteInt24_t, dphitcontentsmask)
+#define GameRules_scoring_add_float2int(client,fld,value,float_field,score_factor) _GameRules_scoring_add_float2int(client, SP_ ##fld, value, float_field, score_factor)
+#define __ARM_FEATURE_UNALIGNED 1
+#define __FLT64_HAS_INFINITY__ 1
+#define EFFECT(istrail,name,realname) REGISTER(Effects, EFFECT, name, m_id, Create_Effect_Entity(realname, istrail));
+#define __DEC64_MAX_EXP__ 385
+#define P00_CLAUSE1(...) __VA_ARGS__ P00_IGNORE
+#define P00_CLAUSE2(...) P00_IDENT
+#define _LOG_HELP(s) MACRO_BEGIN string __s = s; print("^7", __s, (str2chr(__s, strlen(__s) - 1) != '\n') ? "\n" : ""); MACRO_END
+#define EV_SpectateSet(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) o(entity, MUTATOR_ARGV_1_entity)
+#define EV_Item_Spawn(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __LDBL_MAX__ 1.18973149535723176508575932662800702e+4932L
+#define __LDBL_IS_IEC_60559__ 1
+#define new(class) _new(class, false)
+#define FOREACH_ENTITY_STRING_UNORDERED(fld,match,body) _FOREACH_ENTITY_FIND_UNORDERED(, string, fld, match, true, body)
+#define navigation_item_add_link(from_wp,to_item,walkable) waypoint_addlink_customcost(to_item, from_wp, (walkable ? waypoint_getlinkcost(from_wp, to_item) : 999))
+#define ITEM_KEY_BIT(n) ( bitshift(1, n) )
+#define debug_text_3d(...) EVAL(OVERLOAD(debug_text_3d, __VA_ARGS__))
+#define PHYS_DODGING_MAXSPEED autocvar_sv_dodging_maxspeed
+#define REGISTER_MUTATOR(id,dependence) bool MUTATORFUNC_ ##id ##_hooks(int mode) { return = false; } bool MUTATORFUNC_ ##id(int mode) { return = false; bool ret = MUTATORFUNC_ ##id ##_hooks(mode); if (ret) return ret; } bool MUTATOR_ ##id ##_check() { return dependence; } REGISTER(Mutators, MUTATOR, id, m_id, NEW(Mutator, #id, MUTATORFUNC_ ##id)) { this.mutatorcheck = MUTATOR_ ##id ##_check; } ACCUMULATE bool MUTATORFUNC_ ##id(int mode)
+#define FOREACH_CLIENT(cond,body) FOREACH_CLIENTSLOT(IS_CLIENT(it) && (cond), LAMBDA(body))
+#define __AARCH64_CMODEL_SMALL__ 1
+#define _TEST_ASSERT(statement) MACRO_BEGIN LAMBDA(statement); ++TEST_fatal; return; MACRO_END
+#define __WINT_MIN__ 0U
+#define strid(s) stof(sprintf("%i", s))
+#define __FLT128_MIN_10_EXP__ (-4931)
+#define subscribe(listener,T,fn) MACRO_BEGIN listener.evt_ ##T = (fn); listener.evt_ ##T ##_listener = true; IL_PUSH(g_events, listener); MACRO_END
+#define DEATH_ISMONSTER(t) (DEATH_ISSPECIAL(t) && (REGISTRY_GET(Deathtypes, t - DT_FIRST)).death_msgextra == "monster")
+#define CSQCMODEL_AUTOINIT(e) CSQCModel_LinkEntity(e)
+#define NAME_NEUTRAL _("Neutral")
+#define getentity DO_NOT_USE_GLOBALS
+#define NAME_TEAM_1 CTX(_("TEAM^Red"))
+#define NAME_TEAM_3 CTX(_("TEAM^Yellow"))
+#define __WCHAR_MIN__ 0U
+#define ITEM_TOUCH_NEEDKILL() (((trace_dpstartcontents | trace_dphitcontents) & DPCONTENTS_NODROP) || (trace_dphitq3surfaceflags & Q3SURFACEFLAG_SKY))
+#define W_SetupShot_Range(ent,wepent,antilag,recoil,snd,chan,maxdamage,range,deathtype) W_SetupShot_Dir_ProjectileSize_Range(ent, wepent, v_forward, '0 0 0', '0 0 0', antilag, recoil, snd, chan, maxdamage, range, deathtype)
+#define GAMEPLAYFIX_EASIERWATERJUMP(s) STAT(GAMEPLAYFIX_EASIERWATERJUMP)
+#define __GCC_ATOMIC_POINTER_LOCK_FREE 2
+#define __SIG_ATOMIC_MIN__ (-__SIG_ATOMIC_MAX__ - 1)
+#define GetClientErrorString(clienterror,original_input) GetClientErrorString_color(clienterror, original_input, "^7")
+#define SORT_SWAP(a,b) b.sort_prev = a.sort_prev; a.sort_next = b.sort_next; if (b.sort_next) b.sort_next.sort_prev = a; if (a.sort_prev) a.sort_prev.sort_next = b; a.sort_prev = b; b.sort_next = a
+#define LOG_DEBUG(...) _LOG_DEBUG(strcat1n(__VA_ARGS__))
+#define _FOREACH_ENTITY_FIND_UNORDERED(id,T,fld,match,cond,body) MACRO_BEGIN MUTEX_LOCK(_FOREACH_ENTITY_FIND_ ##T ##_ ##id ##mutex); entity _foundchain_first = _findchain ##T ##_tofield(fld, match, _FOREACH_ENTITY_FIND_ ##T ##_next ##id); FOREACH_LIST(_foundchain, _FOREACH_ENTITY_FIND_ ##T ##_next ##id, cond, body); MUTEX_UNLOCK(_FOREACH_ENTITY_FIND_ ##T ##_ ##id ##mutex); MACRO_END
+#define WEAPONS_ALL_C 
+#define ASSERT_LESS(name,var,const) noref int name[(const - var + 1)];
+#define EV_URI_GetCallback(i,o) i(float, MUTATOR_ARGV_0_float) i(float, MUTATOR_ARGV_1_float) i(string, MUTATOR_ARGV_2_string)
+#define WRITESPECTATABLE_MSG_ONE(to,statement) MACRO_BEGIN entity prev = msg_entity; entity dst = to; FOREACH_CLIENT(IS_REAL_CLIENT(it), { if (it == dst || (it.classname == STR_SPECTATOR && it.enemy == dst)) { msg_entity = it; LAMBDA(statement); } }); msg_entity = prev; MACRO_END
+#define ANNCE_INSTANT -1
+#define CAT(a,b) _CAT(a, b)
+#define EV_TakeResource(i,o) i(entity, MUTATOR_ARGV_7_entity) i(entity, MUTATOR_ARGV_8_entity) o(entity, MUTATOR_ARGV_8_entity) i(float, MUTATOR_ARGV_9_float) o(float, MUTATOR_ARGV_9_float)
+#define WriteAngleVector(to,v) MACRO_BEGIN WriteAngle(to, v.x); WriteAngle(to, v.y); WriteAngle(to, v.z); MACRO_END
+#define PS(this) ((this)._ps)
+#define autocvar_fraglimit cvar("fraglimit")
+#define EV_ChatMessageTo(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define __DBL_DIG__ 15
+#define UNSET_ONSLICK(s) ((s).flags &= ~FL_ONSLICK)
+#define HEXDIGIT_TO_DEC(d) ((HEXDIGIT_TO_DEC_RAW(d) | 0x10) - 0x10)
+#define HM_gets(this,k) db_get(this, k)
+#define __FLT32_IS_IEC_60559__ 1
+#define classfield(name) 
+#define EV_GiveResource(i,o) i(entity, MUTATOR_ARGV_7_entity) i(entity, MUTATOR_ARGV_8_entity) o(entity, MUTATOR_ARGV_8_entity) i(float, MUTATOR_ARGV_9_float) o(float, MUTATOR_ARGV_9_float)
+#define static_init_late() CALL_ACCUMULATED_FUNCTION(__static_init_2)
+#define __LDBL_MIN__ 3.36210314311209350626267781732175260e-4932L
+#define VEH_LAST (REGISTRY_COUNT(Vehicles) - 1)
+#define QCC_SUPPORT_POW 
+#define make_pure(e) (e).pure_data = true; (e).solid = SOLID_NOT;
+#define WriteRegistered(r,to,it) Write_byte(to, it.m_id)
+#define TCR(input,type,team) strreplace("^TC", COL_TEAM_ ##team, strreplace("^TT", strtoupper(type ##_TEAM_ ##team), input))
+#define chr2str _chr2str
+#define GAMEPLAYFIX_WATERTRANSITION(s) STAT(GAMEPLAYFIX_WATERTRANSITION)
+#define setcefc(e,f) SELFWRAP_SET(customizeentityforclient, e, f)
+#define SAME_TEAM(a,b) (teamplay ? (a.team == b.team) : (a == b))
+#define strhasword(s,w) (strstrofs(strcat(" ", s, " "), strcat(" ", w, " "), 0) >= 0)
+#define autocvar_bot_suffix cvar_string("bot_suffix")
+#define EV_PlayerDamaged(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(float, MUTATOR_ARGV_2_float) i(float, MUTATOR_ARGV_3_float) i(vector, MUTATOR_ARGV_4_vector) i(int, MUTATOR_ARGV_5_int) i(float, MUTATOR_ARGV_6_float)
+#define db_remove(db,key) db_put(db, key, "")
+#define GET_TAG_INFO(ent,tagindex,forward,right,up,origin) MACRO_BEGIN DEGLOB_LOG(DEGLOB_WRAPPED, "GET_TAG_INFO", #ent, #tagindex); origin = _gettaginfo_hidden(ent, tagindex); GET_V_GLOBALS(forward, right, up); CLEAR_V_GLOBALS(); MACRO_END
+#define LL_CLEAR_2(this,dtor) MACRO_BEGIN LinkedList _ll = this; assert(_ll); while (_ll.ll_tail) { entity it = LL_POP(_ll); if (!it) continue; dtor delete(it); } MACRO_END
+#define MURDER_FRAG_FIRE2 BOLD(_("^K3%sYou scored against ^BG%s"))
+#define __FLT64_MANT_DIG__ 53
+#define EV_SpectateNext(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) o(entity, MUTATOR_ARGV_1_entity)
+#define EV_PM_Physics(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) i(float, MUTATOR_ARGV_2_float)
+#define __BFLT16_DIG__ 2
+#define _LOG(f,level,s) MACRO_BEGIN if (autocvar_developer > 0) f(strcat1n(_LOG_HEADER(level), "\n")); f(strcat1n("^7", s, "\n")); MACRO_END
+#define SUCCEED() (TEST_ok = true)
+#define IS_ONSLICK(s) boolean((s).flags & FL_ONSLICK)
+#define __SIZEOF_LONG_DOUBLE__ 16
+#define IS_MONSTER(v) (v.flags & FL_MONSTER)
+#define MUTEX_UNLOCK(this) MACRO_BEGIN this = string_null; MACRO_END
+#define PlayerSound(this,def,chan,vol,voicetype) _GlobalSound(this, NULL, def, string_null, chan, vol, voicetype, false)
+#define __FLT64_DECIMAL_DIG__ 17
+#define PHYS_AIRSTRAFEACCELERATE(s) STAT(MOVEVARS_AIRSTRAFEACCELERATE, s)
+#define PHYS_BUGRIGS_ANGLE_SMOOTHING(s) g_bugrigs_angle_smoothing
+#define LOG_INFO(...) _LOG_INFO(strcat1n(__VA_ARGS__))
+#define repr_cvar_vector(x) (sprintf("%v", x))
+#define MACRO_END }else voidfunc()
+#define SET_FIELD_COUNT(field,first,count) if (!field) { field = (first + count); ++count; }
+#define EV_PlayerSpawn(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define __FLT16_MAX_10_EXP__ 4
+#define PHYS_INPUT_FRAMETIME sys_frametime
+#define _MUTATOR_HANDLE_PREPARE(type,id) id = in_ ##id;
+#define EV_PrepareExplosionByDamage(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity)
+#define SetNewParms _SetNewParms
+#define REGISTER_RADARICON(id,num) REGISTER(RadarIcons, RADARICON, id, m_id, new_pure(RadarIcon)) { this.m_radaricon = num; this.netname = #id; }
+#define PHYS_WALLJUMP_VELOCITY_Z_FACTOR(s) STAT(WALLJUMP_VELOCITY_Z_FACTOR, s)
+#define __DBL_HAS_INFINITY__ 1
+#define W_SetupShot(ent,wepent,antilag,recoil,snd,chan,maxdamage,deathtype) W_SetupShot_ProjectileSize(ent, wepent, '0 0 0', '0 0 0', antilag, recoil, snd, chan, maxdamage, deathtype)
+#define EV_SetWeaponreplace(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(string, MUTATOR_ARGV_2_string) o(string, MUTATOR_ARGV_2_string)
+#define shotorg_adjust shotorg_adjust_values
+#define ENUMCLASS(id) USING(id, int); enum { CASE(id, Null)
+#define __DEC32_MIN_EXP__ (-94)
+#define WPCOLOR_DROPPEDFLAG(t) ((t) ? ('0.25 0.25 0.25' + colormapPaletteColor(t - 1, false)) * 0.5 : '1 1 1')
+#define EV_FragCenterMessage(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(float, MUTATOR_ARGV_2_float) i(int, MUTATOR_ARGV_3_int) i(int, MUTATOR_ARGV_4_int)
+#define teamscores(i) _teamscores[i]
+#define __FLT128_HAS_INFINITY__ 1
+#define __DEC128_MAX__ 9.999999999999999999999999999999999E6144DL
+#define CMD_STATUS_FINISHED 1
+#define _MUTATOR_HANDLE_POPTMP(type,id) id = tmp_ ##id;
+#define IF(cond,f,...) cond(f, __VA_ARGS__)
+#define EV_GetPlayerStatus(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define DEATH_ISVEHICLE(t) (DEATH_ISSPECIAL(t) && (REGISTRY_GET(Deathtypes, t - DT_FIRST)).death_msgextra == "vehicle")
+#define MURDER_FRAGGED BOLD(_("^K1%sYou were fragged by ^BG%s"))
+#define ANTILAG_LATENCY(e) min(0.4, CS(e).ping * 0.001)
+#define EVENT(T,args) .bool evt_ ##T ##_listener; .void args evt_ ##T
+#define MURDER_FRAGGED_FIRE2 BOLD(_("^K1%sYou were scored against by ^BG%s"))
+#define IS_MOVABLE(v) ((IS_PLAYER(v) || IS_MONSTER(v)) && !STAT(FROZEN, v))
+#define CLASS_1(cname) CLASS_2(cname, )
+#define CLASS_2(cname,base) entityclass(cname, base); classfield(cname).bool instanceOf ##cname; DEBUG_STUFF(cname) VTBL(cname, base) _INIT_STATIC(cname) { if (cname ##_vtbl && !this.transmute) { copyentity_qc(cname ##_vtbl, this); return; } spawn ##base ##_static(this); this.instanceOf ##cname = true; } INIT(cname) { if (cname ##_vtbl.vtblname == this.classname) { spawn ##cname ##_static(this); this.transmute = false; this.classname = #cname; this.vtblname = string_null; this.vtblbase = cname ##_vtbl; } spawn ##base ##_1(this); }
+#define __FLT32_HAS_QUIET_NAN__ 1
+#define GETTER(type,name) type GET(name)() { return name; }
+#define PHYS_MULTIJUMP_COUNT(s) STAT(MULTIJUMP_COUNT, s)
+#define Promise_catch(this,handler,userdata) Promise_catch_(this, Promise_new(), handler, userdata)
+#define STRING_ITERATOR(this,s,i) string this ##_s = s; int this ##_i = i
+#define W_CONFIG(class,wepname,fld,T,m) W_CONFIG_ ##m(class, fld, T, wepname)
+#define Team_IndexToColoredFullName(index) Team_ColoredFullName(Team_IndexToTeam(index))
+#define setthink(e,f) SELFWRAP_SET(think, e, f)
+#define inwater(point) (pointcontents(point) == CONTENT_WATER)
+#define __GCC_HAVE_DWARF2_CFI_ASM 1
+#define LOG_TRACE(...) _LOG_TRACE(strcat1n(__VA_ARGS__))
+#define __GXX_ABI_VERSION 1018
+#define W_PROPS(L,class,prefix) L(W_PROP_BEGIN, W_PROP, W_PROP_END, class, prefix) L(W_CONFIG_BEGIN, W_CONFIG, W_CONFIG_END, class, prefix) L(W_UPDATE_BEGIN, W_UPDATE, W_UPDATE_END, class, prefix) L(W_NET_BEGIN, W_NET, W_NET_END, class, prefix)
+#define mmsst(tm,compact) clockedtime_tostring(tm, false, compact)
+#define _MUTATOR_HOOKABLE(id,params) CallbackChain HOOK_ ##id; bool __Mutator_Send_ ##id(int params(_MUTATOR_HANDLE_PARAMS, _MUTATOR_HANDLE_NOP)) { params(_MUTATOR_HANDLE_PUSHTMP, _MUTATOR_HANDLE_NOP) params(_MUTATOR_HANDLE_PREPARE, _MUTATOR_HANDLE_NOP) bool ret = CallbackChain_Call(HOOK_ ##id); params(_MUTATOR_HANDLE_NOP, _MUTATOR_HANDLE_PUSHOUT) params(_MUTATOR_HANDLE_POPTMP, _MUTATOR_HANDLE_NOP) params(_MUTATOR_HANDLE_NOP, _MUTATOR_HANDLE_POPOUT) return ret; } ACCUMULATE void RegisterHooks() { HOOK_ ##id = NEW(CallbackChain, #id); }
+#define _strid(s) ITOF(reinterpret_cast(int, s))
+#define BUFF_SPAWNFUNC_Q3COMPAT(o,r) spawnfunc(o) { buff_Init_Compat(this, r); }
+#define g_assault IS_GAMETYPE(ASSAULT)
+#define MAX_TEAMSCORE 2
+#define PHYS_INPUT_BUTTON_BUTTON13(s) (CS(s).button13)
+#define WITHSELF(value,block) block
+#define getthink(e) SELFWRAP_GET(think, e)
+#define W_CONFIG_BOTH(class,fld,T,wepname) W_CONFIG_PRI(class, fld, T, wepname) W_CONFIG_SEC(class, fld, T, wepname)
+#define REGISTER_RESOURCE(id,inst) REGISTER(Resources, RES, id, m_id, inst)
+#define g_ca IS_GAMETYPE(CA)
+#define EV_TurretValidateTarget(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(int, MUTATOR_ARGV_2_int) o(float, MUTATOR_ARGV_3_float)
+#define __PIE__ 2
+#define SET_FIRST_OR_LAST(input,first,count) if (!input) { input = (first + count); }
+#define g_tmayhem IS_GAMETYPE(TEAM_MAYHEM)
+#define CAMPAIGN_GETARG a = argv(++i); if(a == ",") a = ""; else ++i
+#define PHYS_DOUBLEJUMP(s) STAT(DOUBLEJUMP, s)
+#define EV_VehicleInit(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define W_UPDATE_PRI(class,fld,T,wepname) _W_UPDATE(class, primary_ ##fld, T, wepname)
+#define EV_WantWeapon(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) o(float, MUTATOR_ARGV_1_float) i(bool, MUTATOR_ARGV_2_bool) o(bool, MUTATOR_ARGV_2_bool) i(bool, MUTATOR_ARGV_3_bool) o(bool, MUTATOR_ARGV_3_bool)
+#define EV_PlayerUseKey(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define DEBUG_STUFF(cname) 
+#define REPLICATE(...) EVAL_REPLICATE(OVERLOAD(REPLICATE, __VA_ARGS__))
+#define W_PROP_BEGIN(class) 
+#define autocvar_g_maplist cvar_string("g_maplist")
+#define EV_PlayerWeaponSelect(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define TEST(suite,test) void _TEST_ ##suite ##_ ##test(); ACCUMULATE int TEST_RunAll_accumulated(int f) { if (!TEST_Run(#suite "_" #test)) ++f; return = f; } void _TEST_ ##suite ##_ ##test()
+#define POSTGIVE_WEAPON(e,b,snd_incr,snd_decr) GiveSound((e), !!(save_weapons & WepSet_FromWeapon(b)), !!(STAT(WEAPONS, e) & WepSet_FromWeapon(b)), 0, snd_incr, snd_decr)
+#define movetogoal(e,...) (__self = (e), builtin_movetogoal(__VA_ARGS__))
+#define __FLT64_MIN_10_EXP__ (-307)
+#define GAMEPLAYFIX_STEPMULTIPLETIMES(s) STAT(GAMEPLAYFIX_STEPMULTIPLETIMES)
+#define __DEC128_MIN__ 1E-6143DL
+#define EV_GetCvars(i,o) i(float, get_cvars_f) i(string, get_cvars_s)
+#define EV_SpectatePrev(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) o(entity, MUTATOR_ARGV_1_entity) i(entity, MUTATOR_ARGV_2_entity)
+#define __NO_INLINE__ 1
+#define SPAWNFUNC_BODY(item) if (item && Item_IsDefinitionAllowed(item)) StartItem(this, item); else { startitem_failed = true; delete(this); }
+#define BADPREFIX_COND(p) (substring(k, 0, strlen(p)) == p)
+#define EV_ItemModel(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define __LDBL_DECIMAL_DIG__ 36
+#define error(...) (__self = (NULL), builtin_error(__VA_ARGS__))
+#define WALKER_ROCKET_MOVE(s) movelib_move_simple((s), newdir, (autocvar_g_turrets_unit_walker_rocket_speed), (autocvar_g_turrets_unit_walker_rocket_turnrate)); UpdateCSQCProjectile(s)
+#define PHYS_JUMPSTEP(s) STAT(MOVEVARS_JUMPSTEP)
+#define EVAL1(...) EVAL2(EVAL2(EVAL2(__VA_ARGS__)))
+#define _SSMAGIX "SUPERSPEC_OPTIONSFILE_V1"
+#define getblocked(e) SELFWRAP_GET(blocked, e)
+#define EV_AutoJoinOnConnection(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define ENTCS_PROP_RESOURCE(id,ispublic,checkprop,setprop,decfactor,svsend,clreceive) bool id ##_check(entity ent, entity player) { return (floor(GetResource(ent, checkprop) / decfactor) != floor(GetResource(player, checkprop) / decfactor)); } void id ##_set(entity ent, entity player) { SetResourceExplicit(ent, checkprop, GetResource(player, checkprop)); } void id ##_send(int chan, entity ent) { LAMBDA(svsend); } REGISTER(EntCSProps, ENTCS_PROP, id, m_id, new_pure(entcs_prop)) { this.m_public = ispublic; this.m_check = id ##_check; this.m_set = id ##_set; this.m_send = id ##_send; }
+#define WETFEET(pos) IN_LIQUID(pos + eZ * (m1.z + 1))
+#define SV_ChangeTeam _SV_ChangeTeam
+#define PHYS_HEALTH(s) STAT(HEALTH, s)
+#define W_SetupProjVelocity_SEC(ent,wepname) W_SetupProjVelocity_Explicit(ent, w_shotdir, v_up, WEP_CVAR_SEC(wepname, speed), 0, 0, WEP_CVAR_SEC(wepname, spread), false)
+#define ACVNN(name) autocvar_notification_ ##name
+#define TDEATHLOOP(o) vector deathmin = (o) + player.mins; vector deathmax = (o) + player.maxs; if(telefragmin != telefragmax) { if(deathmin.x > telefragmin.x) deathmin.x = telefragmin.x; if(deathmin.y > telefragmin.y) deathmin.y = telefragmin.y; if(deathmin.z > telefragmin.z) deathmin.z = telefragmin.z; if(deathmax.x < telefragmax.x) deathmax.x = telefragmax.x; if(deathmax.y < telefragmax.y) deathmax.y = telefragmax.y; if(deathmax.z < telefragmax.z) deathmax.z = telefragmax.z; } float deathradius = max(vlen(deathmin), vlen(deathmax)); for (entity head = findradius(o, deathradius); head; head = head.chain) if (head != player && head.takedamage && boxesoverlap(deathmin, deathmax, head.absmin, head.absmax))
+#define _spawnfunc_check(fld) if (s == #fld) continue;
+#define MURDER_FRAGGED_FREEZE2 BOLD(_("^K1%sYou were scored against by ^BG%s"))
+#define PHYS_INPUT_BUTTON_BUTTON2(s) (CS(s).button2)
+#define PHYS_INPUT_BUTTON_BUTTON3(s) (CS(s).button3)
+#define PHYS_INPUT_BUTTON_BUTTON4(s) (CS(s).button4)
+#define PHYS_INPUT_BUTTON_BUTTON6(s) (CS(s).button6)
+#define PHYS_INPUT_BUTTON_BUTTON7(s) (CS(s).button7)
+#define PHYS_INPUT_BUTTON_BUTTON8(s) (CS(s).button8)
+#define PHYS_INPUT_BUTTON_BUTTON9(s) (CS(s).button9)
+#define delete(this) MACRO_BEGIN entity _this = (this); void(entity) _dtor = _this.dtor; ONREMOVE(this); if (_dtor) _dtor(_this); else delete_fn(_this); MACRO_END
+#define __SCHAR_WIDTH__ 8
+#define INDEPENDENT_ATTACK_FINISHED 1
+#define __FLT32_MAX_10_EXP__ 38
+#define _W_PROP(class,fld,T,wepname) T _W_PROP_CVAR(wepname, fld); ATTRIB(class, wepvar_ ##fld, T, _W_PROP_CVAR(wepname, fld));
+#define ANNCE_LENGTH 0
+#define PHYS_DODGING_AIR_MAXSPEED autocvar_sv_dodging_air_maxspeed
+#define __INT_FAST32_TYPE__ long int
+#define SPAWNFUNC_INTERNAL_FIELDS(X) X(string, classname, "spawnfunc") X(string, target, string_null) X(string, target2, string_null) X(string, target3, string_null) X(string, target4, string_null) X(string, targetname, string_null)
+#define _LOG_TRACE(s) _LOG(dprint, "^6TRACE", s)
+#define INGAME_STATUS_JOINING 0.5
+#define __BFLT16_EPSILON__ 7.81250000000000000000000000000000000e-3BF16
+#define REGISTRY_DEPENDS_(id) Register ##id ##_Depends()
+#define __FLT16_MANT_DIG__ 11
+#define POSTGIVE_RES_ROT(e,f,t,rotfield,rottime,regenfield,regentime,snd_incr,snd_decr) GiveRot((e),save_ ##f,GetResource((e),(f)),rotfield,rottime,regenfield,regentime);GiveSound((e),save_ ##f,GetResource((e),(f)),t,snd_incr,snd_decr)
+#define aim DO_NOT_USE_GLOBALS
+#define FLAG_TEAM_1 CTX(_("FLAG^Red"))
+#define UNSET_JUMP_HELD(s) ((s).flags |= FL_JUMPRELEASED)
+#define FLAG_TEAM_3 CTX(_("FLAG^Yellow"))
+#define FLAG_TEAM_4 CTX(_("FLAG^Pink"))
+#define __FLT64X_DIG__ 33
+#define LAZY_NEW(id,compute) entity LAZY(id)() { static bool done; static entity it; if (!done) { it = compute; done = true; } return it; }
+#define REGISTER_IMPULSE(id,n) _REGISTER_IMPULSE(IMP_ ##id, id, n)
+#define RandomSelection_AddFloat(f,weight,priority) RandomSelection_Add(NULL, f, string_null, '0 0 0', weight, priority)
+#define GET_GAMETYPE_EXTENSION() ((g_race) ? ".race" : "")
+#define TR_CONFIG_END() }
+#define PHYS_CL_TRACK_CANJUMP(s) (CS_CVAR(s).cvar_cl_movement_track_canjump)
+#define SVQC 1
+#define EVAL_REGISTER(...) __VA_ARGS__
+#define FOREACH_ENTITY_RADIUS_UNORDERED(org,dist,cond,body) _FOREACH_ENTITY_FIND_UNORDERED(, radius, org, dist, cond, body)
+#define DEBUGPATHING 0
+#define PHYS_INPUT_BUTTON_BUTTON_USE(s) (CS(s).buttonuse)
+#define ASSERT_EQ(expected,actual) _TEST_ASSERT(EXPECT_EQ(expected, actual))
+#define MURDER_TYPEFRAGGED BOLD(_("^K1%sYou were typefragged by ^BG%s"))
+#define __SIG_ATOMIC_MAX__ 0x7fffffff
+#define POSTGIVE_VALUE_ROT(e,f,t,rotfield,rottime,regenfield,regentime,snd_incr,snd_decr) GiveRot((e), save_ ##f, (e).f, rotfield, rottime, regenfield, regentime); GiveSound((e), save_ ##f, (e).f, t, snd_incr, snd_decr)
+#define ASSERT_GE(val1,val2) _TEST_ASSERT(EXPECT_GE(val1, val2))
+#define LADDER_CNT 10
+#define MULTITEAM_MULTI(prefix,defaultvalue,anncepre,infopre,centerpre) MSG_MULTI_NOTIF(prefix ##_RED, defaultvalue, anncepre ##_RED, infopre ##_RED, centerpre ##_RED) MSG_MULTI_NOTIF(prefix ##_BLUE, defaultvalue, anncepre ##_BLUE, infopre ##_BLUE, centerpre ##_BLUE) MSG_MULTI_NOTIF(prefix ##_YELLOW, defaultvalue, anncepre ##YELLOW, infopre ##YELLOW, centerpre ##YELLOW) MSG_MULTI_NOTIF(prefix ##_PINK, defaultvalue, anncepre ##PINK, infopre ##PINK, centerpre ##PINK)
+#define ADD_FAILURE(msg) MACRO_BEGIN ++TEST_failed; LOG_WARN(msg); MACRO_END
+#define __SIZEOF_PTRDIFF_T__ 8
+#define __BFLT16_IS_IEC_60559__ 0
+#define MUTATOR_HOOKFUNCTION(...) EVAL_MUTATOR_HOOKFUNCTION(OVERLOAD(MUTATOR_HOOKFUNCTION, __VA_ARGS__))
+#define EV_AddPlayerScore(i,o) i(entity, MUTATOR_ARGV_0_entity) i(float, MUTATOR_ARGV_1_float) o(float, MUTATOR_ARGV_1_float) i(entity, MUTATOR_ARGV_2_entity)
+#define __FLT32X_MANT_DIG__ 53
+#define WITH(type,name,value,block) MACRO_BEGIN type __with_save = (name); name = (value); LAMBDA(block) name = __with_save; MACRO_END
+#define ASSERT_LE(val1,val2) _TEST_ASSERT(EXPECT_LE(val1, val2))
+#define ASSERT_LT(val1,val2) _TEST_ASSERT(EXPECT_LT(val1, val2))
+#define PHYS_JETPACK_MAXSPEED_UP(s) STAT(JETPACK_MAXSPEED_UP, s)
+#define TUR_CONFIG_WRITE_PROPS_string(turname,name) { T_Config_Queue( sprintf("set g_turrets_unit_%s_%s \"%s\"\n", #turname, #name, cvar_string(sprintf("g_turrets_unit_%s_%s", #turname, #name)))); }
+#define WEP_CONFIG_WRITE_CVARS(wepname,name,T) WEP_CONFIG_WRITE_PROPS_ ##T(wepname, name)
+#define WAS_ONSLICK(s) boolean((s).lastflags & FL_ONSLICK)
+#define REGISTER_MINIGAME(name,nicename) REGISTER(Minigames, MINIGAME_ ##name, m_id, new_pure(minigame_descriptor)); int name ##_server_event(entity, string, ...); REGISTER_INIT(MINIGAME_ ##name) { this.netname = strzone(strtolower(#name)); this.message = nicename; this.minigame_event = name ##_server_event; } REGISTER_INIT(MINIGAME_ ##name)
+#define SV(f,...) f(__VA_ARGS__)
+#define __UINT_LEAST64_TYPE__ long unsigned int
+#define CAMPAIGN_MAX_ENTRIES 2
+#define GameRules_scoring(teams,spprio,stprio,fields) MACRO_BEGIN _GameRules_scoring_begin((teams), (spprio), (stprio)); noref void(entity, string, float) field = _GameRules_scoring_field; noref void(int, string, float) field_team = _GameRules_scoring_field_team; LAMBDA(fields); _GameRules_scoring_end(); MACRO_END
+#define STR(it) _STR(it)
+#define __FLT_HAS_QUIET_NAN__ 1
+#define __ARM_64BIT_STATE 1
+#define __FLT_HAS_INFINITY__ 1
+#define PutClientInServer _PutClientInServer
+#define P00_IS_EMPTY_CASE_1010 P00_IS_EMPTY_CASE_1010
+#define P00_IS_EMPTY_CASE_1011 P00_IS_EMPTY_CASE_1011
+#define shutdownhooks() CALL_ACCUMULATED_FUNCTION( __shutdown)
+#define ACCUMULATE [[accumulate]]
+#define __INT_FAST32_WIDTH__ 64
+#define __CHAR16_TYPE__ short unsigned int
+#define EV_GetPressedKeys(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define GENERATOR_TEAM_1 CTX(_("GENERATOR^Red"))
+#define GENERATOR_TEAM_2 CTX(_("GENERATOR^Blue"))
+#define GENERATOR_TEAM_3 CTX(_("GENERATOR^Yellow"))
+#define __FLT16_MAX__ 6.55040000000000000000000000000000000e+4F16
+#define __STDC_VERSION__ 201710L
+#define movelib_move_simple(e,newdir,velo,blendrate) e.velocity = e.velocity * (1 - blendrate) + (newdir * blendrate) * velo
+#define STRING_ITERATOR_NEXT(this) MACRO_BEGIN ++this ##_i; MACRO_END
+#define __DEC32_MAX_EXP__ 97
+#define EV_FilterItemDefinition(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define __ARM_ARCH 8
+#define SV_PlayerPhysics _SV_PlayerPhysics
+#define PHYS_DODGING_FRAMETIME sys_frametime
+#define PHYS_DODGING_UP_SPEED autocvar_sv_dodging_up_speed
+#define ReadRegistered(r) REGISTRY_GET(r, Read_byte())
+#define count_seconds_decs(time,decs) sprintf(CTX(_("CI_DEC^%s seconds")), ftos_decimals(time, decs))
+#define LAZY(id) __lazy_ ##id
+#define PHYS_AIRCONTROL_SIDEWARDS(s) STAT(MOVEVARS_AIRCONTROL_SIDEWARDS, s)
+#define EV_GetModelParams(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string)
+#define EV_Nade_Damage(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(vector, MUTATOR_ARGV_2_vector) o(vector, MUTATOR_ARGV_2_vector) i(float, MUTATOR_ARGV_3_float) o(float, MUTATOR_ARGV_3_float)
+#define P99_MAX_NUMBER 16
+#define assert(expr,...) _assert(print_assertfailed_severe, expr, __VA_ARGS__)
+#define BOT_EXEC_STATUS_WAITING 2
+#define __UINT16_TYPE__ short unsigned int
+#define IL_LAST(this) (this.il_tail)
+#define STATIC_ATTRIB_STRZONE(cname,name,type,val) type cname ##_ ##name; _INIT_STATIC(cname) { strcpy(cname ##_ ##name, val); }
+#define ctf_spawnorigin dropped_origin
+#define PREGIVE_STATUSEFFECT(e,f) bool save_ ##f = StatusEffects_active(f, (e))
+#define BOLD(translatable_msg) strcat(BOLD_OPERATOR, translatable_msg)
+#define __INT_FAST64_WIDTH__ 64
+#define APPEND_TO_STRING(list,sep,add) ((list) = (((list) != "") ? strcat(list, sep, add) : (add)))
+#define EV_FireBullet_Hit(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(vector, MUTATOR_ARGV_2_vector) i(vector, MUTATOR_ARGV_3_vector) i(float, MUTATOR_ARGV_4_float) o(float, MUTATOR_ARGV_4_float) i(entity, MUTATOR_ARGV_5_entity)
+#define EV_ItemSound(i,o) i(string, MUTATOR_ARGV_0_string) i(string, MUTATOR_ARGV_1_string) o(string, MUTATOR_ARGV_1_string)
+#define P00_IS_0_EQ_0(...) ,
+#define PHYS_AMMO_FUEL(s) STAT(FUEL, s)
+#define __FLT_DIG__ 6
+#define GETTIME_REALTIME 1
+#define SPAWNFUNC_Q3AMMO(ammo_classname,xonwep) spawnfunc(ammo_classname) { if(this.count && xonwep.ammo_type) SetResource(this, xonwep.ammo_type, this.count * GetAmmoConsumptionQ3(xonwep.netname)); SPAWNFUNC_BODY(GetAmmoItem(xonwep.ammo_type)) }
+#define __BFLT16_MIN_EXP__ (-125)
+#define SUPPORT_WP goalentity
+#define IS_OBSERVER(v) ((v).classname == STR_OBSERVER)
+#define NAV_SWIM_ONWATER 1
+#define __INT_MAX__ 0x7fffffff
+#define _MUTATOR_IS_ENABLED(this) this.mutatorcheck()
+#define __WINT_TYPE__ unsigned int
+#define __SIZEOF_SHORT__ 2
+#define P99_PASTE2(_1,_2) P99_CAT2(_1, _2)
+#define P99_PASTE3(_1,_2,_3) P99_PASTE2(P99_PASTE2(_1, _2), _3)
+#define P99_PASTE4(_1,_2,_3,_4) P99_PASTE2(P99_PASTE3(_1, _2, _3), _4)
+#define P99_PASTE5(_1,_2,_3,_4,_5) P99_PASTE2(P99_PASTE4(_1, _2, _3, _4), _5)
+#define LL_CLEAR(...) EVAL_LL_CLEAR(OVERLOAD(LL_CLEAR, __VA_ARGS__))
+#define TELEPORT_FLAGS_TELEPORTER (TELEPORT_FLAG_SOUND | TELEPORT_FLAG_PARTICLES | TELEPORT_FLAG_TDEATH)
+#define REGISTER_ANIMATION(id,framenames) .vector anim_ ##id; REGISTER(Animations, ANIM_ ##id, m_id, NEW(Animation)) { this.m_framenames = framenames; }
+#define __SIZEOF_INT128__ 16
+#define __FLT16_MIN__ 6.10351562500000000000000000000000000e-5F16
+#define CL(f,...) 
+#define __LDBL_MAX_10_EXP__ 4932
+#define INGAME_STATUS_SET(it,s) (it).ingame = s
+#define PHYS_BUGRIGS_REVERSE_SPINNING(s) g_bugrigs_reverse_spinning
+#define MURDER_FRAG2 BOLD(_("^K3%sYou scored against ^BG%s"))
+#define skel_get_boneparent _skel_get_boneparent
+#define PHYS_MAXSPEED(s) STAT(MOVEVARS_MAXSPEED, s)
+#define W_SetupProjVelocity_BOTH(ent,wepname,isprimary) if(isprimary) { W_SetupProjVelocity_PRI(ent, wepname); } else { W_SetupProjVelocity_SEC(ent, wepname); }
+#define EV_FixClientCvars(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define addstat_vector(id,fld) MACRO_BEGIN addstat_float(id + 0, fld ##_x); addstat_float(id + 1, fld ##_y); addstat_float(id + 2, fld ##_z); MACRO_END
+#define P00_ISEMPTY(_1,_2,_3,_4) P99_HAS_COMMA(P99_PASTE5(P00_IS_EMPTY_CASE_, _1, _2, _3, _4))
+#define REGISTER_NET_S2C(id) REGISTER_NET_TEMP(id)
+#define __SIZEOF_WCHAR_T__ 4
+#define ENTCS_SET_NORMAL(var,x) MACRO_BEGIN var = x; MACRO_END
+#define FOREACH_CHAR(s,cond,body) MACRO_BEGIN STRING_ITERATOR(iter, s, 0); int _it; while ((_it = STRING_ITERATOR_GET(iter)) > 0) { const noref int it = _it; if (cond) { LAMBDA(body) } } MACRO_END
+#define navigation_item_getlinknum(to_item,from_wp) waypoint_getlinknum(to_item, from_wp)
+#define OVERLOAD__(F,...) P99_IF_EMPTY(__VA_ARGS__)(P99_PASTE2(F, _00)())(P99_PASTE3(F, _, P00_NARG(__VA_ARGS__))(__VA_ARGS__))
+#define autocvar_bot_prefix cvar_string("bot_prefix")
+#define LEGACY_IMPULSE_ID(alias,id) LEGACY_IMPULSE(alias, id, sprintf("impulse %d", IMP_ ##alias.impulse))
+#define ammo_flags currentammo
+#define updateanim(...) anim_update(__VA_ARGS__)
+#define get_turretinfo(i) REGISTRY_GET(Turrets, i)
+#define CMD_STATUS_EXECUTING 0
+#define W_NET_BEGIN(class) METHOD(class, wr_net, void(class this, int chan)) { bool commit = false; int i = 0;
+#define EV_ResourceAmountChanged(i,o) i(entity, MUTATOR_ARGV_7_entity) i(entity, MUTATOR_ARGV_8_entity) i(float, MUTATOR_ARGV_9_float)
+#define CTF_SAMETEAM(a,b) ((autocvar_g_ctf_reverse || (ctf_oneflag && autocvar_g_ctf_oneflag_reverse)) ? DIFF_TEAM(a,b) : SAME_TEAM(a,b))
+#define EV_PlayerPreThink(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EV_WeaponSpeedFactor(i,o) i(float, MUTATOR_ARGV_0_float) o(float, MUTATOR_ARGV_0_float) i(entity, MUTATOR_ARGV_1_entity)
+#define __FP_FAST_FMAF32x 1
+#define __FLT16_HAS_DENORM__ 1
+#define __STDC_UTF_32__ 1
+#define __INT_FAST8_WIDTH__ 8
+#define TR_CONFIG(class,turname,fld,T) _TR_CONFIG(class, fld, T, turname)
+#define AL_NEW(this,n,default,T) MACRO_BEGIN ArrayList _al = this = new_pure(ArrayList); _al.al_buf = buf_create(); for (int i = 0, _n = _al.al_len = n; i < _n; ++i) { const _AL_type__ ##T() it = default; AL_set ##T(this, i, it); } MACRO_END
+#define __FLT32X_MAX__ 1.79769313486231570814527423731704357e+308F32x
+#define PHYS_INPUT_BUTTON_USE(s) PHYS_INPUT_BUTTON_BUTTON_USE(s)
+#define use use1
+#define EV_HavocBot_ChooseRole(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define EV_GetPlayerLimit(i,o) i(int, MUTATOR_ARGV_0_int) o(int, MUTATOR_ARGV_0_int)
+#define TC(T,sym) MACRO_BEGIN MACRO_END
+#define PHYS_INPUT_BUTTON_HOOK(s) PHYS_INPUT_BUTTON_BUTTON6(s)
+#define MUTATOR_CALLHOOK(id,...) _MUTATOR_CALLHOOK(id, __VA_ARGS__)
+#define PHYS_INPUT_ANGLES(s) ((s).v_angle)
+#define SPECTATE_COPYFIELD(fld) SPECTATE_COPY() { this.(fld) = spectatee.(fld); }
+#define LL_DELETE(...) EVAL_LL_DELETE(OVERLOAD(LL_DELETE, __VA_ARGS__))
+#define EXPECT_NO_FATAL_FAILURE__(statement,then) MACRO_BEGIN int TEST_prevfatal = TEST_fatal; LAMBDA(statement); if (TEST_fatal != TEST_prevfatal) LAMBDA(then); MACRO_END
+#define REGISTER_STATUSEFFECT(id,inst) REGISTER(StatusEffect, STATUSEFFECT, id, m_id, inst)
+#define IS_HEXDIGIT(d) (strstrofs(HEXDIGITS_MINSET, (d), 0) >= 0)
+#define settouch(e,f) SELFWRAP_SET(touch, e, f)
+#define COMMON_COMMAND(id,description) CLASS(commoncommand_ ##id, Command) ATTRIB(commoncommand_ ##id, m_name, string, #id); ATTRIB(commoncommand_ ##id, m_description, string, description); ENDCLASS(commoncommand_ ##id) REGISTER(COMMON_COMMANDS, CMD_SV, id, m_id, NEW(commoncommand_ ##id)); METHOD(commoncommand_ ##id, m_invokecmd, void(commoncommand_ ##id this, int request, entity caller, int arguments, string command))
+#define EV_HideTeamNagger(i,o) i(entity, MUTATOR_ARGV_0_entity)
+#define serialize_marker(stream,this) MACRO_BEGIN if (NDEBUG) { this = true; } else { int _de = 0xDE, _ad = 0xAD, _be = 0xBE, _ef = 0xEF; serialize_byte(stream, _de); serialize_byte(stream, _ad); serialize_byte(stream, _be); serialize_byte(stream, _ef); this = (_de == 0xDE && _ad == 0xAD && _be == 0xBE && _ef == 0xEF); } MACRO_END
+#define EV_BuildMutatorsString(i,o) i(string, MUTATOR_ARGV_0_string) o(string, MUTATOR_ARGV_0_string)
+#define __FLT64_MIN__ 2.22507385850720138309023271733240406e-308F64
+#define _LOG_INFO(s) MACRO_BEGIN if (autocvar_developer > 1) dprint(strcat1n(_LOG_HEADER("^5INFO"), "\n")); string __s = s; print("^7", __s); if (str2chr(__s, strlen(__s) - 1) != '\n') { print("\n"); } MACRO_END
+#define _MUTATOR_HANDLE_PUSHTMP(type,id) TC(type, id); type tmp_ ##id = id;
+#define PHYS_INPUT_BUTTON_ATCK(s) PHYS_INPUT_BUTTON_BUTTON1(s)
+#define __ATOMIC_CONSUME 1
+#define __GNUC_MINOR__ 3
+#define PHYS_DODGING g_dodging
+#define REGISTER_INIT(id) ACCUMULATE void Register_ ##id ##_init(entity this)
+#define __DEC32_MANT_DIG__ 7
+#define __FLT32X_DENORM_MIN__ 4.94065645841246544176568792868221372e-324F32x
+#define P00_IS_EMPTY_CASE_1100 P00_IS_EMPTY_CASE_1100
+#define P00_IS_EMPTY_CASE_1101 P00_IS_EMPTY_CASE_1101
+#define ClientKill _ClientKill
+#define P00_IS_EMPTY_CASE_1111 P00_IS_EMPTY_CASE_1111
+#define MUTATOR_IS_ENABLED(this) _MUTATOR_IS_ENABLED(MUTATOR_ ##this)
+#define COMPONENT(com) void com_ ##com ##_interpolate(entity it, float a); .bool com_ ##com
+#define EV_FormatMessage(i,o) i(entity, MUTATOR_ARGV_0_entity) i(string, MUTATOR_ARGV_1_string) i(string, MUTATOR_ARGV_2_string) o(string, MUTATOR_ARGV_2_string) i(string, MUTATOR_ARGV_3_string)
+#define PHYS_INPUT_MOVEVALUES(s) CS(s).movement
+#define skel_get_boneabs(skel,bonenum) ( deglob_log(DEGLOB_ORIGINAL, "skel_get_boneabs", __FILE__, __LINE__, __FUNC__, #skel ", " #bonenum), _skel_get_boneabs_hidden(skel, bonenum) )
+#define COMPAT_NO_MOD_IS_XONOTIC 
+#define PHYS_DODGING_TIMEOUT(s) CS_CVAR(s).cvar_cl_dodging_timeout
+#define SET_ONSLICK(s) ((s).flags |= FL_ONSLICK)
+#define POSTGIVE_STATUSEFFECT(e,f,snd_incr,snd_decr) GiveSound((e), save_ ##f, StatusEffects_active(f, (e)), 0, snd_incr, snd_decr)
+#define REGISTRY_BEGIN(id) ACCUMULATE void REGISTRY_BEGIN_(id) { noref void() f = Register ##id; } void REGISTRY_BEGIN_(id)
+#define __UINT32_TYPE__ unsigned int
+#define INIT(cname) ACCUMULATE cname spawn ##cname ##_1(cname this)
+#define getentityvec DO_NOT_USE_GLOBALS
+#define LOG_TRACEF(...) _LOG_TRACE(sprintf(__VA_ARGS__))
+#define CHECK_MAX_COUNT(name,max,count,type) if (count > max) { error(strcat("Maximum ", type, " hit: ", #name, ": ", ftos(count), ".\n")); }
+#define BOLD_OPERATOR "^BOLD"
+#define P99_IF_EQ(A,B) P00_IF_CLAUSE(P99_PASTE4(P00_IS_, A, _EQ_, B)())
+#define EV_AllowRocketJumping(i,o) i(bool, MUTATOR_ARGV_0_bool) o(bool, MUTATOR_ARGV_0_bool)
+#define __SIZEOF_LONG_LONG__ 8
+#define __INT64_MAX__ 0x7fffffffffffffffL
+#define WarpZone_StoreProjectileData(e_) MACRO_BEGIN entity e = e_; e.warpzone_oldorigin = e.origin; e.warpzone_oldvelocity = e.velocity; e.warpzone_oldangles = e.angles; MACRO_END
+#define EV_CopyBody(i,o) i(entity, MUTATOR_ARGV_0_entity) i(entity, MUTATOR_ARGV_1_entity) i(bool, MUTATOR_ARGV_2_bool)
+#define __LDBL_DIG__ 33
+#define __UINT_FAST16_MAX__ 0xffffffffffffffffUL
+#define REGISTER_VEHICLE(id,inst) REGISTER(Vehicles, VEH, id, vehicleid, inst)
+#define TAG_VIEWLOC_NAME viewloc
+#define round_handler_IsRoundStarted() (!round_handler.wait && !round_handler.cnt)
+#define INDEPENDENT_PLAYERS (autocvar__independent_players ? (autocvar__independent_players > 0) : independent_players)
+#define TIME_DECODE(n) ((n) / TIME_FACTOR)
+#define STRING_ITERATOR_GET(this) str2chr(this ##_s, this ##_i++)
+#define EV_CheckRules_World(i,o) i(float, MUTATOR_ARGV_0_float) o(float, MUTATOR_ARGV_0_float) i(float, MUTATOR_ARGV_1_float) i(float, MUTATOR_ARGV_2_float)

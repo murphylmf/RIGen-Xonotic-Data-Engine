@@ -1,0 +1,168 @@
+From b42f2035edd90c5aaa82705cfca2b0ce053eab08 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:44:55 +0800
+Subject: [PATCH 08/36] Drive authoritative capture actions at fixed server
+ ticks
+
+---
+ source/qcsrc/server/capture.qc | 92 ++++++++++++++++++++++++++++++++++
+ source/qcsrc/server/capture.qh |  2 +
+ source/qcsrc/server/client.qc  |  2 +
+ 3 files changed, 96 insertions(+)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index dd854d2..4dcb976 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -18,6 +18,18 @@ bool capture_server_done;
+ entity capture_player;
+ entity capture_enemy;
+ 
++#define CAPTURE_ACTION_COUNT 384
++float capture_action_forward[CAPTURE_ACTION_COUNT];
++float capture_action_strafe[CAPTURE_ACTION_COUNT];
++float capture_action_pitch[CAPTURE_ACTION_COUNT];
++float capture_action_yaw[CAPTURE_ACTION_COUNT];
++int capture_action_jump[CAPTURE_ACTION_COUNT];
++int capture_action_primary[CAPTURE_ACTION_COUNT];
++int capture_action_secondary[CAPTURE_ACTION_COUNT];
++int capture_action_impulse[CAPTURE_ACTION_COUNT];
++int capture_action_reload[CAPTURE_ACTION_COUNT];
++int capture_action_count;
++
+ vector capture_prev_player_origin;
+ vector capture_prev_player_velocity;
+ vector capture_prev_player_angles;
+@@ -59,6 +71,84 @@ void Capture_SetResources(entity actor, float health, float armor, float reserve
+ 	SetResourceExplicit(actor, RES_FUEL, reserve);
+ }
+ 
++bool Capture_LoadAuthoritativeActions()
++{
++	int fh = fopen(autocvar_capture_server_action_file, FILE_READ);
++	if(fh < 0)
++	{
++		LOG_WARN("capture: could not read authoritative action file ",
++			autocvar_capture_server_action_file);
++		return false;
++	}
++	capture_action_count = 0;
++	float yaw = autocvar_capture_player_yaw;
++	float pitch = 0;
++	for(string line; (line = fgets(fh)); )
++	{
++		if(line == "" || substring(line, 0, 5) == "tick,")
++			continue;
++		int fields = tokenizebyseparator(line, ",");
++		if(fields != 10 || capture_action_count >= CAPTURE_ACTION_COUNT)
++		{
++			fclose(fh);
++			LOG_WARN("capture: invalid authoritative action row ", line);
++			capture_action_count = 0;
++			return false;
++		}
++		int tick = stoi(argv(0));
++		if(tick != capture_action_count)
++		{
++			fclose(fh);
++			LOG_WARNF("capture: non-contiguous authoritative action tick %d", tick);
++			capture_action_count = 0;
++			return false;
++		}
++		capture_action_forward[tick] = stof(argv(1));
++		capture_action_strafe[tick] = stof(argv(2));
++		yaw += stof(argv(3));
++		pitch = bound(-89, pitch + stof(argv(4)), 89);
++		capture_action_yaw[tick] = yaw;
++		capture_action_pitch[tick] = pitch;
++		capture_action_jump[tick] = stoi(argv(5));
++		capture_action_primary[tick] = stoi(argv(6));
++		capture_action_secondary[tick] = stoi(argv(7));
++		capture_action_impulse[tick] = stoi(argv(8));
++		capture_action_reload[tick] = stoi(argv(9));
++		++capture_action_count;
++	}
++	fclose(fh);
++	if(capture_action_count != CAPTURE_ACTION_COUNT)
++	{
++		LOG_WARNF("capture: expected %d authoritative actions, loaded %d",
++			CAPTURE_ACTION_COUNT, capture_action_count);
++		capture_action_count = 0;
++		return false;
++	}
++	LOG_INFOF("capture: loaded %d authoritative server actions from %s",
++		capture_action_count, autocvar_capture_server_action_file);
++	return true;
++}
++
++void Capture_ApplyAuthoritativeAction(entity actor)
++{
++	if(!autocvar_capture_server_enable || !capture_server_started
++		|| capture_server_done || actor != capture_player
++		|| capture_server_tick < 0 || capture_server_tick >= capture_action_count)
++		return;
++	int tick = capture_server_tick;
++	CS(actor).movement = '1 0 0' * capture_action_forward[tick]
++		+ '0 1 0' * capture_action_strafe[tick];
++	actor.v_angle = '1 0 0' * capture_action_pitch[tick]
++		+ '0 1 0' * capture_action_yaw[tick];
++	actor.angles = actor.v_angle;
++	actor.fixangle = true;
++	PHYS_INPUT_BUTTON_JUMP(actor) = capture_action_jump[tick];
++	PHYS_INPUT_BUTTON_ATCK(actor) = capture_action_primary[tick];
++	PHYS_INPUT_BUTTON_ATCK2(actor) = capture_action_secondary[tick];
++	CS(actor).impulse = capture_action_reload[tick]
++		? 20 : capture_action_impulse[tick];
++}
++
+ void Capture_ResetActor(entity actor, vector origin, float yaw)
+ {
+ 	setorigin(actor, origin);
+@@ -122,6 +212,8 @@ bool Capture_TryReset()
+ 	PHYS_INPUT_BUTTON_ATCK2(capture_enemy) = false;
+ 	PHYS_INPUT_BUTTON_JUMP(capture_enemy) = false;
+ 
++	if(!Capture_LoadAuthoritativeActions())
++		return false;
+ 	if(capture_server_fh >= 0)
+ 		fclose(capture_server_fh);
+ 	capture_server_fh = fopen(autocvar_capture_server_log, FILE_WRITE);
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 4abc25e..69ecdfa 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -3,6 +3,7 @@
+ bool autocvar_capture_server_enable;
+ string autocvar_capture_episode_id;
+ string autocvar_capture_server_log;
++string autocvar_capture_server_action_file;
+ vector autocvar_capture_player_origin;
+ vector autocvar_capture_enemy_origin;
+ vector autocvar_capture_enemy_motion_vector;
+@@ -23,6 +24,7 @@ float autocvar_capture_reserve;
+ .int capture_last_fire_event;
+ 
+ void setplayermodel(entity e, string modelname);
++void Capture_ApplyAuthoritativeAction(entity actor);
+ void Capture_ServerFrame();
+ void Capture_Fire(entity actor, int deathtype, vector shot_origin, vector shot_direction);
+ void Capture_ProjectileSpawn(entity projectile, entity actor, int deathtype);
+diff --git a/source/qcsrc/server/client.qc b/source/qcsrc/server/client.qc
+index 00063bb..a456c05 100644
+--- a/source/qcsrc/server/client.qc
++++ b/source/qcsrc/server/client.qc
+@@ -1,5 +1,6 @@
+ #include "client.qh"
+ 
++#include <server/capture.qh>
+ #include <common/csqcmodel_settings.qh>
+ #include <common/deathtypes/all.qh>
+ #include <common/debug.qh>
+@@ -2429,6 +2430,7 @@ Called every frame for each client before the physics are run
+ .float last_vehiclecheck;
+ void PlayerPreThink (entity this)
+ {
++	Capture_ApplyAuthoritativeAction(this);
+ 	STAT(GUNALIGN, this) = CS_CVAR(this).cvar_cl_gunalign; // TODO
+ 	STAT(MOVEVARS_CL_TRACK_CANJUMP, this) = CS_CVAR(this).cvar_cl_movement_track_canjump;
+ 

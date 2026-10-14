@@ -1,0 +1,21 @@
+From 90fc99e856aa6e5b83b92a8a8d8eae1af466b905 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 20:08:32 +0800
+Subject: [PATCH 19/36] Keep captured enemies dead after kill
+
+---
+ source/qcsrc/server/capture.qc | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 6682968..6f19be1 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -209,6 +209,7 @@ bool Capture_TryReset()
+ 	// The enemy remains a solid, damageable player entity, but bot navigation
+ 	// must not inject random velocity between analytic capture updates.
+ 	capture_enemy.move_qcphysics = false;
++	capture_enemy.respawn_flags |= RESPAWN_DENY;
+ 	set_movetype(capture_enemy, MOVETYPE_NONE);
+ 	Capture_SetResources(capture_player,
+ 		autocvar_capture_player_health,

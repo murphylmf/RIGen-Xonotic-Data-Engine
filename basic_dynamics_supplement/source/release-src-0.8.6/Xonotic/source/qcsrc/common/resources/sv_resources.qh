@@ -1,0 +1,95 @@
+#pragma once
+
+         
+                                                          
+                   
+                                              
+
+#include <common/resources/resources.qh>
+
+                                                             
+float autocvar_g_balance_health_limit;
+int autocvar_g_balance_armor_limit;
+float autocvar_g_balance_fuel_limit;
+float autocvar_g_balance_armor_regen;
+float autocvar_g_balance_armor_regenlinear;
+int autocvar_g_balance_armor_regenstable;
+float autocvar_g_balance_armor_rot;
+float autocvar_g_balance_armor_rotlinear;
+int autocvar_g_balance_armor_rotstable;
+float autocvar_g_balance_fuel_regen;
+float autocvar_g_balance_fuel_regenlinear;
+int autocvar_g_balance_fuel_regenstable;
+float autocvar_g_balance_fuel_rot;
+float autocvar_g_balance_fuel_rotlinear;
+int autocvar_g_balance_fuel_rotstable;
+float autocvar_g_balance_health_regen;
+float autocvar_g_balance_health_regenlinear;
+float autocvar_g_balance_health_regenstable;
+float autocvar_g_balance_health_rot;
+float autocvar_g_balance_health_rotlinear;
+float autocvar_g_balance_health_rotstable;
+float autocvar_g_balance_pause_armor_rot;
+float autocvar_g_balance_pause_fuel_regen;
+float autocvar_g_balance_pause_fuel_rot;
+float autocvar_g_balance_pause_health_regen;
+float autocvar_g_balance_pause_health_rot;
+
+                                                                               
+
+                                                            
+                                 
+                                                                
+                                                 
+float GetResourceLimit(entity e, Resource res_type);
+
+                                                                       
+                                 
+                                                                
+                                                            
+float GetResource(entity e, Resource res_type);
+
+                                                                           
+                                      
+                                                                
+                                                
+                                                           
+bool SetResourceExplicit(entity e, Resource res_type, float amount);
+
+                                                                         
+                                                                
+                                      
+                                                                
+                                                
+                      
+void SetResource(entity e, Resource res_type, float amount);
+
+                                         
+                                                       
+                                                                
+                                                 
+                      
+void GiveResource(entity receiver, Resource res_type, float amount);
+
+                                                                   
+                                                       
+                                                                
+                                                 
+                                                
+                      
+void GiveResourceWithLimit(entity receiver, Resource res_type, float amount, float limit);
+
+                                         
+                                                         
+                                                                
+                                                 
+                      
+void TakeResource(entity receiver, Resource res_type, float amount);
+
+                                                                   
+                                                         
+                                                                
+                                                 
+                                                
+                      
+void TakeResourceWithLimit(entity receiver, Resource res_type, float amount, float limit);

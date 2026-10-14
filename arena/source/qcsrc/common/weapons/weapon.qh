@@ -1,0 +1,238 @@
+#pragma once
+
+#include <common/items/item/pickup.qh>
+#include <common/resources/resources.qh>
+#include <common/stats.qh>
+
+#ifdef SVQC
+#include <common/effects/qc/_mod.qh>
+#endif
+
+USING(WepSet, vector);
+
+const int MAX_WEAPONSLOTS = 2;
+.entity weaponentities[MAX_WEAPONSLOTS];
+
+int weaponslot(.entity weaponentity)
+{
+	for (int i = 0; i < MAX_WEAPONSLOTS; ++i)
+	{
+		if (weaponentities[i] == weaponentity)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
+                                             
+                         
+const int WS_CLEAR  = 0;
+                  
+const int WS_RAISE  = 1;
+                        
+const int WS_DROP   = 2;
+                 
+const int WS_INUSE  = 3;
+                 
+const int WS_READY  = 4;
+
+                                                                                                                 
+CLASS(Weapon, Object)
+	ATTRIB(Weapon, m_id, int, 0);
+	                                   
+    ATTRIB(Weapon, m_canonical_spawnfunc, string);
+                                                           
+    METHOD(Weapon, m_spawnfunc_hookreplace, Weapon(Weapon this, entity e)) { return this; }
+                                        
+    ATTRIB(Weapon, ammo_type, Resource, RES_NONE);
+                                        
+    ATTRIB(Weapon, impulse, int, -1);
+                                                   
+    ATTRIB(Weapon, spawnflags, int, 0);
+                                             
+    ATTRIB(Weapon, bot_pickupbasevalue, float, 0);
+                                              
+    ATTRIB(Weapon, wpcolor, vector, '0 0 0');
+                                                                      
+    ATTRIB(Weapon, mdl, string, "");
+#ifdef GAMEQC
+                               
+    ATTRIB(Weapon, m_model, entity);
+                                            
+    ATTRIB(Weapon, m_muzzlemodel, entity, MDL_Null);
+                                                
+    ATTRIB(Weapon, m_muzzleeffect, entity);
+#endif
+                                                                     
+    ATTRIB(Weapon, w_crosshair, string, "gfx/crosshairmoustache");
+                                                                                       
+    ATTRIB(Weapon, w_crosshair_size, float, 1);
+                                                 
+    ATTRIB(Weapon, w_reticle, string, string_null);
+                                                                                                                                 
+    ATTRIB(Weapon, model2, string, "");
+                                             
+    ATTRIB(Weapon, netname, string, "");
+                                             
+    ATTRIB(Weapon, m_name, string, "AOL CD Thrower");
+                                                                                                      
+    ATTRIB(Weapon, m_deprecated_netname, string, "");
+
+    ATTRIB(Weapon, m_pickup, entity);
+
+                                     
+    METHOD(Weapon, wr_setup, void(Weapon this, entity actor, .entity weaponentity)) {}
+                                            
+    METHOD(Weapon, wr_think, void(Weapon this, entity actor, .entity weaponentity, int fire)) {}
+                                                  
+    METHOD(Weapon, wr_checkammo1, bool(Weapon this, entity actor, .entity weaponentity)) {return false;}
+                                                 
+    METHOD(Weapon, wr_checkammo2, bool(Weapon this, entity actor, .entity weaponentity)) {return false;}
+                                                        
+    METHOD(Weapon, wr_aim, void(Weapon this, entity actor, .entity weaponentity)) {}
+                                                                                               
+    METHOD(Weapon, wr_init, void(Weapon this)) {}
+                                                                                                 
+    METHOD(Weapon, wr_suicidemessage, entity(Weapon this)) {return NULL;}
+                                                                                              
+    METHOD(Weapon, wr_killmessage, entity(Weapon this)) {return NULL;}
+                                                
+    METHOD(Weapon, wr_reload, void(Weapon this, entity actor, .entity weaponentity)) {}
+                                                         
+    METHOD(Weapon, wr_resetplayer, void(Weapon this, entity actor)) {}
+                                                      
+    METHOD(Weapon, wr_impacteffect, void(Weapon this, entity actor)) {}
+                                                 
+    METHOD(Weapon, wr_playerdeath, void(Weapon this, entity actor, .entity weaponentity)) {}
+                                                    
+    METHOD(Weapon, wr_gonethink, void(Weapon this, entity actor, .entity weaponentity)) {}
+                                                                                           
+    METHOD(Weapon, wr_config, void(Weapon this)) {}
+                                              
+    METHOD(Weapon, wr_zoom, bool(Weapon this, entity actor)) {
+                                                   
+        return false;
+    }
+                                                                           
+    METHOD(Weapon, wr_zoomdir, bool(Weapon this)) {return false;}
+                                              
+    METHOD(Weapon, wr_viewmodel, string(Weapon this, entity wep)) { return string_null; }
+                                      
+    METHOD(Weapon, wr_glow, vector(Weapon this, int actor_colors, entity wepent)) { return '0 0 0'; }
+                                         
+    METHOD(Weapon, wr_drop, void(Weapon this, entity actor, .entity weaponentity)) {}
+                                         
+    METHOD(Weapon, wr_pickup, void(Weapon this, entity actor, .entity weaponentity)) {}
+                                                
+    METHOD(Weapon, wr_update, void(Weapon this)) {}
+	METHOD(Weapon, display, void(entity this, void(string name, string icon) returns)) {
+		returns(this.m_name, this.model2 ? sprintf("/gfx/hud/%s/%s", cvar_string("menu_skin"), this.model2) : string_null);
+	}
+ENDCLASS(Weapon)
+
+#ifdef SVQC
+
+void weapon_defaultspawnfunc(entity this, Weapon e);
+#define SPAWNFUNC_WEAPON(name, weapon) \
+    spawnfunc(name) { weapon_defaultspawnfunc(this, weapon); }
+
+#define SPAWNFUNC_WEAPON_COND(name, cond, wep1, wep2) \
+	SPAWNFUNC_WEAPON(name, (cond ? wep1 : wep2))
+
+#else
+
+#define SPAWNFUNC_WEAPON(name, weapon)
+
+#endif
+
+#include <common/items/_mod.qh>
+CLASS(WeaponPickup, Pickup)
+    ATTRIB(WeaponPickup, m_weapon, Weapon);
+    ATTRIB(WeaponPickup, m_name, string);
+#ifdef GAMEQC
+    ATTRIB(WeaponPickup, m_sound, Sound, SND_WEAPONPICKUP);
+#endif
+#ifdef SVQC
+    ATTRIB(WeaponPickup, m_itemflags, int, FL_WEAPON);
+    float weapon_pickupevalfunc(entity player, entity item);
+    ATTRIB(WeaponPickup, m_pickupevalfunc, float(entity player, entity item), weapon_pickupevalfunc);
+#endif
+    CONSTRUCTOR(WeaponPickup, Weapon w) {
+        CONSTRUCT(WeaponPickup);
+        this.m_weapon = w;
+        this.m_name = w.m_name;
+#ifdef GAMEQC
+        this.m_model = w.m_model;
+#endif
+#ifdef SVQC
+        this.m_botvalue = w.bot_pickupbasevalue;
+#endif
+    }
+#ifdef SVQC
+    METHOD(WeaponPickup, giveTo, bool(entity this, entity item, entity player))
+    {
+        bool b = Item_GiveTo(item, player);
+                  
+                                                                        
+           
+        return b;
+    }
+#endif
+ENDCLASS(WeaponPickup)
+
+CLASS(OffhandWeapon, Object)
+    METHOD(OffhandWeapon, offhand_think, void(OffhandWeapon this, entity player, bool key_pressed)) {}
+ENDCLASS(OffhandWeapon)
+
+#ifdef SVQC
+.OffhandWeapon offhand;
+#endif
+
+#ifdef GAMEQC
+int max_shot_distance = 32768;                                                
+#endif
+
+               
+const int WEP_TYPE_OTHER          =  BIT(0);                           
+const int WEP_TYPE_SPLASH         =  BIT(1);                 
+const int WEP_TYPE_HITSCAN        =  BIT(2);           
+const int WEP_FLAG_CANCLIMB       =  BIT(3);                            
+const int WEP_FLAG_NORMAL         =  BIT(4);                         
+const int WEP_FLAG_HIDDEN         =  BIT(5);                   
+const int WEP_FLAG_RELOADABLE     =  BIT(6);                  
+const int WEP_FLAG_SUPERWEAPON    =  BIT(7);                 
+const int WEP_FLAG_MUTATORBLOCKED =  BIT(8);                                                                        
+const int WEP_TYPE_MELEE_PRI      =  BIT(9);                                                 
+const int WEP_TYPE_MELEE_SEC      =  BIT(10);                                                   
+const int WEP_FLAG_DUALWIELD      =  BIT(11);                              
+const int WEP_FLAG_NODUAL         =  BIT(12);                                                                                                                       
+const int WEP_FLAG_PENETRATEWALLS =  BIT(13);                                                                               
+const int WEP_FLAG_BLEED          =  BIT(14);                                                                
+const int WEP_FLAG_NOTRUEAIM      =  BIT(15);                                          
+const int WEP_FLAG_SPECIALATTACK  =  BIT(16);                                                                                 
+
+             
+string weaponorder_byid;
+
+             
+string W_FixWeaponOrder(string order, float complete);
+string W_NameWeaponOrder(string order);
+string W_NumberWeaponOrder(string order);
+string W_FixWeaponOrder_BuildImpulseList(string o);
+string W_FixWeaponOrder_AllowIncomplete(entity this, string order);
+string W_FixWeaponOrder_ForceComplete(string order);
+WepSet W_RandomWeapons(entity e, WepSet remaining, int n);
+
+string GetAmmoPicture(Resource ammotype);
+
+string GetAmmoName(Resource ammotype);
+
+entity GetAmmoItem(Resource ammotype);
+
+#ifdef CSQC
+int GetAmmoStat(Resource ammotype);
+#endif
+
+string W_Sound(string w_snd);
+string W_Model(string w_mdl);

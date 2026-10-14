@@ -1,0 +1,59 @@
+#pragma once
+
+#ifdef GAMEQC
+    #include <common/sounds/all.qh>
+#endif
+
+REGISTRY(StatusEffect, 32)
+REGISTER_REGISTRY(StatusEffect)
+#define REGISTER_STATUSEFFECT(id, inst) REGISTER(StatusEffect, STATUSEFFECT, id, m_id, inst)
+
+REGISTRY_SORT(StatusEffect)
+REGISTRY_CHECK(StatusEffect)
+
+REGISTRY_DEFINE_GET(StatusEffect, NULL)
+STATIC_INIT(StatusEffect) { FOREACH(StatusEffect, true, it.m_id = i); }
+
+enum
+{
+    STATUSEFFECT_FLAG_ACTIVE = BIT(0),
+    STATUSEFFECT_FLAG_PERSISTENT = BIT(1)                                                  
+};
+
+enum
+{
+    STATUSEFFECT_REMOVE_NORMAL,                                                                                    
+    STATUSEFFECT_REMOVE_TIMEOUT,
+    STATUSEFFECT_REMOVE_CLEAR                                                                                         
+};
+
+CLASS(StatusEffects, Object)
+    ATTRIB(StatusEffects, m_id, int, 0);
+    ATTRIB(StatusEffects, m_name, string);
+    ATTRIB(StatusEffects, m_icon, string);
+    ATTRIB(StatusEffects, m_color, vector, '1 1 1');
+                                                     
+    ATTRIB(StatusEffects, m_hidden, bool, false);
+                                               
+    ATTRIB(StatusEffects, m_lifetime, float, 30);
+#ifdef GAMEQC
+    ATTRIB(StatusEffects, m_sound, Sound, SND_Null);
+    ATTRIB(StatusEffects, m_sound_rm, Sound, SND_Null);
+    METHOD(StatusEffects, m_tick, void(StatusEffects this, entity actor));
+    METHOD(StatusEffects, m_active, bool(StatusEffects this, entity actor));
+                                                                 
+    ATTRIBARRAY(StatusEffects, statuseffect_time, float, REGISTRY_MAX(StatusEffect));
+    ATTRIBARRAY(StatusEffects, statuseffect_flags, int, REGISTRY_MAX(StatusEffect));
+#endif
+#ifdef SVQC
+    METHOD(StatusEffects, m_apply, void(StatusEffects this, entity actor, float eff_time, int eff_flags));
+    METHOD(StatusEffects, m_remove, void(StatusEffects this, entity actor, int removal_type));
+                                                                             
+    METHOD(StatusEffects, m_persistent, bool(StatusEffects this, entity actor)) { return false; };
+#endif
+    METHOD(StatusEffects, display, void(StatusEffects this, void(string name, string icon) returns))
+    {
+        TC(StatusEffects, this);
+        returns(this.m_name, this.m_icon ? sprintf("/gfx/hud/%s/%s", cvar_string("menu_skin"), this.m_icon) : string_null);
+    }
+ENDCLASS(StatusEffects)

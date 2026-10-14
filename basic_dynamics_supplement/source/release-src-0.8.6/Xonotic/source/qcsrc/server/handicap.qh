@@ -1,0 +1,40 @@
+#pragma once
+
+         
+                                                          
+                   
+                                              
+
+                                                                             
+                                                                                
+                                                                              
+                                                                             
+                                                                         
+                                                                               
+                                 
+
+                                                     
+                                               
+                      
+void Handicap_Initialize(entity player);
+
+                                                        
+                                      
+                                             
+float Handicap_GetVoluntaryHandicap(entity player);
+
+                                                     
+                                      
+                                          
+float Handicap_GetForcedHandicap(entity player);
+
+                                                  
+                                      
+                                           
+                      
+void Handicap_SetForcedHandicap(entity player, float value);
+
+                                                    
+                                      
+                                         
+float Handicap_GetTotalHandicap(entity player);

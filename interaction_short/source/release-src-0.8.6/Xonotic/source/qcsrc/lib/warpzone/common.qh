@@ -1,0 +1,116 @@
+#pragma once
+
+                                                             
+                    
+
+IntrusiveList g_warpzones;
+STATIC_INIT(g_warpzones) { g_warpzones = IL_NEW(); }
+
+float warpzone_warpzones_exist;
+float warpzone_cameras_exist;
+
+.float warpzone_isboxy;
+.vector warpzone_shift;
+.vector warpzone_origin;
+.vector warpzone_angles;
+.vector warpzone_forward;
+.vector warpzone_targetorigin;
+.vector warpzone_targetangles;
+.vector warpzone_targetforward;
+.vector warpzone_transform;
+.float warpzone_fadestart;
+.float warpzone_fadeend;
+void WarpZone_SetUp(entity e, vector my_org, vector my_ang, vector other_org, vector other_ang);
+void WarpZone_Camera_SetUp(entity e, vector my_org, vector my_ang);
+
+float WarpZoneLib_BoxTouchesBrush(vector mi, vector ma, entity e, entity ig);
+vector WarpZoneLib_NearestPointOnBox(vector mi, vector ma, vector org);
+
+entity WarpZone_Find(vector mi, vector ma);
+void WarpZone_MakeAllSolid();
+void WarpZone_MakeAllOther();
+
+#define MOVE_NOTHING -1
+entity WarpZone_trace_forent;                                          
+USING(WarpZone_trace_callback_t, void(vector start, vector hit, vector end));                                    
+var WarpZone_trace_callback_t WarpZone_trace_callback_t_null;
+entity WarpZone_trace_transform;                                        
+entity WarpZone_trace_firstzone;                                                                                                                         
+entity WarpZone_trace_lastzone;                                                                                                                         
+vector WarpZone_tracetoss_velocity;                                                   
+float WarpZone_tracetoss_time;                                  
+void WarpZone_TraceBox(vector org, vector min, vector max, vector end, float nomonsters, entity forent);
+void WarpZone_TraceBox_ThroughZone(vector org, vector min, vector max, vector end, float nomonsters, entity forent, entity zone, WarpZone_trace_callback_t cb);
+void WarpZone_TraceLine(vector org, vector end, float nomonsters, entity forent);
+void WarpZone_TraceToss(entity e, entity forent);
+void WarpZone_TraceToss_ThroughZone(entity e, entity forent, entity zone, WarpZone_trace_callback_t cb);
+void WarpZone_TrailParticles(entity own, float eff, vector org, vector end);
+#ifdef CSQC
+void WarpZone_TrailParticles_WithMultiplier(entity own, float eff, vector org, vector end, float f, float boxflags);
+#endif
+
+.vector WarpZone_findradius_dist;
+.vector WarpZone_findradius_nearest;
+                                                                                                                   
+.vector WarpZone_findradius_findorigin;
+.float WarpZone_findradius_findradius;
+entity WarpZone_FindRadius(vector org, float radius, float needlineofsight);
+
+float WarpZone_PlaneDist(entity wz, vector v);
+float WarpZone_TargetPlaneDist(entity wz, vector v);
+vector WarpZone_TransformOrigin(entity wz, vector v);
+vector WarpZone_TransformVelocity(entity wz, vector v);
+vector WarpZone_TransformAngles(entity wz, vector v);
+vector WarpZone_TransformVAngles(entity wz, vector v);
+vector WarpZone_UnTransformOrigin(entity wz, vector v);
+vector WarpZone_UnTransformVelocity(entity wz, vector v);
+vector WarpZone_UnTransformAngles(entity wz, vector v);
+vector WarpZone_UnTransformVAngles(entity wz, vector v);
+
+                                                  
+void WarpZone_RefSys_Clear(entity me);           
+void WarpZone_RefSys_Add(entity me, entity wz);                   
+void WarpZone_RefSys_AddInverse(entity me, entity wz);                      
+void WarpZone_RefSys_AddTransform(entity me, vector t, vector s);                      
+void WarpZone_RefSys_AddInverseTransform(entity me, vector t, vector s);                         
+
+                                                  
+                                                                                                  
+                                                                                   
+                                                                                    
+void WarpZone_RefSys_AddIncrementally(entity me, entity ref);                                                   
+void WarpZone_RefSys_BeginAddingIncrementally(entity me, entity ref);                    
+
+vector WarpZone_RefSys_TransformOrigin(entity from, entity to, vector org);                             
+vector WarpZone_RefSys_TransformVelocity(entity from, entity to, vector vel);                             
+vector WarpZone_RefSys_TransformAngles(entity from, entity to, vector ang);                             
+vector WarpZone_RefSys_TransformVAngles(entity from, entity to, vector ang);                             
+void WarpZone_RefSys_Copy(entity me, entity from);                  
+entity WarpZone_RefSys_SpawnSameRefSys(entity me);                    
+
+#ifndef BITCLR
+# define BITCLR(a,b) ((a) - ((a) & (b)))
+#endif
+#ifndef BITSET
+# define BITSET(a,b) ((a) | (b))
+#endif
+#ifndef BITXOR
+# define BITXOR(a,b) (((a) | (b)) - ((a) & (b)))
+#endif
+#ifndef BITCLR_ASSIGN
+# define BITCLR_ASSIGN(a,b) ((a) = (a) - ((a) & (b)))
+#endif
+#ifndef BITSET_ASSIGN
+# define BITSET_ASSIGN(a,b) ((a) |= (b))
+#endif
+#ifndef BITXOR_ASSIGN
+# define BITXOR_ASSIGN(a,b) ((a) = ((a) | (b)) - ((a) & (b)))
+#endif
+bool WarpZoneLib_MoveOutOfSolid(entity e);
+#define move_out_of_solid(e) WarpZoneLib_MoveOutOfSolid(e)
+
+bool WarpZoneLib_ExactTrigger_Touch(entity this, entity toucher, bool touchfunc);
+
+                                        
+#define EXACTTRIGGER_TOUCH(e,t) if(!WarpZoneLib_ExactTrigger_Touch((e), (t), true)) return                                   
+#define EXACTTRIGGER_INIT  WarpZoneLib_ExactTrigger_Init(this, true)

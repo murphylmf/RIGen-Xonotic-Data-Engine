@@ -1,0 +1,72 @@
+From 72c56ea759de863e0dae54d6eae0fb8166b4c9d7 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:29:09 +0800
+Subject: [PATCH 06/36] Make scheduler reset and live demo completion
+ deterministic
+
+---
+ source/darkplaces/capture_telemetry.c | 11 +++++++++--
+ source/qcsrc/server/capture.qc        |  7 ++++++-
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/source/darkplaces/capture_telemetry.c b/source/darkplaces/capture_telemetry.c
+index 159aa4b..4dcdbfd 100644
+--- a/source/darkplaces/capture_telemetry.c
++++ b/source/darkplaces/capture_telemetry.c
+@@ -45,6 +45,8 @@ cvar_t capture_enable = {0, "capture_enable", "0", "enable deterministic capture
+ cvar_t capture_mode = {0, "capture_mode", "0", "0 schedules live usercmds, 1 renders and logs output"};
+ cvar_t capture_action_file = {0, "capture_action_file", "", "absolute CSV action schedule path"};
+ cvar_t capture_log_dir = {0, "capture_log_dir", "", "absolute existing output directory"};
++cvar_t capture_initial_yaw = {0, "capture_initial_yaw", "0", "deterministic scheduler yaw at episode reset"};
++cvar_t capture_initial_pitch = {0, "capture_initial_pitch", "0", "deterministic scheduler pitch at episode reset"};
+ cvar_t capture_expected_frames = {0, "capture_expected_frames", "320", "stop output after exactly this many frames"};
+ cvar_t capture_quit_on_end = {0, "capture_quit_on_end", "0", "quit shortly after reaching the exact frame target"};
+ 
+@@ -205,8 +207,11 @@ static void Capture_EpisodeReset_f(void)
+ 	if (capture_mode.integer == 0 && !cls.demoplayback)
+ 	{
+ 		capture_action_active = Capture_LoadActions() > 0;
+-		capture_yaw = cl.viewangles[YAW];
+-		capture_pitch = cl.viewangles[PITCH];
++		capture_yaw = capture_initial_yaw.value;
++		capture_pitch = bound(-89.0f, capture_initial_pitch.value, 89.0f);
++		cl.viewangles[YAW] = capture_yaw;
++		cl.viewangles[PITCH] = capture_pitch;
++		cl.viewangles[ROLL] = 0;
+ 		Capture_CloseFile(&capture_actions_file);
+ 		capture_actions_file = Capture_OpenCSV("actions_engine.csv",
+ 			"episode_id,action_index,action_tick,cmd_sequence,cmd_time,"
+@@ -274,6 +279,8 @@ void Capture_Init(void)
+ 	Cvar_RegisterVariable(&capture_mode);
+ 	Cvar_RegisterVariable(&capture_action_file);
+ 	Cvar_RegisterVariable(&capture_log_dir);
++	Cvar_RegisterVariable(&capture_initial_yaw);
++	Cvar_RegisterVariable(&capture_initial_pitch);
+ 	Cvar_RegisterVariable(&capture_expected_frames);
+ 	Cvar_RegisterVariable(&capture_quit_on_end);
+ 	Cmd_AddCommand("capture_episode_reset", Capture_EpisodeReset_f,
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index f7452e5..8b3115d 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -271,7 +271,7 @@ void Capture_ServerFrame()
+ 		capture_server_done = true;
+ 		return;
+ 	}
+-	if(capture_server_tick == 384)
++	if(capture_server_tick == 388)
+ 	{
+ 		Capture_Log(sprintf(
+ 			"{\"kind\":\"output_end\",\"server_tick\":%d,\"server_time\":%.9f}",
+@@ -282,6 +282,11 @@ void Capture_ServerFrame()
+ 		capture_server_fh = -1;
+ 		return;
+ 	}
++	if(capture_server_tick >= 384)
++	{
++		++capture_server_tick;
++		return;
++	}
+ 	Capture_MoveEnemy();
+ 	Capture_LogState();
+ 	if(capture_server_tick == 63)

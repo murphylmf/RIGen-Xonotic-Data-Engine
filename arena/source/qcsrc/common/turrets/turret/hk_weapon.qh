@@ -1,0 +1,9 @@
+#pragma once
+
+CLASS(HunterKillerAttack, PortoLaunch)
+                ATTRIB(HunterKillerAttack, spawnflags, int, WEP_FLAG_HIDDEN | WEP_FLAG_SPECIALATTACK);
+                ATTRIB(HunterKillerAttack, impulse, int, 9);
+                ATTRIB(HunterKillerAttack, netname, string, "turret_hk");
+                ATTRIB(HunterKillerAttack, m_name, string, _("Hunter-Killer"));
+ENDCLASS(HunterKillerAttack)
+REGISTER_WEAPON(HK, NEW(HunterKillerAttack));

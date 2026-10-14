@@ -1,0 +1,5 @@
+                                
+#include <common/mutators/mutator/campcheck/campcheck.qh>
+#ifdef SVQC
+    #include <common/mutators/mutator/campcheck/sv_campcheck.qh>
+#endif

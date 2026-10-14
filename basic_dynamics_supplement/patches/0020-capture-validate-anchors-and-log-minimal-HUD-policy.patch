@@ -1,0 +1,88 @@
+From e640f7f39399eef13a38fa66a70bb7960a60ae5e Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 21:38:39 +0800
+Subject: [PATCH 20/36] capture: validate anchors and log minimal HUD policy
+
+---
+ source/darkplaces/capture_telemetry.c |  7 ++++++
+ source/qcsrc/server/capture.qc        | 31 +++++++++++++++++++++++++--
+ source/qcsrc/server/capture.qh        |  1 +
+ 3 files changed, 37 insertions(+), 2 deletions(-)
+
+diff --git a/source/darkplaces/capture_telemetry.c b/source/darkplaces/capture_telemetry.c
+index 4dcdbfd..cad5038 100644
+--- a/source/darkplaces/capture_telemetry.c
++++ b/source/darkplaces/capture_telemetry.c
+@@ -248,6 +248,13 @@ static void Capture_OutputBegin_f(void)
+ 	Cvar_Set("cl_capturevideo", "1");
+ 	Con_Printf("capture: output begin id=%s expected_frames=%d\n",
+ 		capture_episode_id, capture_expected_frames.integer);
++	Con_Printf(
++		"capture: hud policy cl_damagetext=%.0f crosshair_hitindication=%.0f "
++		"hud_healtharmor=%.0f hud_ammo=%.0f\n",
++		Cvar_VariableValue("cl_damagetext"),
++		Cvar_VariableValue("crosshair_hitindication"),
++		Cvar_VariableValue("hud_panel_healtharmor"),
++		Cvar_VariableValue("hud_panel_ammo"));
+ }
+ 
+ static void Capture_OutputEnd_f(void)
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 6f19be1..fed9d0a 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -250,13 +250,40 @@ bool Capture_TryReset()
+ 	capture_prev_player_clip = weapon_entity.clip_load;
+ 	capture_prev_player_reserve = Capture_Reserve(capture_player, weapon_entity.m_weapon);
+ 
++	tracebox(capture_player.origin, PL_MIN_CONST, PL_MAX_CONST,
++		capture_player.origin, MOVE_WORLDONLY, capture_player);
++	bool player_clear = !trace_startsolid && !trace_allsolid;
++	tracebox(capture_player.origin, PL_MIN_CONST, PL_MAX_CONST,
++		capture_player.origin - '0 0 96', MOVE_WORLDONLY, capture_player);
++	bool player_ground = !trace_startsolid && trace_fraction < 1;
++	float player_ground_distance = trace_fraction * 96;
++	tracebox(capture_enemy.origin, PL_MIN_CONST, PL_MAX_CONST,
++		capture_enemy.origin, MOVE_WORLDONLY, capture_enemy);
++	bool enemy_clear = !trace_startsolid && !trace_allsolid;
++	tracebox(capture_enemy.origin, PL_MIN_CONST, PL_MAX_CONST,
++		capture_enemy.origin - '0 0 96', MOVE_WORLDONLY, capture_enemy);
++	bool enemy_ground = !trace_startsolid && trace_fraction < 1;
++	float enemy_ground_distance = trace_fraction * 96;
++	traceline(capture_player.origin + '0 0 24',
++		capture_enemy.origin + '0 0 24',
++		MOVE_WORLDONLY, capture_player);
++	float anchor_los_fraction = trace_fraction;
++
+ 	Capture_Log(sprintf(
+ 		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
+ 		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
+-		"\"weapon\":\"%s\",\"enemy_model\":\"%s\"}",
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\","
++		"\"anchor\":{\"id\":\"%s\",\"player_clear\":%d,\"enemy_clear\":%d,"
++		"\"player_ground\":%d,\"enemy_ground\":%d,"
++		"\"player_ground_distance\":%.6f,\"enemy_ground_distance\":%.6f,"
++		"\"los_fraction\":%.9f}}",
+ 		autocvar_capture_episode_id, time, GetMapname(),
+ 		etof(capture_player), etof(capture_enemy),
+-		autocvar_capture_weapon, autocvar_capture_enemy_model));
++		autocvar_capture_weapon, autocvar_capture_enemy_model,
++		autocvar_capture_anchor_id,
++		player_clear, enemy_clear, player_ground, enemy_ground,
++		player_ground_distance, enemy_ground_distance,
++		anchor_los_fraction));
+ 	stuffcmd(capture_player,
+ 		sprintf("\ncapture_episode_reset \"%s\"\n", autocvar_capture_episode_id));
+ 	return true;
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 64578f1..003e286 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -2,6 +2,7 @@
+ 
+ bool autocvar_capture_server_enable;
+ string autocvar_capture_episode_id;
++string autocvar_capture_anchor_id;
+ string autocvar_capture_server_log;
+ string autocvar_capture_server_action_file;
+ vector autocvar_capture_player_origin;

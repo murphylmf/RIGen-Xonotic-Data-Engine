@@ -1,0 +1,113 @@
+From 1fe372f2a02f3ea6d6f3bd0c314f7a22726c8f65 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 00:41:18 +0800
+Subject: [PATCH 23/36] Seed capture weapon spread at episode reset
+
+---
+ source/qcsrc/server/capture.qc         | 35 ++++++++++++++++++++++++--
+ source/qcsrc/server/capture.qh         |  2 ++
+ source/qcsrc/server/weapons/tracing.qc |  2 +-
+ 3 files changed, 36 insertions(+), 3 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index e46fa83..9c32b1f 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -18,6 +18,7 @@ bool capture_server_done;
+ bool capture_server_tick_logged;
+ entity capture_player;
+ entity capture_enemy;
++float capture_weapon_random_seed;
+ 
+ #define CAPTURE_ACTION_COUNT 384
+ float capture_action_forward[CAPTURE_ACTION_COUNT];
+@@ -60,6 +61,30 @@ float Capture_Reserve(entity actor, Weapon weapon)
+ 	return GetResource(actor, weapon.ammo_type);
+ }
+ 
++float Capture_WeaponRandom()
++{
++	float value = crc16(false,
++		strcat(ftos(capture_weapon_random_seed),
++			ftos(capture_weapon_random_seed + M_PI)));
++	capture_weapon_random_seed = value;
++	return value / 65536;
++}
++
++vector Capture_WeaponSpreadRandom(entity actor)
++{
++	if(!autocvar_capture_server_enable || actor != capture_player)
++		return randomvec();
++	vector value;
++	do
++	{
++		value.x = Capture_WeaponRandom() * 2 - 1;
++		value.y = Capture_WeaponRandom() * 2 - 1;
++		value.z = Capture_WeaponRandom() * 2 - 1;
++	}
++	while(value * value > 1);
++	return value;
++}
++
+ void Capture_SetResources(entity actor, float health, float armor, float reserve)
+ {
+ 	SetResourceExplicit(actor, RES_HEALTH, health);
+@@ -219,6 +244,11 @@ bool Capture_TryReset()
+ 		autocvar_capture_enemy_health,
+ 		autocvar_capture_enemy_armor,
+ 		autocvar_capture_reserve);
++	// The engine's sv_random_seed is applied at map start. Connection setup
++	// consumes a timing-dependent number of global random values before the
++	// atomic episode reset, so capture weapon spread uses this private stream
++	// seeded exactly at the reset boundary.
++	capture_weapon_random_seed = autocvar_capture_seed;
+ 	Capture_ConfigurePlayerWeapon(capture_player);
+ 	setplayermodel(capture_enemy,
+ 		strcat("models/player/", autocvar_capture_enemy_model, ".iqm"));
+@@ -274,10 +304,11 @@ bool Capture_TryReset()
+ 	string reset_row = sprintf(
+ 		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
+ 		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
+-		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",",
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",\"seed\":%.0f,",
+ 		autocvar_capture_episode_id, time, GetMapname(),
+ 		etof(capture_player), etof(capture_enemy),
+-		autocvar_capture_weapon, autocvar_capture_enemy_model);
++		autocvar_capture_weapon, autocvar_capture_enemy_model,
++		autocvar_capture_seed);
+ 	reset_row = strcat(reset_row, sprintf(
+ 		"\"anchor\":{\"id\":\"%s\",\"player_clear\":%d,\"enemy_clear\":%d,"
+ 		"\"player_ground\":%d,\"enemy_ground\":%d,"
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 003e286..766689a 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -3,6 +3,7 @@
+ bool autocvar_capture_server_enable;
+ string autocvar_capture_episode_id;
+ string autocvar_capture_anchor_id;
++float autocvar_capture_seed;
+ string autocvar_capture_server_log;
+ string autocvar_capture_server_action_file;
+ vector autocvar_capture_player_origin;
+@@ -27,6 +28,7 @@ float autocvar_capture_reserve;
+ 
+ void setplayermodel(entity e, string modelname);
+ void Capture_ApplyAuthoritativeAction(entity actor);
++vector Capture_WeaponSpreadRandom(entity actor);
+ void Capture_ServerFrame();
+ void Capture_ServerFrameEnd(entity actor);
+ void Capture_Fire(entity actor, int deathtype, vector shot_origin, vector shot_direction);
+diff --git a/source/qcsrc/server/weapons/tracing.qc b/source/qcsrc/server/weapons/tracing.qc
+index 64c9d70..cd7d32d 100644
+--- a/source/qcsrc/server/weapons/tracing.qc
++++ b/source/qcsrc/server/weapons/tracing.qc
+@@ -358,7 +358,7 @@ void fireBullet_trace_callback(vector start, vector hit, vector end)
+ 
+ void fireBullet_antilag(entity this, .entity weaponentity, vector start, vector dir, float spread, float max_solid_penetration, float damage, float headshot_multiplier, float force, float dtype, entity tracer_effect, bool do_antilag)
+ {
+-	dir = normalize(dir + randomvec() * spread);
++	dir = normalize(dir + Capture_WeaponSpreadRandom(this) * spread);
+ 	vector end = start + dir * max_shot_distance;
+ 
+ 	fireBullet_last_hit = NULL;

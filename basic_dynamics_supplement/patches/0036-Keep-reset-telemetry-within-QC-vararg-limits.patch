@@ -1,0 +1,34 @@
+From 52aae0d6706aedf882f2a98e7b0da6f56110523c Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 01:18:52 +0800
+Subject: [PATCH 36/36] Keep reset telemetry within QC vararg limits
+
+---
+ source/qcsrc/server/capture.qc | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 8a3b000..e6b2ddb 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -318,14 +318,15 @@ bool Capture_TryReset()
+ 	string reset_row = sprintf(
+ 		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
+ 		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
+-		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",\"seed_header_seen\":%d,"
+-		"\"seed_crc\":%.0f,"
+-		"\"weapon_rng_seed\":%.6f,",
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",",
+ 		autocvar_capture_episode_id, time, GetMapname(),
+ 		etof(capture_player), etof(capture_enemy),
+-		autocvar_capture_weapon, autocvar_capture_enemy_model,
++		autocvar_capture_weapon, autocvar_capture_enemy_model);
++	reset_row = strcat(reset_row, sprintf(
++		"\"seed_header_seen\":%d,\"seed_crc\":%.0f,"
++		"\"weapon_rng_seed\":%.6f,",
+ 		capture_episode_seed_header_seen, capture_episode_seed_crc,
+-		capture_weapon_random_seed);
++		capture_weapon_random_seed));
+ 	reset_row = strcat(reset_row, sprintf(
+ 		"\"anchor\":{\"id\":\"%s\",\"player_clear\":%d,\"enemy_clear\":%d,"
+ 		"\"player_ground\":%d,\"enemy_ground\":%d,"

@@ -1,0 +1,84 @@
+From d7014b84bc4ed9f7814b0f6ce3c3c1293a4fe310 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:34:12 +0800
+Subject: [PATCH 07/36] Hold warmup and enemy motion to deterministic state
+
+---
+ source/qcsrc/server/capture.qc | 32 +++++++++++++++++++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 8b3115d..dd854d2 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -158,25 +158,37 @@ bool Capture_TryReset()
+ void Capture_MoveEnemy()
+ {
+ 	vector offset = '0 0 0';
++	vector commanded_velocity = '0 0 0';
+ 	float t = capture_server_tick / 64.0;
+ 	switch(autocvar_capture_enemy_motion)
+ 	{
+ 		case 1:
+ 			offset = autocvar_capture_enemy_motion_vector
+ 				* (sin(t * M_PI * 0.8) * autocvar_capture_enemy_motion_distance);
++			commanded_velocity = autocvar_capture_enemy_motion_vector
++				* (cos(t * M_PI * 0.8) * M_PI * 0.8
++				* autocvar_capture_enemy_motion_distance);
+ 			break;
+ 		case 2:
+ 			offset = autocvar_capture_enemy_motion_vector
+ 				* (sin(t * M_PI * 0.4) * autocvar_capture_enemy_motion_distance);
++			commanded_velocity = autocvar_capture_enemy_motion_vector
++				* (cos(t * M_PI * 0.4) * M_PI * 0.4
++				* autocvar_capture_enemy_motion_distance);
+ 			break;
+ 		case 3:
+ 			if((floor(t * 2) % 2) == 0)
++			{
+ 				offset = autocvar_capture_enemy_motion_vector
+ 					* (sin(t * M_PI) * autocvar_capture_enemy_motion_distance);
++				commanded_velocity = autocvar_capture_enemy_motion_vector
++					* (cos(t * M_PI) * M_PI
++					* autocvar_capture_enemy_motion_distance);
++			}
+ 			break;
+ 	}
+ 	vector target = autocvar_capture_enemy_origin + offset;
+-	capture_enemy.velocity = (target - capture_enemy.origin) * 64;
++	capture_enemy.velocity = commanded_velocity;
+ 	setorigin(capture_enemy, target);
+ 	capture_enemy.v_angle = '0 1 0' * autocvar_capture_enemy_yaw;
+ 	capture_enemy.angles = capture_enemy.v_angle;
+@@ -186,6 +198,23 @@ void Capture_MoveEnemy()
+ 	PHYS_INPUT_BUTTON_JUMP(capture_enemy) = false;
+ }
+ 
++void Capture_HoldWarmup()
++{
++	if(capture_server_tick >= 64)
++		return;
++	setorigin(capture_player, autocvar_capture_player_origin);
++	capture_player.velocity = '0 0 0';
++	capture_player.oldvelocity = '0 0 0';
++	capture_player.v_angle = '0 1 0' * autocvar_capture_player_yaw;
++	capture_player.angles = capture_player.v_angle;
++	capture_player.fixangle = true;
++	CS(capture_player).movement = '0 0 0';
++	CS(capture_player).impulse = 0;
++	PHYS_INPUT_BUTTON_ATCK(capture_player) = false;
++	PHYS_INPUT_BUTTON_ATCK2(capture_player) = false;
++	PHYS_INPUT_BUTTON_JUMP(capture_player) = false;
++}
++
+ void Capture_LogState()
+ {
+ 	entity weapon_entity = capture_player.(weaponentities[0]);
+@@ -287,6 +316,7 @@ void Capture_ServerFrame()
+ 		++capture_server_tick;
+ 		return;
+ 	}
++	Capture_HoldWarmup();
+ 	Capture_MoveEnemy();
+ 	Capture_LogState();
+ 	if(capture_server_tick == 63)

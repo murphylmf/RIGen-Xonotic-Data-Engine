@@ -1,0 +1,47 @@
+From a38b7100f4c01b0d7abb95c5a1b6cc99bd96fbd7 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 21:41:19 +0800
+Subject: [PATCH 21/36] capture: split anchor reset telemetry formatting
+
+---
+ source/qcsrc/server/capture.qc | 21 ++++++++++++---------
+ 1 file changed, 12 insertions(+), 9 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index fed9d0a..4c3abaa 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -269,21 +269,24 @@ bool Capture_TryReset()
+ 		MOVE_WORLDONLY, capture_player);
+ 	float anchor_los_fraction = trace_fraction;
+ 
+-	Capture_Log(sprintf(
++	string reset_row = sprintf(
+ 		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
+ 		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
+-		"\"weapon\":\"%s\",\"enemy_model\":\"%s\","
+-		"\"anchor\":{\"id\":\"%s\",\"player_clear\":%d,\"enemy_clear\":%d,"
+-		"\"player_ground\":%d,\"enemy_ground\":%d,"
+-		"\"player_ground_distance\":%.6f,\"enemy_ground_distance\":%.6f,"
+-		"\"los_fraction\":%.9f}}",
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",",
+ 		autocvar_capture_episode_id, time, GetMapname(),
+ 		etof(capture_player), etof(capture_enemy),
+-		autocvar_capture_weapon, autocvar_capture_enemy_model,
++		autocvar_capture_weapon, autocvar_capture_enemy_model);
++	reset_row = strcat(reset_row, sprintf(
++		"\"anchor\":{\"id\":\"%s\",\"player_clear\":%d,\"enemy_clear\":%d,"
++		"\"player_ground\":%d,\"enemy_ground\":%d,"
++		"\"player_ground_distance\":%.6f,",
+ 		autocvar_capture_anchor_id,
+ 		player_clear, enemy_clear, player_ground, enemy_ground,
+-		player_ground_distance, enemy_ground_distance,
+-		anchor_los_fraction));
++		player_ground_distance));
++	reset_row = strcat(reset_row, sprintf(
++		"\"enemy_ground_distance\":%.6f,\"los_fraction\":%.9f}}",
++		enemy_ground_distance, anchor_los_fraction));
++	Capture_Log(reset_row);
+ 	stuffcmd(capture_player,
+ 		sprintf("\ncapture_episode_reset \"%s\"\n", autocvar_capture_episode_id));
+ 	return true;

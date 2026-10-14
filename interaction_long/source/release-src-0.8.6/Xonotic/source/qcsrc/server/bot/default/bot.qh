@@ -1,0 +1,117 @@
+#pragma once
+  
+                     
+   
+
+const int AI_STATUS_ROAMING                    = BIT(0);                                                     
+const int AI_STATUS_ATTACKING                  = BIT(1);                              
+const int AI_STATUS_RUNNING                    = BIT(2);                        
+const int AI_STATUS_DANGER_AHEAD               = BIT(3);                                          
+const int AI_STATUS_OUT_JUMPPAD                = BIT(4);                                              
+const int AI_STATUS_OUT_WATER                  = BIT(5);                              
+const int AI_STATUS_WAYPOINT_PERSONAL_LINKING  = BIT(6);                                                  
+const int AI_STATUS_WAYPOINT_PERSONAL_GOING    = BIT(7);                                
+const int AI_STATUS_WAYPOINT_PERSONAL_REACHED  = BIT(8);                             
+const int AI_STATUS_JETPACK_FLYING             = BIT(9);
+const int AI_STATUS_JETPACK_LANDING            = BIT(10);
+const int AI_STATUS_STUCK                      = BIT(11);                         
+
+.bool isbot;                                         
+.int aistatus;
+
+               
+#define SUPERBOT (skill > 100)
+
+float autoskill_nextthink;
+
+                                              
+.float bot_moveskill;                    
+.float bot_dodgeskill;           
+
+.float bot_pingskill;               
+
+.float bot_weaponskill;                                     
+.float bot_aggresskill;                                                        
+.float bot_rangepreference;                                                                                                               
+
+.float bot_aimskill;                
+.float bot_offsetskill;                
+.float bot_mouseskill;                 
+
+.float bot_thinkskill;                 
+.float bot_aiskill;                   
+
+.float totalfrags_lastcheck;
+
+                           
+float bot_distance_far;
+float bot_distance_close;
+
+entity bot_list;
+.entity nextbot;
+.string cleanname;
+                                                          
+                                               
+.string netname_freeme;
+.string playermodel_freeme;
+.string playerskin_freeme;
+
+.float bot_nextthink;
+
+.float createdtime;
+.float bot_preferredcolors;
+.float bot_attack;
+.float bot_dodge;
+.float bot_dodgerating;
+
+.float bot_pickup;
+.float bot_pickupbasevalue;
+.bool bot_pickup_respawning;
+.float bot_strategytime;
+.float bot_jump_time;
+
+.float bot_forced_team;
+.float bot_config_loaded;
+
+float bot_strategytoken_taken;
+entity bot_strategytoken;
+
+float botframe_spawnedwaypoints;
+float botframe_nextthink;
+float botframe_nextdangertime;
+
+int _content_type;
+#define IN_LAVA(pos) (_content_type = pointcontents(pos), (_content_type == CONTENT_LAVA || _content_type == CONTENT_SLIME))
+#define IN_LIQUID(pos) (_content_type = pointcontents(pos), (_content_type == CONTENT_WATER || _content_type == CONTENT_LAVA || _content_type == CONTENT_SLIME))
+#define SUBMERGED(pos) IN_LIQUID(pos + autocvar_sv_player_viewoffset)
+#define WETFEET(pos) IN_LIQUID(pos + eZ * (m1.z + 1))
+
+  
+            
+   
+
+entity bot_spawn();
+bool bot_fixcount(bool multiple_per_frame);
+
+void bot_think(entity this);
+void bot_setnameandstuff(entity this);
+void bot_custom_weapon_priority_setup();
+void bot_endgame();
+void bot_relinkplayerlist();
+void bot_clientdisconnect(entity this);
+void bot_clientconnect(entity this);
+void bot_removefromlargestteam();
+void bot_removenewest();
+void autoskill(float factor);
+void bot_serverframe();
+
+.void(entity this) bot_ai;
+.float(entity player, entity item) bot_pickupevalfunc;
+
+  
+          
+   
+
+void(entity this) havocbot_setupbot;
+
+void bot_calculate_stepheightvec();

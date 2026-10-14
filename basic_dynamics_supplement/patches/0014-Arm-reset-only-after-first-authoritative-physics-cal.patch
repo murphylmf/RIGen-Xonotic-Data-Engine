@@ -1,0 +1,50 @@
+From 21fc591a48bc8ac0218c187c400e43379cde46f6 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 19:00:41 +0800
+Subject: [PATCH 14/36] Arm reset only after first authoritative physics
+ callback
+
+---
+ source/qcsrc/server/capture.qc | 9 ++++++---
+ source/qcsrc/server/capture.qh | 1 +
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index be5ddd4..ce5b2ed 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -132,8 +132,10 @@ bool Capture_LoadAuthoritativeActions()
+ 
+ void Capture_ApplyAuthoritativeAction(entity actor)
+ {
+-	if(!autocvar_capture_server_enable || !capture_server_started
+-		|| capture_server_done || actor != capture_player
++	if(!autocvar_capture_server_enable || actor != capture_player)
++		return;
++	actor.capture_physics_ready = true;
++	if(!capture_server_started || capture_server_done
+ 		|| capture_server_tick < 0 || capture_server_tick >= capture_action_count)
+ 		return;
+ 	int tick = capture_server_tick;
+@@ -197,7 +199,8 @@ bool Capture_TryReset()
+ 	// IS_PLAYER becomes true slightly before the join path finishes restoring
+ 	// normal walk physics. Starting the episode in that window makes the
+ 	// number of gravity ticks depend on connection timing.
+-	if(capture_player.move_movetype != MOVETYPE_WALK)
++	if(capture_player.move_movetype != MOVETYPE_WALK
++		|| !capture_player.capture_physics_ready)
+ 		return false;
+ 
+ 	cvar_set("bot_nofire", "1");
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index 21e7542..64578f1 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -22,6 +22,7 @@ float autocvar_capture_reserve;
+ 
+ .int capture_event_id;
+ .int capture_last_fire_event;
++.bool capture_physics_ready;
+ 
+ void setplayermodel(entity e, string modelname);
+ void Capture_ApplyAuthoritativeAction(entity actor);

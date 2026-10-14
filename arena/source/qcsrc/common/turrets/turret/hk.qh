@@ -1,0 +1,31 @@
+#pragma once
+
+                         
+
+#include "hk_weapon.qh"
+
+CLASS(HunterKiller, Turret)
+                 ATTRIB(HunterKiller, spawnflags, int, TUR_FLAG_SPLASH | TUR_FLAG_MEDPROJ | TUR_FLAG_PLAYER | TUR_FLAG_RECIEVETARGETS);
+                 ATTRIB(HunterKiller, m_mins, vector, '-32 -32 0');
+                 ATTRIB(HunterKiller, m_maxs, vector, '32 32 64');
+                 ATTRIB(HunterKiller, mdl, string, "base.md3");
+                 ATTRIB_STRZONE(HunterKiller, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(HunterKiller, head_model, string, strcat("models/turrets/", "hk.md3"));
+                 ATTRIB(HunterKiller, netname, string, "hk");
+                 ATTRIB(HunterKiller, turret_name, string, _("Hunter-Killer Turret"));
+    ATTRIB(HunterKiller, m_weapon, Weapon, WEP_HK);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+		P(class, prefix, shot_speed_accel, float) \
+		P(class, prefix, shot_speed_accel2, float) \
+		P(class, prefix, shot_speed_decel, float) \
+		P(class, prefix, shot_speed_max, float) \
+		P(class, prefix, shot_speed_turnrate, float) \
+	END()
+	TR_PROPS(X, HunterKiller, hk)
+#undef X
+
+ENDCLASS(HunterKiller)
+REGISTER_TURRET(HK, NEW(HunterKiller));

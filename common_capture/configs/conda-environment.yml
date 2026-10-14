@@ -1,0 +1,15 @@
+name: xonotic-capture
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - numpy
+  - pandas
+  - pyarrow
+  - scipy
+  - pysoundfile
+  - psutil
+  - pyyaml
+  - jsonschema
+  - pytest

@@ -1,0 +1,31 @@
+#pragma once
+
+                          
+
+#include "ewheel_weapon.qh"
+
+CLASS(EWheel, Turret)
+                 ATTRIB(EWheel, spawnflags, int, TUR_FLAG_PLAYER | TUR_FLAG_MOVE | TUR_FLAG_ROAM);
+                 ATTRIB(EWheel, m_mins, vector, '-32 -32 0');
+                 ATTRIB(EWheel, m_maxs, vector, '32 32 48');
+                 ATTRIB(EWheel, mdl, string, "ewheel-base2.md3");
+                 ATTRIB_STRZONE(EWheel, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(EWheel, head_model, string, strcat("models/turrets/", "ewheel-gun1.md3"));
+                 ATTRIB(EWheel, netname, string, "ewheel");
+                 ATTRIB(EWheel, turret_name, string, _("eWheel Turret"));
+    ATTRIB(EWheel, m_weapon, Weapon, WEP_EWHEEL);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+		P(class, prefix, speed_fast, float) \
+		P(class, prefix, speed_slow, float) \
+		P(class, prefix, speed_slower, float) \
+		P(class, prefix, speed_stop, float) \
+		P(class, prefix, turnrate, float) \
+	END()
+	TR_PROPS(X, EWheel, ewheel)
+#undef X
+
+ENDCLASS(EWheel)
+REGISTER_TURRET(EWHEEL, NEW(EWheel));

@@ -1,0 +1,68 @@
+#pragma once
+
+float autocvar_g_chat_flood_burst;
+float autocvar_g_chat_flood_burst_team;
+float autocvar_g_chat_flood_burst_tell;
+float autocvar_g_chat_flood_lmax;
+float autocvar_g_chat_flood_lmax_team;
+float autocvar_g_chat_flood_lmax_tell;
+bool autocvar_g_chat_flood_notify_flooder;
+float autocvar_g_chat_flood_spl;
+float autocvar_g_chat_flood_spl_team;
+float autocvar_g_chat_flood_spl_tell;
+bool autocvar_g_chat_allowed;
+bool autocvar_g_chat_private_allowed;
+bool autocvar_g_chat_spectator_allowed;
+bool autocvar_g_chat_team_allowed;
+int autocvar_g_chat_nospectators;
+bool autocvar_g_chat_teamcolors;
+bool autocvar_g_chat_tellprivacy;
+
+const float NUM_NEAREST_ENTITIES = 4;
+entity nearest_entity[NUM_NEAREST_ENTITIES];
+float nearest_length[NUM_NEAREST_ENTITIES];
+
+.float floodcontrol_chat;
+.float floodcontrol_chatteam;
+.float floodcontrol_chattell;
+.float floodcontrol_voice;
+.float floodcontrol_voiceteam;
+
+#define CHAT_NOSPECTATORS() ((autocvar_g_chat_nospectators == 1) || (autocvar_g_chat_nospectators == 2 && !warmup_stage))
+
+int Say(entity source, int teamsay, entity privatesay, string msgin, bool floodcontrol);
+
+string NearestLocation(vector p);
+
+string formatmessage(entity this, string msg);
+
+                                                 
+                                         
+                                  
+void PrintToChat(entity client, string text);
+
+                                                                               
+             
+                                         
+                                  
+void DebugPrintToChat(entity client, string text);
+
+                                                  
+                                  
+void PrintToChatAll(string text);
+
+                                                                                
+             
+                                  
+void DebugPrintToChatAll(string text);
+
+                                                                         
+                                                                 
+                                  
+void PrintToChatTeam(int team_num, string text);
+
+                                                                               
+                                     
+                                                                 
+                                  
+void DebugPrintToChatTeam(int team_num, string text);

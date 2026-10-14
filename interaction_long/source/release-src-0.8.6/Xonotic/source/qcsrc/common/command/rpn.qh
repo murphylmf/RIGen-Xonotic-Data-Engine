@@ -1,0 +1,14 @@
+#pragma once
+
+                                                            
+                                                           
+                                     
+                                                            
+
+const int MAX_RPN_STACK = 16;
+int rpn_db;
+int rpn_error;
+int rpn_sp;
+string rpn_stack[MAX_RPN_STACK];
+
+void GenericCommand_rpn(int request, int argc, string command);

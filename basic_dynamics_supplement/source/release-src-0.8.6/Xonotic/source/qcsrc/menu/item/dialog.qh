@@ -1,0 +1,75 @@
+#pragma once
+
+                                                                                                  
+                   
+                                            
+                  
+                    
+                
+                 
+                                                                            
+                       
+                                                                                                                 
+                                                                             
+                                                      
+  
+                                               
+
+#include "inputcontainer.qh"
+CLASS(Dialog, InputContainer)
+	METHOD(Dialog, configureDialog, void(entity));                                                                   
+	METHOD(Dialog, fill, void(entity));                                                                        
+	METHOD(Dialog, keyDown, float(entity, float, float, float));
+	METHOD(Dialog, close, void(entity));
+	METHOD(Dialog, addItemSimple, void(entity, float, float, float, float, entity, vector));
+
+	METHOD(Dialog, TD, void(entity, float, float, entity));
+	METHOD(Dialog, TDNoMargin, void(entity, float, float, entity, vector));
+	METHOD(Dialog, TDempty, void(entity, float));
+	METHOD(Dialog, setFirstColumn, void(entity, float));
+	METHOD(Dialog, TR, void(entity));
+	METHOD(Dialog, gotoRC, void(entity, float, float));
+
+	ATTRIB(Dialog, isTabRoot, float, 1);
+	ATTRIB(Dialog, closeButton, entity);
+	ATTRIB(Dialog, intendedHeight, float, 0);
+	ATTRIB(Dialog, itemOrigin, vector, '0 0 0');
+	ATTRIB(Dialog, itemSize, vector, '0 0 0');
+	ATTRIB(Dialog, itemSpacing, vector, '0 0 0');
+	ATTRIB(Dialog, currentRow, float, 0);
+	ATTRIB(Dialog, currentColumn, float, 0);
+	ATTRIB(Dialog, firstColumn, float, 0);
+
+	                   
+	ATTRIB(Dialog, closable, float, 1);
+	ATTRIB(Dialog, title, string, "Form1");
+	ATTRIB(Dialog, name, string, "");                                                                                       
+	ATTRIB(Dialog, color, vector, '1 0.5 1');
+	ATTRIB(Dialog, intendedWidth, float, 0);
+	ATTRIB(Dialog, rows, float, 3);
+	ATTRIB(Dialog, columns, float, 2);
+
+	ATTRIB(Dialog, marginTop, float, 0);              
+	ATTRIB(Dialog, marginBottom, float, 0);           
+	ATTRIB(Dialog, marginLeft, float, 0);             
+	ATTRIB(Dialog, marginRight, float, 0);            
+	ATTRIB(Dialog, columnSpacing, float, 0);          
+	ATTRIB(Dialog, rowSpacing, float, 0);             
+	ATTRIB(Dialog, rowHeight, float, 0);              
+	ATTRIB(Dialog, titleHeight, float, 0);            
+	ATTRIB(Dialog, titleFontSize, float, 0);                                        
+	ATTRIB(Dialog, zoomedOutTitleBarPosition, float, 0);
+	ATTRIB(Dialog, zoomedOutTitleBar, float, 0);
+
+	ATTRIB(Dialog, requiresConnection, float, 0);                                                                 
+
+	ATTRIB(Dialog, backgroundImage, string);
+	ATTRIB(Dialog, borderLines, float, 1);
+	ATTRIB(Dialog, closeButtonImage, string);
+
+	ATTRIB(Dialog, hideMenuOnClose, bool, false);
+
+	ATTRIB(Dialog, frame, entity);
+ENDCLASS(Dialog)
+
+void Dialog_Close(entity button, entity me);

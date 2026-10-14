@@ -1,0 +1,122 @@
+#pragma once
+
+                                        
+.entity list_prev;
+                             
+.entity list_next;
+
+entity minigame_get_descriptor(string id);
+
+                                  
+int minigame_tile_letter(string id);
+
+                                  
+                                                            
+                                                             
+                                                                              
+int minigame_tile_number(string id);
+
+                                                      
+vector minigame_tile_pos(string id, int rows, int columns);
+
+                               
+string minigame_tile_buildname(int letter, int number);
+
+                                                 
+string minigame_relative_tile(string start_id, int dx, int dy, int rows, int columns);
+
+                                                                                   
+string minigame_tile_name(vector pos, int rows, int columns);
+
+                                                                                     
+int minigame_next_team(int curr_team, int n_teams);
+
+                               
+int minigame_prev_team(int curr_team, int n_teams);
+
+                                     
+                                                                         
+void minigame_server_sendflags(entity ent, int mgflags);
+
+                                                    
+int minigame_count_players(entity minigame);
+
+                                                     
+.entity descriptor;
+
+                                                              
+                  
+                                  
+                                            
+                                          
+                                            
+                                             
+                                        
+                                            
+                                             
+               
+                                                                    
+                 
+                                                                      
+                                               
+                                                       
+                                                     
+                                                                 
+                                                                           
+                                       
+                                                                              
+                                                                                       
+                           
+                                                  
+                  
+            
+                                                    
+          
+                                                         
+                        
+                                                      
+                                                                          
+                        
+                                                          
+                                        
+                                                   
+                                                     
+                                                                 
+                                                                           
+                                                          
+                                          
+                             
+                                    
+                                  
+                                                                                    
+                                                      
+                                                
+                                          
+                                                
+                                                      
+.int(entity,string,...)   minigame_event;
+
+                                                                                     
+.bool minigame_autoclean;
+
+                                                                   
+.int minigame_flags;
+
+                                                                                 
+                                                                     
+                                              
+const int MINIG_SF_CREATE  = 0x01;                       
+const int MINIG_SF_UPDATE  = 0x02;                               
+const int MINIG_SF_CUSTOM  = 0x10;                                
+const int MINIG_SF_MAX     = 0x80;                                            
+const int MINIG_SF_ALL     = 0xff;                            
+
+
+                                                                  
+                                                                   
+entity msle_spawn(entity minigame_session, entity e);
+
+#include "minigame/all.qh"
+
+int msle_id(string class_name);
+string msle_classname(int id);

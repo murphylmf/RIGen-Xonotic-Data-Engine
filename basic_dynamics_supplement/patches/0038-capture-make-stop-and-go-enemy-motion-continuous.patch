@@ -1,0 +1,58 @@
+From 3e2bc09a5bd4ed848986b8ed80c467941171c156 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Mon, 27 Jul 2026 03:36:43 +0800
+Subject: [PATCH] capture: make stop-and-go enemy motion continuous
+
+---
+ source/qcsrc/server/capture.qc | 33 +++++++++++++++++++++++++++------
+ 1 file changed, 27 insertions(+), 6 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index d4027f2..9c4744c 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -428,14 +428,35 @@ void Capture_MoveEnemy()
+ 				* autocvar_capture_enemy_motion_distance);
+ 			break;
+ 		case 3:
+-			if((floor(t * 2) % 2) == 0)
++			// A continuous three-second stop-and-go cycle:
++			// move 0 -> +D, hold, move +D -> -D, hold, move -D -> 0.
++			// Both position and velocity match at every segment boundary.
++			float phase = t - floor(t / 3) * 3;
++			float scalar = 0;
++			float scalar_velocity = 0;
++			if(phase < 0.5)
+ 			{
+-				offset = autocvar_capture_enemy_motion_vector
+-					* (sin(t * M_PI) * autocvar_capture_enemy_motion_distance);
+-				commanded_velocity = autocvar_capture_enemy_motion_vector
+-					* (cos(t * M_PI) * M_PI
+-					* autocvar_capture_enemy_motion_distance);
++				scalar = sin(phase * M_PI);
++				scalar_velocity = cos(phase * M_PI) * M_PI;
+ 			}
++			else if(phase < 1)
++				scalar = 1;
++			else if(phase < 2)
++			{
++				scalar = cos((phase - 1) * M_PI);
++				scalar_velocity = -sin((phase - 1) * M_PI) * M_PI;
++			}
++			else if(phase < 2.5)
++				scalar = -1;
++			else
++			{
++				scalar = -cos((phase - 2.5) * M_PI);
++				scalar_velocity = sin((phase - 2.5) * M_PI) * M_PI;
++			}
++			offset = autocvar_capture_enemy_motion_vector
++				* (scalar * autocvar_capture_enemy_motion_distance);
++			commanded_velocity = autocvar_capture_enemy_motion_vector
++				* (scalar_velocity * autocvar_capture_enemy_motion_distance);
+ 			break;
+ 	}
+ 	vector target = autocvar_capture_enemy_origin + offset;
+-- 
+2.43.0
+

@@ -1,0 +1,82 @@
+From fd134b1cc79df1001e7a6e2561ec85851c1c9c55 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 01:17:23 +0800
+Subject: [PATCH 35/36] Hash the bound seed header without reparsing it
+
+---
+ source/qcsrc/server/capture.qc | 29 ++++++++++++++++-------------
+ 1 file changed, 16 insertions(+), 13 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 4120433..8a3b000 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -19,7 +19,8 @@ bool capture_server_tick_logged;
+ entity capture_player;
+ entity capture_enemy;
+ float capture_weapon_random_seed;
+-float capture_episode_seed;
++float capture_episode_seed_crc;
++bool capture_episode_seed_header_seen;
+ 
+ #define CAPTURE_ACTION_COUNT 384
+ float capture_action_forward[CAPTURE_ACTION_COUNT];
+@@ -108,7 +109,8 @@ bool Capture_LoadAuthoritativeActions()
+ 		return false;
+ 	}
+ 	capture_action_count = 0;
+-	capture_episode_seed = 0;
++	capture_episode_seed_crc = 0;
++	capture_episode_seed_header_seen = false;
+ 	capture_weapon_random_seed = 0;
+ 	float yaw = autocvar_capture_player_yaw;
+ 	float pitch = 0;
+@@ -116,11 +118,9 @@ bool Capture_LoadAuthoritativeActions()
+ 	{
+ 		if(substring(line, 0, 6) == "#seed,")
+ 		{
+-			if(tokenizebyseparator(line, ",") == 2)
+-			{
+-				capture_episode_seed = stof(argv(1));
+-				capture_weapon_random_seed = crc16(false, argv(1));
+-			}
++			capture_episode_seed_crc = crc16(false, line);
++			capture_weapon_random_seed = capture_episode_seed_crc;
++			capture_episode_seed_header_seen = true;
+ 			continue;
+ 		}
+ 		if(line == "" || substring(line, 0, 5) == "tick,")
+@@ -156,11 +156,12 @@ bool Capture_LoadAuthoritativeActions()
+ 	}
+ 	fclose(fh);
+ 	if(capture_action_count != CAPTURE_ACTION_COUNT
+-		|| capture_episode_seed <= 0)
++		|| !capture_episode_seed_header_seen)
+ 	{
+-		LOG_WARNF("capture: expected %d authoritative actions and positive seed,"
+-			" loaded actions=%d seed=%.0f",
+-			CAPTURE_ACTION_COUNT, capture_action_count, capture_episode_seed);
++		LOG_WARNF("capture: expected %d authoritative actions and seed header,"
++			" loaded actions=%d seed_header=%d",
++			CAPTURE_ACTION_COUNT, capture_action_count,
++			capture_episode_seed_header_seen);
+ 		capture_action_count = 0;
+ 		return false;
+ 	}
+@@ -317,12 +318,14 @@ bool Capture_TryReset()
+ 	string reset_row = sprintf(
+ 		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
+ 		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
+-		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",\"seed\":\"%.0f\","
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",\"seed_header_seen\":%d,"
++		"\"seed_crc\":%.0f,"
+ 		"\"weapon_rng_seed\":%.6f,",
+ 		autocvar_capture_episode_id, time, GetMapname(),
+ 		etof(capture_player), etof(capture_enemy),
+ 		autocvar_capture_weapon, autocvar_capture_enemy_model,
+-		capture_episode_seed, capture_weapon_random_seed);
++		capture_episode_seed_header_seen, capture_episode_seed_crc,
++		capture_weapon_random_seed);
+ 	reset_row = strcat(reset_row, sprintf(
+ 		"\"anchor\":{\"id\":\"%s\",\"player_clear\":%d,\"enemy_clear\":%d,"
+ 		"\"player_ground\":%d,\"enemy_ground\":%d,"

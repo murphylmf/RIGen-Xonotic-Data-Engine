@@ -1,0 +1,9 @@
+#pragma once
+
+CLASS(HellionAttack, PortoLaunch)
+                ATTRIB(HellionAttack, spawnflags, int, WEP_FLAG_HIDDEN | WEP_FLAG_SPECIALATTACK);
+                ATTRIB(HellionAttack, impulse, int, 9);
+                ATTRIB(HellionAttack, netname, string, "turret_hellion");
+                ATTRIB(HellionAttack, m_name, string, _("Hellion"));
+ENDCLASS(HellionAttack)
+REGISTER_WEAPON(HELLION, NEW(HellionAttack));

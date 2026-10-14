@@ -1,0 +1,69 @@
+#pragma once
+
+#include <common/items/_mod.qh>
+#include <common/items/item/ammo.qh>
+#include <common/mutators/mutator/powerups/_mod.qh>
+
+float instagib_respawntime_ammo = 45;
+float instagib_respawntimejitter_ammo = 0;
+GETTER(float, instagib_respawntime_ammo)
+GETTER(float, instagib_respawntimejitter_ammo)
+
+#ifdef GAMEQC
+MODEL(VaporizerCells_ITEM, Item_Model("a_cells.md3"));
+SOUND(VaporizerCells, Item_Sound("itempickup"));
+#endif
+
+#ifdef SVQC
+int autocvar_g_instagib_ammo_drop;
+void ammo_vaporizercells_init(Pickup this, entity item)
+{
+    if(!GetResource(item, RES_CELLS))
+        SetResourceExplicit(item, RES_CELLS, autocvar_g_instagib_ammo_drop);
+}
+#endif
+REGISTER_ITEM(VaporizerCells, Ammo) {
+    this.m_canonical_spawnfunc = "item_vaporizer_cells";
+#ifdef GAMEQC
+    this.spawnflags = ITEM_FLAG_MUTATORBLOCKED;
+    this.m_model                =   MDL_VaporizerCells_ITEM;
+    this.m_sound                =   SND_VaporizerCells;
+#endif
+    this.netname                =   "vaporizer_cells";
+    this.m_name                 =   _("Vaporizer ammo");
+    this.m_icon                 =   "ammo_supercells";
+#ifdef SVQC
+    this.m_botvalue             =   2000;
+    this.m_itemid               =   IT_RESOURCE;
+    this.m_respawntime          =   GET(instagib_respawntime_ammo);
+    this.m_respawntimejitter    =   GET(instagib_respawntimejitter_ammo);
+    this.m_iteminit             =   ammo_vaporizercells_init;
+#endif
+}
+
+SPAWNFUNC_ITEM(item_vaporizer_cells, ITEM_VaporizerCells)
+SPAWNFUNC_ITEM(item_minst_cells, ITEM_VaporizerCells)
+
+#ifdef GAMEQC
+MODEL(ExtraLife_ITEM, Item_Model("g_h100.md3"));
+SOUND(ExtraLife, Item_Sound("megahealth"));
+#endif
+
+REGISTER_ITEM(ExtraLife, Powerup) {
+    this.m_canonical_spawnfunc = "item_extralife";
+#ifdef GAMEQC
+	this.m_model                =   MDL_ExtraLife_ITEM;
+    this.m_sound                =   SND_ExtraLife;
+#endif
+    this.netname                =   "extralife";
+    this.m_name                 =   _("Extra life");
+    this.m_icon                 =   "item_mega_health";
+    this.m_color                =   '1 0 0';
+    this.m_waypoint             =   _("Extra life");
+    this.m_waypointblink        =   2;
+#ifdef SVQC
+    this.m_itemid               =   IT_RESOURCE;
+#endif
+}
+
+SPAWNFUNC_ITEM(item_extralife, ITEM_ExtraLife)

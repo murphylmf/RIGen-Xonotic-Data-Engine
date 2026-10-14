@@ -1,0 +1,15 @@
+#pragma once
+
+#ifdef MENUQC
+
+#include "xonotic/tab.qh"
+
+REGISTRY(Settings, BITS(3))
+REGISTER_REGISTRY(Settings)
+
+REGISTRY_DEFINE_GET(Settings, NULL)
+#define REGISTER_SETTINGS(id, impl) \
+    LAZY_NEW(id, impl) \
+    REGISTER(Settings, MENU, id, m_id, NEW(Lazy, LAZY(id)))
+
+#endif

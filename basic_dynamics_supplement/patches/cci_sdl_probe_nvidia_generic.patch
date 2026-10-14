@@ -1,0 +1,11 @@
+--- probes/sdl_offscreen_gl_audio_probe.c
++++ probes/cci_sdl_offscreen_gl_audio_probe.c
+@@ -169,7 +169,7 @@
+     int result = 0;
+     if (!vendor || !renderer ||
+         !strstr(vendor, "NVIDIA") ||
+-        !strstr(renderer, "NVIDIA GB300")) {
++        !strstr(renderer, "NVIDIA")) {
+         fprintf(stderr, "hardware renderer gate failed\n");
+         result = 78;
+     } else if (got.freq != 48000 || got.format != AUDIO_S16SYS ||

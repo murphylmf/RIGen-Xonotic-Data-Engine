@@ -1,0 +1,5 @@
+                                
+#include <common/gamemodes/gamemode/tdm/tdm.qh>
+#ifdef SVQC
+    #include <common/gamemodes/gamemode/tdm/sv_tdm.qh>
+#endif

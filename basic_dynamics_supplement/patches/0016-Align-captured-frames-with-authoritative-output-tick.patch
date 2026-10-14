@@ -1,0 +1,27 @@
+From bb9565ae19bf226ef155073e61eea528de52525a Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 19:13:00 +0800
+Subject: [PATCH 16/36] Align captured frames with authoritative output ticks
+
+---
+ source/qcsrc/server/capture.qc | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 61abcd0..ad41e4c 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -418,9 +418,10 @@ void Capture_ServerFrame()
+ 		return;
+ 	}
+ 	Capture_MoveEnemy();
+-	// The stuffcmd is delivered after this server frame. Sending at tick 63
+-	// makes the first captured demo frame authoritative tick 64.
+-	if(capture_server_tick == 63)
++	// The stuffcmd and demo playback path add three authoritative snapshots
++	// before the first captured frame. Sending at tick 61 therefore maps frame
++	// zero to state tick 64 and frame 319 to state tick 383 exactly.
++	if(capture_server_tick == 61)
+ 	{
+ 		Capture_Log(sprintf(
+ 			"{\"kind\":\"output_begin\",\"server_tick\":%d,\"server_time\":%.9f}",

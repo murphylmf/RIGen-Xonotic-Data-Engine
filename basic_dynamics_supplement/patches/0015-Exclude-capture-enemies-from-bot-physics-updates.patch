@@ -1,0 +1,33 @@
+From dbe1c7799247ff22923509da58fec91c6694056c Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 19:03:36 +0800
+Subject: [PATCH 15/36] Exclude capture enemies from bot physics updates
+
+---
+ source/qcsrc/server/capture.qc | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index ce5b2ed..61abcd0 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -206,6 +206,10 @@ bool Capture_TryReset()
+ 	cvar_set("bot_nofire", "1");
+ 	Capture_ResetActor(capture_player, autocvar_capture_player_origin, autocvar_capture_player_yaw);
+ 	Capture_ResetActor(capture_enemy, autocvar_capture_enemy_origin, autocvar_capture_enemy_yaw);
++	// The enemy remains a solid, damageable player entity, but bot navigation
++	// must not inject random velocity between analytic capture updates.
++	capture_enemy.move_qcphysics = false;
++	set_movetype(capture_enemy, MOVETYPE_NONE);
+ 	Capture_SetResources(capture_player,
+ 		autocvar_capture_player_health,
+ 		autocvar_capture_player_armor,
+@@ -290,6 +294,8 @@ void Capture_MoveEnemy()
+ 			break;
+ 	}
+ 	vector target = autocvar_capture_enemy_origin + offset;
++	capture_enemy.move_qcphysics = false;
++	set_movetype(capture_enemy, MOVETYPE_NONE);
+ 	capture_enemy.velocity = commanded_velocity;
+ 	setorigin(capture_enemy, target);
+ 	capture_enemy.v_angle = '0 1 0' * autocvar_capture_enemy_yaw;

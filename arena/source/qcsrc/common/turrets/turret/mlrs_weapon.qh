@@ -1,0 +1,9 @@
+#pragma once
+
+CLASS(MLRSTurretAttack, PortoLaunch)
+                ATTRIB(MLRSTurretAttack, spawnflags, int, WEP_FLAG_HIDDEN | WEP_FLAG_SPECIALATTACK);
+                ATTRIB(MLRSTurretAttack, impulse, int, 9);
+                ATTRIB(MLRSTurretAttack, netname, string, "turret_mlrs");
+                ATTRIB(MLRSTurretAttack, m_name, string, _("MLRS"));
+ENDCLASS(MLRSTurretAttack)
+REGISTER_WEAPON(TUR_MLRS, NEW(MLRSTurretAttack));

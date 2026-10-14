@@ -1,0 +1,194 @@
+#pragma once
+
+#include "i18n.qh"
+
+                                                  
+                                                 
+                                                  
+
+#define count_years_decs(time, decs) sprintf(CTX(_("CI_DEC^%s years")), ftos_decimals(time, decs))
+#define count_years(time) \
+	count_fill(time, \
+	_("CI_ZER^%d years"),              \
+	_("CI_FIR^%d year"),              \
+	_("CI_SEC^%d years"),            \
+	_("CI_THI^%d years"),             \
+	_("CI_MUL^%d years"))            
+
+#define count_weeks_decs(time, decs) sprintf(CTX(_("CI_DEC^%s weeks")), ftos_decimals(time, decs))
+#define count_weeks(time) \
+	count_fill(time, \
+	_("CI_ZER^%d weeks"),              \
+	_("CI_FIR^%d week"),              \
+	_("CI_SEC^%d weeks"),            \
+	_("CI_THI^%d weeks"),             \
+	_("CI_MUL^%d weeks"))            
+
+#define count_days_decs(time, decs) sprintf(CTX(_("CI_DEC^%s days")), ftos_decimals(time, decs))
+#define count_days(time) \
+	count_fill(time, \
+	_("CI_ZER^%d days"),              \
+	_("CI_FIR^%d day"),              \
+	_("CI_SEC^%d days"),           \
+	_("CI_THI^%d days"),             \
+	_("CI_MUL^%d days"))            
+
+#define count_hours_decs(time, decs) sprintf(CTX(_("CI_DEC^%s hours")), ftos_decimals(time, decs))
+#define count_hours(time) \
+	count_fill(time, \
+	_("CI_ZER^%d hours"),              \
+	_("CI_FIR^%d hour"),              \
+	_("CI_SEC^%d hours"),            \
+	_("CI_THI^%d hours"),             \
+	_("CI_MUL^%d hours"))            
+
+
+#define count_minutes_decs(time, decs) sprintf(CTX(_("CI_DEC^%s minutes")), ftos_decimals(time, decs))
+#define count_minutes(time) \
+	count_fill(time, \
+	_("CI_ZER^%d minutes"),              \
+	_("CI_FIR^%d minute"),              \
+	_("CI_SEC^%d minutes"),              \
+	_("CI_THI^%d minutes"),             \
+	_("CI_MUL^%d minutes"))            
+
+#define count_seconds_decs(time, decs) sprintf(CTX(_("CI_DEC^%s seconds")), ftos_decimals(time, decs))
+#define count_seconds(time) \
+	count_fill(time, \
+	_("CI_ZER^%d seconds"),              \
+	_("CI_FIR^%d second"),              \
+	_("CI_SEC^%d seconds"),              \
+	_("CI_THI^%d seconds"),             \
+	_("CI_MUL^%d seconds"))            
+
+                                                                             
+ERASEABLE
+string count_ordinal(int interval)
+{
+	                                                                                
+	                                                                               
+	                                                                                    
+
+	int last2digits = interval % 100;
+
+	                                                                      
+	if (last2digits < 4 || last2digits > 20)
+	{
+		switch (last2digits % 10)
+		{
+			case 1: return sprintf(_("%dst"), interval);
+			case 2: return sprintf(_("%dnd"), interval);
+			case 3: return sprintf(_("%drd"), interval);
+		}
+	}
+
+	return sprintf(_("%dth"), interval);
+}
+
+ERASEABLE
+string count_fill(float interval, string zeroth, string first, string second, string third, string multi)
+{
+	                                                                                
+	                                                                               
+	                                                                                    
+
+	                                                                                     
+	                                              
+	              
+	             
+	              
+	              
+	                                      
+
+	switch (floor(interval))
+	{
+		case 0: return sprintf(CTX(zeroth), interval);
+		case 1:
+		{
+			if (interval == 1)                       
+				return sprintf(CTX(first), interval);
+			else return sprintf(CTX(multi), interval);
+		}
+		case 2: return sprintf(CTX(second), interval);
+		case 3: return sprintf(CTX(third), interval);
+		default: return sprintf(CTX(multi), interval);
+	}
+	return "";
+}
+
+ERASEABLE
+string process_time(float outputtype, int seconds)
+{
+	int tmp_hours = 0, tmp_minutes = 0, tmp_seconds = 0;
+	int tmp_years = 0, tmp_weeks = 0, tmp_days = 0;
+
+	tmp_seconds = floor(seconds);
+
+	if (tmp_seconds)
+	{
+		tmp_minutes = floor(tmp_seconds / 60);
+
+		if (tmp_minutes)
+		{
+			tmp_seconds -= (tmp_minutes * 60);
+			tmp_hours = floor(tmp_minutes / 60);
+
+			if (tmp_hours)
+			{
+				tmp_minutes -= (tmp_hours * 60);
+				tmp_days = floor(tmp_hours / 24);
+
+				if (tmp_days)
+				{
+					tmp_hours -= (tmp_days * 24);
+					tmp_weeks = floor(tmp_days / 7);
+
+					if (tmp_weeks)
+					{
+						tmp_days -= (tmp_weeks * 7);
+						tmp_years = floor(tmp_weeks / 52);
+					}
+				}
+			}
+		}
+	}
+
+	switch (outputtype)
+	{
+		case 1: return sprintf("%02d:%02d:%02d", tmp_hours, tmp_minutes, tmp_seconds);
+		case 2:
+		{
+			string output = "";
+			#define APPEND_TIME(unit) \
+				if (tmp_##unit) output = strcat(output, ((output != "") ? ", " : ""), count_##unit(tmp_##unit))
+			APPEND_TIME(years);
+			APPEND_TIME(weeks);
+			APPEND_TIME(days);
+			APPEND_TIME(hours);
+			APPEND_TIME(minutes);
+			APPEND_TIME(seconds);
+			#undef APPEND_TIME
+			if (output == "")
+				return count_seconds(0);
+			return output;
+		}
+		case 3:
+		{
+			string output = "";
+
+			output = count_hours(tmp_hours);
+
+			if (tmp_weeks) tmp_days += (tmp_weeks * 7);
+			if (tmp_years) tmp_days += (tmp_years * 365);
+			if (tmp_days)
+			{
+				output = sprintf(
+					count_days(tmp_days),
+					((output != "") ? strcat(", ", output) : ""));
+			}
+
+			return output;
+		}
+	}
+	return "";
+}

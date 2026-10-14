@@ -1,0 +1,226 @@
+{
+  "schema_version": "xonotic-stage2-long60-collision-camera-overlay-v1",
+  "source_config": "configs/LONG60_MULTIMAP_HITSCAN_V7.json",
+  "source_config_sha256": "5f00b7c6b2f09bd15b5fb5a5d878028ac1d4e3e64fd0344b2f3c08fd62118484",
+  "geometry_by_map_template": {
+    "bromine": {
+      "four_distinct": {
+        "player_origin": [-40.5, 398.3, 156.4],
+        "angle_degrees": 180.0,
+        "trajectory_scale": 0.75,
+        "qualification": "passed_step18_floor_projection_probe",
+        "qualification_result": "manifests/long60_collision_geometry_v8_scan_floorproject_scale075_allangles_20260829/results/l60colv8_bromine_default_four_distinct_s075_a180.json"
+      },
+      "controlled_return": {
+        "player_origin": [-40.5, 398.3, 156.4],
+        "angle_degrees": 180.0,
+        "trajectory_scale": 0.75,
+        "qualification": "passed_step18_floor_projection_probe",
+        "qualification_result": "manifests/long60_collision_geometry_v8_scan_floorproject_scale075_allangles_20260829/results/l60colv8_bromine_default_controlled_return_s075_a180.json"
+      }
+    },
+    "courtfun": {
+      "four_distinct": {
+        "player_origin": [-2048.0, 1984.0, 24.0],
+        "angle_degrees": 270.0,
+        "trajectory_scale": 0.45,
+        "qualification": "passed_step18_floor_projection_probe",
+        "qualification_result": "manifests/long60_collision_geometry_v8_scan_step18_small_selected_20260829/results/l60colv8_courtfun_default_four_distinct_s045_a270.json"
+      },
+      "controlled_return": {
+        "player_origin": [-2048.0, 1984.0, 24.0],
+        "angle_degrees": 270.0,
+        "trajectory_scale": 0.45,
+        "qualification": "passed_step18_floor_projection_probe",
+        "qualification_result": "manifests/long60_collision_geometry_v8_scan_step18_small_selected_20260829/results/l60colv8_courtfun_default_controlled_return_s045_a270.json"
+      }
+    },
+    "geoplanetary": {
+      "four_distinct": {
+        "player_origin": [608.4, 1429.2, -104.0],
+        "angle_degrees": 0.0,
+        "trajectory_scale": 0.75,
+        "qualification": "passed_step18_floor_projection_probe",
+        "qualification_result": "manifests/long60_collision_geometry_v8_scan_floorproject_scale075_allangles_20260829/results/l60colv8_geoplanetary_default_four_distinct_s075_a000.json"
+      },
+      "controlled_return": {
+        "player_origin": [608.4, 1429.2, -104.0],
+        "angle_degrees": 0.0,
+        "trajectory_scale": 0.75,
+        "qualification": "passed_step18_floor_projection_probe",
+        "qualification_result": "manifests/long60_collision_geometry_v8_scan_floorproject_scale075_allangles_20260829/results/l60colv8_geoplanetary_default_controlled_return_s075_a000.json"
+      }
+    },
+    "stormkeep": {
+      "four_distinct": {
+        "player_origin": [-400.0, 528.0, -8.0],
+        "angle_degrees": 315.0,
+        "trajectory_scale": 0.25,
+        "qualification": "passed_step18_floor_projection_probe",
+        "qualification_result": "manifests/long60_collision_geometry_v8_scan_step18_stormkeep_open_small_20260829/results/l60colv8_stormkeep_open_v2_four_distinct_s025_a315.json"
+      },
+      "controlled_return": {
+        "player_origin": [-400.0, 528.0, -8.0],
+        "angle_degrees": 315.0,
+        "trajectory_scale": 0.25,
+        "qualification": "passed_step18_floor_projection_probe",
+        "qualification_result": "manifests/long60_collision_geometry_v8_scan_step18_stormkeep_open_small_20260829/results/l60colv8_stormkeep_open_v2_controlled_return_s025_a315.json"
+      }
+    }
+  },
+  "collision_policy": {
+    "canonical_player_hull_mins": [-16.0, -16.0, -24.0],
+    "canonical_player_hull_maxs": [16.0, 16.0, 45.0],
+    "world_sweep_every_timeline_tick": true,
+    "non_jump_ground_probe_up_units": 18.0,
+    "non_jump_ground_probe_down_units": 32.0,
+    "maximum_ground_step_units": 18.0,
+    "ground_pose_floor_clearance_units": 0.125,
+    "qualification_runtime_build": "capture-3688c19201b0-aarch64",
+    "fatal_reasons": [
+      "enemy_world_collision",
+      "enemy_ground_support_missing",
+      "enemy_ground_discontinuity"
+    ]
+  },
+  "player_motion_policy": {
+    "scale": 0.75,
+    "decoupled_from_enemy_trajectory_scale": true,
+    "source": "LONG60_MULTIMAP_HITSCAN_V7 player motion calibration",
+    "reason": "preserve humanlike locomotion while enemy paths use independently collision-qualified geometry"
+  },
+  "lifecycle_health_overrides": {
+    "MachineGun": {
+      "controlled_return_slot1_kill_health_by_map": {
+        "bromine": 130.0,
+        "courtfun": 80.0,
+        "geoplanetary": 60.0,
+        "stormkeep": 110.0
+      },
+      "reason": "survive the first appearance and die with one calibrated hit of margin during the declared return interaction"
+    }
+  },
+  "lifecycle_health_calibration": {
+    "weapon": "MachineGun",
+    "template": "controlled_return",
+    "source_config_sha256": "12046745d14455c99d2ac64b6d681a786dbd6cbeea7212732f1e30734f310796",
+    "artifact_root": "manifests/long60_v8_canonical_world_motion_alive_fire_originalblocks_probe8_20260829",
+    "cells": {
+      "bromine": {
+        "first_appearance_hits": 9,
+        "return_hits_in_declared_block": 5,
+        "return_total_hits": 6,
+        "report": "manifests/long60_v8_canonical_world_motion_alive_fire_originalblocks_probe8_20260829/results/bromine_controlled_return.json",
+        "report_sha256": "467e573fcea7eb92106c71c079fd1a6342aca27646fe34e624394def23c608ce"
+      },
+      "courtfun": {
+        "first_appearance_hits": 4,
+        "return_hits_in_declared_block": 5,
+        "return_total_hits": 6,
+        "report": "manifests/long60_v8_canonical_world_motion_alive_fire_originalblocks_probe8_20260829/results/courtfun_controlled_return.json",
+        "report_sha256": "ab8f1268faf7dfc633259e7ebde320b43991d2197ea40878b5ad62c788d307b3"
+      },
+      "geoplanetary": {
+        "first_appearance_hits": 3,
+        "return_hits_in_declared_block": 4,
+        "return_total_hits": 4,
+        "report": "manifests/long60_v8_canonical_world_motion_alive_fire_originalblocks_probe8_20260829/results/geoplanetary_controlled_return.json",
+        "report_sha256": "33554cd220fe151d86899b95fdfedd5f6b24434838563b53cab19ab52e8a1c24"
+      },
+      "stormkeep": {
+        "first_appearance_hits": 9,
+        "return_hits_in_declared_block": 3,
+        "return_total_hits": 4,
+        "report": "manifests/long60_v8_canonical_world_motion_alive_fire_originalblocks_probe8_20260829/results/stormkeep_controlled_return.json",
+        "report_sha256": "c8119794c08a7ddbdf96adfc4ec8233542fa7b8f9e79ba96a5acf1a97490bd6e"
+      }
+    }
+  },
+  "interaction_aim_policy": {
+    "name": "frozen_nofire_alive_canonical_world_motion_bearing_trace_v4",
+    "source_geometry_config_sha256": "3fbb7e7bdd0ad279583fd5a2a7e826c613999494e85ff6eea78e37e25e1ed6e0",
+    "reads_live_enemy_state": false,
+    "reads_live_player_state": false,
+    "movement_world_compensation": true,
+    "movement_reference": "canonical_time_only_camera_without_profile_lobes",
+    "minimum_approach_ticks": 96,
+    "maximum_approach_ticks": 640,
+    "planned_yaw_rate_degrees_per_tick": 0.28,
+    "release_ticks": 72,
+    "cells": {
+      "bromine": {
+        "controlled_return": {
+          "fire_blocks": [7, 18, 40, 57, 68],
+          "target_ticks": [434, 1035, 2162, 3032, 3595],
+          "baseline_report": "manifests/long60_v8_canonical_world_motion_nofire_alive8_20260829/results/bromine_controlled_return.json",
+          "baseline_report_sha256": "361fdc85ce7a437ad8ec85c45020ab93c6b3253e3a04f3c823639c71d7485681"
+        },
+        "four_distinct": {
+          "fire_blocks": [9, 28, 49, 67],
+          "target_ticks": [575, 1501, 2586, 3544],
+          "baseline_report": "manifests/long60_v8_canonical_world_motion_nofire_alive8_20260829/results/bromine_four_distinct.json",
+          "baseline_report_sha256": "505b50bfebc9f0dfd0c526396e9aaccea418240509b1fabcaa405cc28b82fca8"
+        }
+      },
+      "courtfun": {
+        "controlled_return": {
+          "fire_blocks": [7, 18, 40, 57, 68],
+          "target_ticks": [472, 1035, 2162, 3032, 3595],
+          "baseline_report": "manifests/long60_v8_canonical_world_motion_nofire_alive8_20260829/results/courtfun_controlled_return.json",
+          "baseline_report_sha256": "2e876c10774c010ae73a5daf67dc3a45bea9bbc81c7ddef2f98b54753eba9864"
+        },
+        "four_distinct": {
+          "fire_blocks": [9, 28, 49, 67],
+          "target_ticks": [575, 1547, 2587, 3544],
+          "baseline_report": "manifests/long60_v8_canonical_world_motion_nofire_alive8_20260829/results/courtfun_four_distinct.json",
+          "baseline_report_sha256": "f75bc4ef292aef4882cc94d4853aefaaa8e3ca5098530a4e8694cf0261d17d4c"
+        }
+      },
+      "geoplanetary": {
+        "controlled_return": {
+          "fire_blocks": [7, 18, 40, 57, 68],
+          "target_ticks": [472, 1035, 2116, 3010, 3595],
+          "baseline_report": "manifests/long60_v8_canonical_world_motion_nofire_alive8_20260829/results/geoplanetary_controlled_return.json",
+          "baseline_report_sha256": "a4160de9c709a3ade8d9e54d9449661a8ef10a34412b745d13cc43c3ab53e5d8"
+        },
+        "four_distinct": {
+          "fire_blocks": [9, 28, 49, 67],
+          "target_ticks": [575, 1501, 2623, 3544],
+          "baseline_report": "manifests/long60_v8_canonical_world_motion_nofire_alive8_20260829/results/geoplanetary_four_distinct.json",
+          "baseline_report_sha256": "8f14625d2a6f7248ceab3e1737b5fc5ecd380d25712245ebdb32ab3b2ca90a0c"
+        }
+      },
+      "stormkeep": {
+        "controlled_return": {
+          "fire_blocks": [7, 18, 40, 57, 68],
+          "target_ticks": [426, 1035, 2162, 2986, 3595],
+          "baseline_report": "manifests/long60_v8_canonical_world_motion_nofire_alive8_20260829/results/stormkeep_controlled_return.json",
+          "baseline_report_sha256": "c193ef4553dca686df8338dfd6261396a76afd49b31a1a881e7f2b03f9ab8597"
+        },
+        "four_distinct": {
+          "fire_blocks": [9, 28, 49, 67],
+          "target_ticks": [528, 1547, 2576, 3498],
+          "baseline_report": "manifests/long60_v8_canonical_world_motion_nofire_alive8_20260829/results/stormkeep_four_distinct.json",
+          "baseline_report_sha256": "71b6a68f51173c0b8ce83dfebad6598251abb72d61089bcff89b01bbd2374c4b"
+        }
+      }
+    }
+  },
+  "camera_policy": {
+    "name": "independent_asymmetric_scan_with_frozen_planned_interaction_aim_v8",
+    "reads_enemy_state": false,
+    "reads_live_player_state": false,
+    "schedule_inputs": ["output_time", "declared_fire_blocks", "cell_profile", "frozen_cell_bearing_trace"],
+    "interaction_protect_before_seconds": 0.55,
+    "interaction_protect_after_seconds": 1.25,
+    "maximum_yaw_step_degrees_per_tick": 0.35,
+    "maximum_pitch_step_degrees_per_tick": 0.14,
+    "brief_pause_count": 5,
+    "brief_pause_ticks": 20,
+    "brief_pause_guard_from_interaction_ticks": 48,
+    "brief_pause_guard_from_player_idle_ticks": 8,
+    "minimum_yaw_range_degrees": 32.0,
+    "minimum_pitch_range_degrees": 6.0,
+    "profile_count": 4
+  }
+}

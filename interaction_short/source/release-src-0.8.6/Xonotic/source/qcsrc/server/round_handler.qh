@@ -1,0 +1,24 @@
+#pragma once
+
+entity round_handler;
+.float delay;                                                  
+.float count;                                          
+.bool wait;                                                                    
+.float cnt;	                                                                      
+			                                  
+.float round_timelimit;
+.float round_endtime;
+.bool() canRoundStart;
+.bool() canRoundEnd;
+.void() roundStart;
+
+void round_handler_Init(float the_delay, float the_count, float the_round_timelimit);
+void round_handler_Spawn(bool() canRoundStart_func, bool() canRoundEnd_func, void() roundStart_func);
+void round_handler_Reset(float next_think);
+void round_handler_Remove();
+
+#define round_handler_IsActive() (round_handler != NULL)
+#define round_handler_AwaitingNextRound() (round_handler.wait)
+#define round_handler_CountdownRunning() (!round_handler.wait && round_handler.cnt)
+#define round_handler_IsRoundStarted() (!round_handler.wait && !round_handler.cnt)
+#define round_handler_GetEndTime() (round_handler.round_endtime)

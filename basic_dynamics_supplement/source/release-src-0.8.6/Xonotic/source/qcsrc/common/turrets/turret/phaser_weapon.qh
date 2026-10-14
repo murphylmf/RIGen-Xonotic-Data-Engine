@@ -1,0 +1,9 @@
+#pragma once
+
+CLASS(PhaserTurretAttack, PortoLaunch)
+                ATTRIB(PhaserTurretAttack, spawnflags, int, WEP_FLAG_HIDDEN | WEP_FLAG_SPECIALATTACK);
+                ATTRIB(PhaserTurretAttack, impulse, int, 9);
+                ATTRIB(PhaserTurretAttack, netname, string, "turret_phaser");
+                ATTRIB(PhaserTurretAttack, m_name, string, _("Phaser"));
+ENDCLASS(PhaserTurretAttack)
+REGISTER_WEAPON(PHASER, NEW(PhaserTurretAttack));

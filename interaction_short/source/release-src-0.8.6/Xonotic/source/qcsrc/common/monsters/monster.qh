@@ -1,0 +1,77 @@
+#pragma once
+
+                      
+const int MONSTER_RESPAWN_DEATHPOINT = BIT(4);                          
+const int MONSTER_TYPE_FLY = BIT(5);
+const int MONSTER_TYPE_SWIM = BIT(6);
+                   
+const int MON_FLAG_SUPERMONSTER = BIT(8);                               
+const int MON_FLAG_RANGED = BIT(9);                              
+const int MON_FLAG_MELEE = BIT(10);
+const int MON_FLAG_CRUSH = BIT(11);                                           
+const int MON_FLAG_RIDE = BIT(12);                                          
+const int MONSTER_SIZE_QUAKE = BIT(13);
+const int MONSTER_TYPE_PASSIVE = BIT(14);                                   
+const int MONSTER_TYPE_UNDEAD = BIT(15);                                                                             
+const int MON_FLAG_HIDDEN = BIT(16);
+
+                                    
+.bool(int, entity actor, entity targ, .entity weaponentity) monster_attackfunc;
+.entity monsterdef;
+
+             
+.vector anim_blockend;
+.vector anim_blockstart;
+.vector anim_melee1;
+.vector anim_melee2;
+.vector anim_melee3;
+.vector anim_walk;
+.vector anim_spawn;
+
+CLASS(Monster, Object)
+    ATTRIB(Monster, monsterid, int, 0);
+                     
+    ATTRIB(Monster, spawnflags, int, 0);
+                              
+    ATTRIB(Monster, monster_name, string, "Monster");
+                     
+    ATTRIB(Monster, netname, string, "");
+                
+    ATTRIB(Monster, m_model, entity);
+                      
+    ATTRIB(Monster, m_mins, vector, '-0 -0 -0');
+                      
+    ATTRIB(Monster, m_maxs, vector, '0 0 0');
+
+                                      
+    METHOD(Monster, mr_setup, bool(Monster this, entity actor)) { TC(Monster, this); return false; }
+                                            
+    METHOD(Monster, mr_think, bool(Monster this, entity actor)) { TC(Monster, this); return false; }
+                                                                       
+    METHOD(Monster, mr_deadthink, bool(Monster this, entity actor)) { TC(Monster, this); return false; }
+                                            
+    METHOD(Monster, mr_death, bool(Monster this, entity actor)) { TC(Monster, this); return false; }
+                                                  
+    METHOD(Monster, mr_pain, float(Monster this, entity actor, float damage_take, entity attacker, float deathtype)) { TC(Monster, this); return damage_take; }
+                                              
+    METHOD(Monster, mr_anim, bool(Monster this, entity actor)) { TC(Monster, this); return false; }
+
+ENDCLASS(Monster)
+
+
+#ifdef SVQC
+#include "sv_monsters.qh"
+#include <server/damage.qh>
+#include <server/bot/api.qh>
+#include <server/weapons/common.qh>
+#include <server/weapons/tracing.qh>
+#include <server/weapons/weaponsystem.qh>
+#include <common/mutators/mutator/waypoints/waypointsprites.qh>
+#include <lib/warpzone/server.qh>
+#endif
+
+#ifdef GAMEQC
+#include "../animdecide.qh"
+#include "../anim.qh"
+vector animfixfps(entity e, vector a, vector b);
+#endif

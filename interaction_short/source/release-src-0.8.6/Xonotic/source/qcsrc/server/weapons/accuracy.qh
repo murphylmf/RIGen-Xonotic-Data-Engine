@@ -1,0 +1,49 @@
+#pragma once
+
+#include <common/weapons/_all.qh>
+#include <common/stats.qh>
+
+   
+                        
+  
+                                                                            
+                        
+  
+                                                                     
+                                                               
+                                                                        
+                                                                              
+                                                                                 
+                                                                             
+                                         
+   
+
+float autocvar_sv_accuracy_data_share = 1;
+
+REPLICATE_INIT(bool, cvar_cl_accuracy_data_share);
+REPLICATE_INIT(bool, cvar_cl_accuracy_data_receive);
+
+.entity accuracy;
+.float accuracy_frags[REGISTRY_MAX(Weapons)];
+
+.float accuracy_hit[REGISTRY_MAX(Weapons)];
+.float accuracy_fired[REGISTRY_MAX(Weapons)];
+.float accuracy_cnt_hit[REGISTRY_MAX(Weapons)];
+.float accuracy_cnt_fired[REGISTRY_MAX(Weapons)];
+
+
+            
+void accuracy_init(entity e);
+void accuracy_free(entity e);
+
+void accuracy_reset(entity e);
+
+                                              
+void accuracy_resend(entity e);
+
+                        
+void accuracy_add(entity e, Weapon w, float fired, float hit);
+
+         
+bool accuracy_isgooddamage(entity attacker, entity targ);
+bool accuracy_canbegooddamage(entity attacker);

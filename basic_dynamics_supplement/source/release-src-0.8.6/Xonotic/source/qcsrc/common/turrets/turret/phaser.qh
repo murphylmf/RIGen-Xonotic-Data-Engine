@@ -1,0 +1,24 @@
+#pragma once
+
+#include "phaser_weapon.qh"
+
+CLASS(PhaserTurret, Turret)
+                 ATTRIB(PhaserTurret, spawnflags, int, TUR_FLAG_SNIPER | TUR_FLAG_HITSCAN | TUR_FLAG_PLAYER);
+                 ATTRIB(PhaserTurret, m_mins, vector, '-32 -32 0');
+                 ATTRIB(PhaserTurret, m_maxs, vector, '32 32 64');
+                 ATTRIB(PhaserTurret, mdl, string, "base.md3");
+                 ATTRIB_STRZONE(PhaserTurret, model, string, strcat("models/turrets/", this.mdl));
+                 ATTRIB_STRZONE(PhaserTurret, head_model, string, strcat("models/turrets/", "phaser.md3"));
+                 ATTRIB(PhaserTurret, netname, string, "phaser");
+                 ATTRIB(PhaserTurret, turret_name, string, _("Phaser Cannon"));
+    ATTRIB(PhaserTurret, m_weapon, Weapon, WEP_PHASER);
+
+#define X(BEGIN, P, END, class, prefix) \
+	BEGIN(class) \
+		TR_PROPS_COMMON(P, class, prefix) \
+	END()
+	TR_PROPS(X, PhaserTurret, phaser)
+#undef X
+
+ENDCLASS(PhaserTurret)
+REGISTER_TURRET(PHASER, NEW(PhaserTurret));

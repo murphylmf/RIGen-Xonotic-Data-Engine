@@ -1,0 +1,115 @@
+#pragma once
+
+#include "all.qh"
+
+bool autocvar_g_turrets;
+float autocvar_g_turrets_aimidle_delay;
+bool autocvar_g_turrets_nofire;
+bool autocvar_g_turrets_reloadcvars;
+float autocvar_g_turrets_targetscan_maxdelay;
+float autocvar_g_turrets_targetscan_mindelay;
+
+entity turret_projectile(entity actor, Sound _snd, float _size, float _health, float _death, float _proj_type, float _cull, float _cli_anim);
+void turret_projectile_explode(entity this);
+float turret_validate_target(entity e_turret, entity e_target, float validate_flags);
+bool turret_firecheck(entity this);
+entity turret_select_target(entity this);
+
+                
+
+#define X(class, prefix, fld, type) .type fld;
+TR_PROPS_COMMON(X, , )
+#undef X
+  
+                                                              
+                                                         
+  
+
+.float ticrate;                         
+.entity tur_head;                          
+.entity tur_defend;                      
+.vector tur_shotorg;               
+.vector tur_aimpos;                   
+.float tur_impacttime;                                    
+.entity tur_impactent;                             
+.float tur_dist_enemy;                     
+.float tur_dist_aimpos;                            
+.float tur_dist_impact_to_aimpos;                         
+.float volly_counter;                                           
+
+.float target_select_time;                                       
+.float target_validate_time;                                            
+
+
+.float ammo;                
+.vector idle_aim;
+
+                                        
+.float turret_scale_damage;
+                                     
+.float turret_scale_range;
+                           
+.float turret_scale_refire;
+                                            
+.float turret_scale_ammo;
+                              
+.float turret_scale_aim;
+                           
+.float turret_scale_health;
+                                 
+.float turret_scale_respawn;
+
+                
+const float TFL_TRACKTYPE_STEPMOTOR = 1;                                                                   
+const float TFL_TRACKTYPE_FLUIDPRECISE = 2;                                                         
+const float TFL_TRACKTYPE_FLUIDINERTIA = 3;                                                                             
+
+void turret_respawn(entity this);
+
+                                                                         
+void turret_do_updates(entity e_turret);
+.vector tur_shotdir_updated;
+
+.float(entity this) turret_firecheckfunc;                    
+
+void turrets_setframe(entity this, float _frame, float client_only);
+
+bool turret_initialize(entity this, Turret tur);
+
+                                                       
+bool turret_closetotarget(entity this, vector targ, float range);
+
+                                                                            
+.float(entity _turret, entity _target) turret_score_target;
+
+.bool(entity this, entity e_target,entity e_sender) turret_addtarget;
+
+.entity pathcurrent;
+
+.entity pathgoal;
+
+float turret_count;
+
+            
+                                                  
+                      
+                                     
+                                   
+#ifdef TURRET_DEBUG
+.float tur_debug_dmg_t_h;                                                                                                            
+.float tur_debug_dmg_t_f;                
+.float tur_debug_start;                              
+.float tur_debug_tmr1;                
+.float tur_debug_tmr2;                
+.float tur_debug_tmr3;                
+.vector tur_debug_rvec;                 
+#endif
+
+         
+vector tvt_thadv;                                                                                         
+vector tvt_tadv;                                                                                    
+float tvt_thadf;                                                                                        
+float tvt_dist;                                                                           
+
+IntrusiveList g_turrets;
+STATIC_INIT(g_turrets) { g_turrets = IL_NEW(); }

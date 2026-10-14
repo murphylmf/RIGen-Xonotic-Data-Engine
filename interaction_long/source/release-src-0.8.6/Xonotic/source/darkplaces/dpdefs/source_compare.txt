@@ -1,0 +1,433 @@
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                                 
+                                                  
+                                                  
+                                                   
+                                                   
+                                                   
+                                                   
+                                                    
+                                                  
+                                                  
+                                                     
+                                                
+                                                   
+                                                         
+                                                    
+                                               
+                                            
+                                                  
+                                                   
+                                                 
+                                                
+                                               
+                                                   
+                                                 
+                                                
+                                               
+                                                 
+                                              
+                                              
+                                                    
+                                                     
+                                                        
+                                                      
+                                                            
+                                                           
+                                                              
+                                                         
+                                                        
+                                                        
+                                                         
+                                                       
+                                                        
+                                                   
+                                                    
+                                                 
+                                                  
+                                                     
+                                                  
+                                                  
+                                                     
+                                                     
+                                                  
+                                            
+                                               
+                                                 
+                                                
+                                             
+                                              
+                                              
+                                             
+                                              
+                                                      
+                                               
+                                                  
+                                                   
+                                              
+                                            
+                                            
+                                               
+                                              
+                                            
+                                              
+                                             
+                                             
+                                               
+                                                
+                                                
+                                                   
+                                                      
+                                                      
+                                                      
+                                                      
+                                              
+                                                  
+                                                   
+                                                 
+                                              
+                                              
+                                              
+                                                
+                                               
+                                              
+                                                    
+                                                  
+                                                    
+                                                    
+                                                       
+                                                    
+                                                     
+                                                  
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                             
+                                             
+                                                  
+                                                  
+                                                    
+                                                   
+                                                   
+                                                    
+                                               
+                                                      
+                                                         
+                                                      
+                                                    
+                                                   
+                                                   
+                                                 
+                                                   
+                                                
+                                                            
+                                                           
+                                                         
+                                                             
+                                                                      
+                                                           
+                                               
+                                                 
+                                                      
+                                                    
+                                                       
+                                                    
+                                                         
+                                                         
+                                                   
+                                                   
+                                                       
+                                                    
+                                                            
+                                                            
+                                                                
+                                                           
+                                           
+          
+                                            
+float VM_CL_checkpvs(...) = #240;              
+float skel_create(...) = #263;                            
+float skel_build(...) = #264;                            
+float skel_get_numbones(...) = #265;                            
+float skel_get_bonename(...) = #266;                            
+float skel_get_boneparent(...) = #267;                            
+float skel_find_bone(...) = #268;                            
+float skel_get_bonerel(...) = #269;                            
+float skel_get_boneabs(...) = #270;                            
+float skel_set_bone(...) = #271;                            
+float skel_mul_bone(...) = #272;                            
+float skel_mul_bones(...) = #273;                            
+float skel_copybones(...) = #274;                            
+float skel_delete(...) = #275;                            
+float frameforname(...) = #276;                            
+float frameduration(...) = #277;                            
+float VM_drawsubpic(...) = #328;              
+float VM_drawrotpic(...) = #329;              
+float VM_CL_videoplaying(...) = #355;              
+float crc16(...) = #494;               
+float cvar_type(...) = #495;                   
+float numentityfields(...) = #496;                    
+float entityfieldname(...) = #497;                    
+float entityfieldtype(...) = #498;                    
+float getentityfieldstring(...) = #499;                    
+float putentityfieldstring(...) = #500;                    
+float ReadPicture(...) = #501;              
+float boxparticles(...) = #502;                        
+float whichpack(...) = #503;              
+float uri_escape(...) = #510;              
+float uri_unescape(...) = #511;              
+float num_for_edict(...) = #512;                       
+float tokenize_console(...) = #514;                          
+float argv_start_index(...) = #515;                          
+float argv_end_index(...) = #516;                          
+float buf_cvarlist(...) = #517;                                
+float cvar_description(...) = #518;                          
+float gettime(...) = #519;                 
+float keynumtostring(...) = #520;              
+float findkeysforcommand(...) = #521;              
+float VM_loadfromdata(...) = #529;              
+float VM_loadfromfile(...) = #530;              
+float VM_log(...) = #532;              
+float getsoundtime(...) = #533;                       
+float soundlength(...) = #534;                       
+float physics_enable(...) = #540;                  
+float physics_addforce(...) = #541;                  
+float physics_addtorque(...) = #542;                  
+float VM_callfunction(...) = #605;              
+float VM_writetofile(...) = #606;              
+float VM_isfunction(...) = #607;              
+float VM_parseentitydata(...) = #613;              
+float getextresponse(...) = #624;              
+float sprintf(...) = #627;              
+float getsurfacenumpoints(...) = #628;                            
+float getsurfacepoint(...) = #629;                            
+float VM_CL_RotateMoves(...) = #638;              
+float CSQC_ConsoleCommand;              
+float CSQC_Init;              
+float CSQC_InputEvent;              
+float CSQC_Shutdown;              
+float CSQC_UpdateView;              
+float coop;              
+float deathmatch;              
+float dmg_origin;              
+float dmg_save;              
+float dmg_take;              
+float drawfontscale;              
+float gettaginfo_forward;              
+float gettaginfo_name;              
+float gettaginfo_offset;              
+float gettaginfo_parent;              
+float gettaginfo_right;              
+float gettaginfo_up;              
+float particles_alphamax;              
+float particles_alphamin;              
+float particles_colormax;              
+float particles_colormin;              
+float sb_showscores;              
+float serverdeltatime;              
+float serverprevtime;              
+float servertime;              
+float trace_dphitcontents;              
+float trace_dphitq3surfaceflags;              
+float trace_dphittexturename;              
+float trace_dpstartcontents;              
+float trace_networkentity;              
+.float aiment;              
+.float alpha;              
+.float camera_transform;              
+.float colormod;              
+.float dimension_hit;              
+.float dimension_solid;              
+.float dphitcontentsmask;              
+.float fatness;              
+.float forceshader;              
+.float frame1time;              
+.float frame2;              
+.float frame2time;              
+.float frame3;              
+.float frame3time;              
+.float frame4;              
+.float frame4time;              
+.float glowmod;              
+.float groundentity;              
+.float hull;              
+.float ideal_yaw;              
+.float idealpitch;              
+.float jointtype;              
+.float lerpfrac;              
+.float lerpfrac3;              
+.float lerpfrac4;              
+.float mass;              
+.float message;              
+.float movedir;              
+.float pitch_speed;              
+.float renderflags;              
+.float scale;              
+.float shadertime;              
+.float skeletonindex;                            
+.float tag_entity;              
+.float tag_index;              
+.float userwavefunc_param0;              
+.float userwavefunc_param1;              
+.float userwavefunc_param2;              
+.float userwavefunc_param3;              
+.float yaw_speed;              
+                                           
+       
+                                            
+float VM_itof(...) = #79;              
+float VM_ftoe(...) = #80;              
+float isString(...) = #81;              
+float VM_altstr_count(...) = #82;              
+float VM_altstr_prepare(...) = #83;              
+float VM_altstr_get(...) = #84;              
+float VM_altstr_set(...) = #85;              
+float VM_altstr_ins(...) = #86;              
+float VM_findflags(...) = #87;              
+float VM_findchainflags(...) = #88;              
+float VM_cvar_defstring(...) = #89;              
+float strstrofs(...) = #221;               
+float str2chr(...) = #222;               
+float chr2str(...) = #223;               
+float strconv(...) = #224;               
+float strpad(...) = #225;               
+float infoadd(...) = #226;               
+float infoget(...) = #227;               
+float strncmp(...) = #228;               
+float strcasecmp(...) = #229;               
+float strncasecmp(...) = #230;               
+float keynumtostring(...) = #340;              
+float VM_CL_isdemo(...) = #349;              
+float wasfreed(...) = #353;              
+float VM_CL_videoplaying(...) = #355;              
+float loadfont(...) = #356;                
+float loadfont(...) = #357;                
+float buf_create(...) = #440;                       
+float buf_del(...) = #441;                       
+float buf_getsize(...) = #442;                       
+float buf_copy(...) = #443;                       
+float buf_sort(...) = #444;                       
+float buf_implode(...) = #445;                       
+float bufstr_get(...) = #446;                       
+float bufstr_set(...) = #447;                       
+float bufstr_add(...) = #448;                       
+float bufstr_free(...) = #449;                       
+float VM_cin_open(...) = #461;              
+float VM_cin_close(...) = #462;              
+float VM_cin_setstate(...) = #463;              
+float VM_cin_getstate(...) = #464;              
+float VM_cin_restart(...) = #465;              
+float VM_drawline(...) = #466;              
+float VM_stringwidth(...) = #468;              
+float VM_drawsubpic(...) = #469;              
+float VM_drawrotpic(...) = #470;              
+float VM_asin(...) = #471;                              
+float VM_acos(...) = #472;                              
+float VM_atan(...) = #473;                              
+float VM_atan2(...) = #474;                              
+float VM_tan(...) = #475;                              
+float float(...) = #476;                              
+float string(...) = #477;                              
+float string(...) = #478;                  
+float tokenizebyseparator(...) = #479;                             
+float VM_strtolower(...) = #480;              
+float VM_strtoupper(...) = #481;              
+float strreplace(...) = #484;                    
+float strireplace(...) = #485;                    
+float gecko_create(...) = #487;              
+float gecko_destroy(...) = #488;              
+float gecko_navigate(...) = #489;              
+float gecko_keyevent(...) = #490;              
+float gecko_mousemove(...) = #491;              
+float gecko_resize(...) = #492;              
+float gecko_get_texture_extent(...) = #493;              
+float crc16(...) = #494;               
+float cvar_type(...) = #495;                   
+float whichpack(...) = #503;              
+float uri_escape(...) = #510;              
+float uri_unescape(...) = #511;              
+float num_for_edict(...) = #512;                       
+float tokenize_console(...) = #514;                          
+float argv_start_index(...) = #515;                          
+float argv_end_index(...) = #516;                          
+float buf_cvarlist(...) = #517;                                
+float cvar_description(...) = #518;                          
+float VM_log(...) = #532;              
+float getsoundtime(...) = #533;                       
+float soundlength(...) = #534;                       
+float parseentitydata(...) = #613;              
+float stringtokeynum(...) = #614;              
+float resethostcachemasks(...) = #615;              
+float sethostcachemaskstring(...) = #616;              
+float sethostcachemasknumber(...) = #617;              
+float resorthostcache(...) = #618;              
+float sethostcachesort(...) = #619;              
+float refreshhostcache(...) = #620;              
+float gethostcachenumber(...) = #621;              
+float gethostcacheindexforkey(...) = #622;              
+float addwantedhostcachekey(...) = #623;              
+float getextresponse(...) = #624;              
+float netaddress_resolve(...) = #625;              
+float getgamedirinfo(...) = #626;              
+float sprintf(...) = #627;              
+float drawfont;              
+float drawfontscale;              
+.float angles;              
+.float chain;              
+.float classname;              
+.float frame;            
+.float nextthink;            
+.float think;            
+                                           
+        
+                                            
+float setmodelindex(...) = #333;            
+float modelnameforindex(...) = #334;            
+float isserver(...) = #350;            
+float serverkey(...) = #354;            
+float VM_parseentitydata(...) = #613;              
+float ClientConnect;              
+float ClientDisconnect;              
+float ClientKill;              
+float PlayerPostThink;              
+float PlayerPreThink;              
+float PutClientInServer;              
+float SV_InitCmd;              
+float SetChangeParms;              
+float SetNewParms;              
+float StartFrame;              
+float main;              
+float require_spawnfunc_prefix;              
+.float SendEntity;              
+.float SendFlags;              
+.float Version;              
+.float ammo_cells1;              
+.float ammo_lava_nails;              
+.float ammo_multi_rockets;              
+.float ammo_nails1;              
+.float ammo_plasma;              
+.float ammo_rockets1;              
+.float ammo_shells1;              
+.float dimension_hit;              
+.float dimension_solid;              
+.float fatness;              
+.float fullbright;              
+.float hull;              
+.float items2;              
+.float pmodel;              
+.float renderamt;              
+.float rendermode;              
+.float sendcomplexanimation;              

@@ -1,0 +1,42 @@
+From 18a2dc36c4086addd48ade33cfe701b24ab30644 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 21:47:10 +0800
+Subject: [PATCH 22/36] capture: distinguish grounded anchors from solids
+
+---
+ source/qcsrc/server/capture.qc | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 4c3abaa..e46fa83 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -250,20 +250,22 @@ bool Capture_TryReset()
+ 	capture_prev_player_clip = weapon_entity.clip_load;
+ 	capture_prev_player_reserve = Capture_Reserve(capture_player, weapon_entity.m_weapon);
+ 
+-	tracebox(capture_player.origin, PL_MIN_CONST, PL_MAX_CONST,
++	vector anchor_mins = PL_MIN_CONST + '0.1 0.1 0.1';
++	vector anchor_maxs = PL_MAX_CONST - '0.1 0.1 0.1';
++	tracebox(capture_player.origin, anchor_mins, anchor_maxs,
+ 		capture_player.origin, MOVE_WORLDONLY, capture_player);
+ 	bool player_clear = !trace_startsolid && !trace_allsolid;
+-	tracebox(capture_player.origin, PL_MIN_CONST, PL_MAX_CONST,
++	tracebox(capture_player.origin + '0 0 1', anchor_mins, anchor_maxs,
+ 		capture_player.origin - '0 0 96', MOVE_WORLDONLY, capture_player);
+ 	bool player_ground = !trace_startsolid && trace_fraction < 1;
+-	float player_ground_distance = trace_fraction * 96;
+-	tracebox(capture_enemy.origin, PL_MIN_CONST, PL_MAX_CONST,
++	float player_ground_distance = capture_player.origin.z - trace_endpos.z;
++	tracebox(capture_enemy.origin, anchor_mins, anchor_maxs,
+ 		capture_enemy.origin, MOVE_WORLDONLY, capture_enemy);
+ 	bool enemy_clear = !trace_startsolid && !trace_allsolid;
+-	tracebox(capture_enemy.origin, PL_MIN_CONST, PL_MAX_CONST,
++	tracebox(capture_enemy.origin + '0 0 1', anchor_mins, anchor_maxs,
+ 		capture_enemy.origin - '0 0 96', MOVE_WORLDONLY, capture_enemy);
+ 	bool enemy_ground = !trace_startsolid && trace_fraction < 1;
+-	float enemy_ground_distance = trace_fraction * 96;
++	float enemy_ground_distance = capture_enemy.origin.z - trace_endpos.z;
+ 	traceline(capture_player.origin + '0 0 24',
+ 		capture_enemy.origin + '0 0 24',
+ 		MOVE_WORLDONLY, capture_player);

@@ -1,0 +1,1643 @@
+  
+                                         
+
+                                                             
+                                                           
+                                                              
+                                                      
+
+                                                               
+                                                              
+                                                    
+
+                                                    
+
+                                                                 
+                                                           
+                                                                           
+
+  
+                                         
+
+#include "quakedef.h"
+#include "r_shadow.h"
+#include "portals.h"
+#include "csprogs.h"
+#include "image.h"
+
+cvar_t r_ambient = {0, "r_ambient", "0", "brightens map, value is 0-128"};
+cvar_t r_lockpvs = {0, "r_lockpvs", "0", "disables pvs switching, allows you to walk around and inspect what is visible from a given location in the map (anything not visible from your current location will not be drawn)"};
+cvar_t r_lockvisibility = {0, "r_lockvisibility", "0", "disables visibility updates, allows you to walk around and inspect what is visible from a given viewpoint in the map (anything offscreen at the moment this is enabled will not be drawn)"};
+cvar_t r_useportalculling = {0, "r_useportalculling", "2", "improve framerate with r_novis 1 by using portal culling - still not as good as compiled visibility data in the map, but it helps (a value of 2 forces use of this even with vis data, which improves framerates in maps without too much complexity, but hurts in extremely complex maps, which is why 2 is not the default mode)"};
+cvar_t r_usesurfaceculling = {0, "r_usesurfaceculling", "1", "skip off-screen surfaces (1 = cull surfaces if the map is likely to benefit, 2 = always cull surfaces)"};
+cvar_t r_q3bsp_renderskydepth = {0, "r_q3bsp_renderskydepth", "0", "draws sky depth masking in q3 maps (as in q1 maps), this means for example that sky polygons can hide other things"};
+
+  
+               
+               
+
+                                                                       
+               
+  
+void R_BuildLightMap (const entity_render_t *ent, msurface_t *surface)
+{
+	int smax, tmax, i, size, size3, maps, l;
+	int *bl, scale;
+	unsigned char *lightmap, *out, *stain;
+	dp_model_t *model = ent->model;
+	int *intblocklights;
+	unsigned char *templight;
+
+	smax = (surface->lightmapinfo->extents[0]>>4)+1;
+	tmax = (surface->lightmapinfo->extents[1]>>4)+1;
+	size = smax*tmax;
+	size3 = size*3;
+
+	r_refdef.stats[r_stat_lightmapupdatepixels] += size;
+	r_refdef.stats[r_stat_lightmapupdates]++;
+
+	if (cl.buildlightmapmemorysize < size*sizeof(int[3]))
+	{
+		cl.buildlightmapmemorysize = size*sizeof(int[3]);
+		if (cl.buildlightmapmemory)
+			Mem_Free(cl.buildlightmapmemory);
+		cl.buildlightmapmemory = (unsigned char *) Mem_Alloc(cls.levelmempool, cl.buildlightmapmemorysize);
+	}
+
+	                                                                        
+	                                                                
+	intblocklights = (int *)cl.buildlightmapmemory;
+	templight = (unsigned char *)cl.buildlightmapmemory;
+
+	                              
+	model->brushq1.lightmapupdateflags[surface - model->data_surfaces] = false;
+
+	lightmap = surface->lightmapinfo->samples;
+
+                                      
+	bl = intblocklights;
+	if (!model->brushq1.lightdata)
+	{
+		for (i = 0;i < size3;i++)
+			bl[i] = 128*256;
+	}
+	else
+	{
+                    
+		memset(bl, 0, size3*sizeof(*bl));
+
+                        
+		if (lightmap)
+			for (maps = 0;maps < MAXLIGHTMAPS && surface->lightmapinfo->styles[maps] != 255;maps++, lightmap += size3)
+				for (scale = r_refdef.scene.lightstylevalue[surface->lightmapinfo->styles[maps]], i = 0;i < size3;i++)
+					bl[i] += lightmap[i] * scale;
+	}
+
+	stain = surface->lightmapinfo->stainsamples;
+	bl = intblocklights;
+	out = templight;
+	                                                                  
+	                                                                    
+	                                                       
+	                                  
+	if (stain)
+	{
+		for (i = 0;i < size;i++, bl += 3, stain += 3, out += 4)
+		{
+			l = (bl[0] * stain[0]) >> 16;out[2] = min(l, 255);
+			l = (bl[1] * stain[1]) >> 16;out[1] = min(l, 255);
+			l = (bl[2] * stain[2]) >> 16;out[0] = min(l, 255);
+			out[3] = 255;
+		}
+	}
+	else
+	{
+		for (i = 0;i < size;i++, bl += 3, out += 4)
+		{
+			l = bl[0] >> 8;out[2] = min(l, 255);
+			l = bl[1] >> 8;out[1] = min(l, 255);
+			l = bl[2] >> 8;out[0] = min(l, 255);
+			out[3] = 255;
+		}
+	}
+
+	if(vid_sRGB.integer && vid_sRGB_fallback.integer && !vid.sRGB3D)
+		Image_MakesRGBColorsFromLinear_Lightmap(templight, templight, size);
+	R_UpdateTexture(surface->lightmaptexture, templight, surface->lightmapinfo->lightmaporigin[0], surface->lightmapinfo->lightmaporigin[1], 0, smax, tmax, 1);
+
+	                                               
+	if (surface->deluxemaptexture != r_texture_blanknormalmap)
+	{
+		vec3_t n;
+		unsigned char *normalmap = surface->lightmapinfo->nmapsamples;
+		lightmap = surface->lightmapinfo->samples;
+		                        
+		bl = intblocklights;
+		memset(bl, 0, size3*sizeof(*bl));
+		                         
+		if (lightmap && normalmap)
+		{
+			for (maps = 0;maps < MAXLIGHTMAPS && surface->lightmapinfo->styles[maps] != 255;maps++, lightmap += size3, normalmap += size3)
+			{
+				for (scale = r_refdef.scene.lightstylevalue[surface->lightmapinfo->styles[maps]], i = 0;i < size;i++)
+				{
+					                                                                                  
+					l = (int)(VectorLength(lightmap + i*3) * scale);
+					bl[i*3+0] += ((int)normalmap[i*3+0] - 128) * l;
+					bl[i*3+1] += ((int)normalmap[i*3+1] - 128) * l;
+					bl[i*3+2] += ((int)normalmap[i*3+2] - 128) * l;
+				}
+			}
+		}
+		bl = intblocklights;
+		out = templight;
+		                                                                      
+		for (i = 0;i < size;i++, bl += 3, out += 4)
+		{
+			VectorCopy(bl, n);
+			VectorNormalize(n);
+			l = (int)(n[0] * 128 + 128);out[2] = bound(0, l, 255);
+			l = (int)(n[1] * 128 + 128);out[1] = bound(0, l, 255);
+			l = (int)(n[2] * 128 + 128);out[0] = bound(0, l, 255);
+			out[3] = 255;
+		}
+		R_UpdateTexture(surface->deluxemaptexture, templight, surface->lightmapinfo->lightmaporigin[0], surface->lightmapinfo->lightmaporigin[1], 0, smax, tmax, 1);
+	}
+}
+
+static void R_StainNode (mnode_t *node, dp_model_t *model, const vec3_t origin, float radius, const float fcolor[8])
+{
+	float ndist, a, ratio, maxdist, maxdist2, maxdist3, invradius, sdtable[256], td, dist2;
+	msurface_t *surface, *endsurface;
+	int i, s, t, smax, tmax, smax3, impacts, impactt, stained;
+	unsigned char *bl;
+	vec3_t impact;
+
+	maxdist = radius * radius;
+	invradius = 1.0f / radius;
+
+loc0:
+	if (!node->plane)
+		return;
+	ndist = PlaneDiff(origin, node->plane);
+	if (ndist > radius)
+	{
+		node = node->children[0];
+		goto loc0;
+	}
+	if (ndist < -radius)
+	{
+		node = node->children[1];
+		goto loc0;
+	}
+
+	dist2 = ndist * ndist;
+	maxdist3 = maxdist - dist2;
+
+	if (node->plane->type < 3)
+	{
+		VectorCopy(origin, impact);
+		impact[node->plane->type] -= ndist;
+	}
+	else
+	{
+		impact[0] = origin[0] - node->plane->normal[0] * ndist;
+		impact[1] = origin[1] - node->plane->normal[1] * ndist;
+		impact[2] = origin[2] - node->plane->normal[2] * ndist;
+	}
+
+	for (surface = model->data_surfaces + node->firstsurface, endsurface = surface + node->numsurfaces;surface < endsurface;surface++)
+	{
+		if (surface->lightmapinfo->stainsamples)
+		{
+			smax = (surface->lightmapinfo->extents[0] >> 4) + 1;
+			tmax = (surface->lightmapinfo->extents[1] >> 4) + 1;
+
+			impacts = (int)(DotProduct (impact, surface->lightmapinfo->texinfo->vecs[0]) + surface->lightmapinfo->texinfo->vecs[0][3] - surface->lightmapinfo->texturemins[0]);
+			impactt = (int)(DotProduct (impact, surface->lightmapinfo->texinfo->vecs[1]) + surface->lightmapinfo->texinfo->vecs[1][3] - surface->lightmapinfo->texturemins[1]);
+
+			s = bound(0, impacts, smax * 16) - impacts;
+			t = bound(0, impactt, tmax * 16) - impactt;
+			i = (int)(s * s + t * t + dist2);
+			if ((i > maxdist) || (smax > (int)(sizeof(sdtable)/sizeof(sdtable[0]))))                                         
+				continue;
+
+			                      
+			for (s = 0, i = impacts; s < smax; s++, i -= 16)
+				sdtable[s] = i * i + dist2;
+
+			bl = surface->lightmapinfo->stainsamples;
+			smax3 = smax * 3;
+			stained = false;
+
+			i = impactt;
+			for (t = 0;t < tmax;t++, i -= 16)
+			{
+				td = i * i;
+				                                                    
+				if (td < maxdist3)
+				{
+					maxdist2 = maxdist - td;
+					for (s = 0;s < smax;s++)
+					{
+						if (sdtable[s] < maxdist2)
+						{
+							ratio = lhrandom(0.0f, 1.0f);
+							a = (fcolor[3] + ratio * fcolor[7]) * (1.0f - sqrt(sdtable[s] + td) * invradius);
+							if (a >= (1.0f / 64.0f))
+							{
+								if (a > 1)
+									a = 1;
+								bl[0] = (unsigned char) ((float) bl[0] + a * ((fcolor[0] + ratio * fcolor[4]) - (float) bl[0]));
+								bl[1] = (unsigned char) ((float) bl[1] + a * ((fcolor[1] + ratio * fcolor[5]) - (float) bl[1]));
+								bl[2] = (unsigned char) ((float) bl[2] + a * ((fcolor[2] + ratio * fcolor[6]) - (float) bl[2]));
+								stained = true;
+							}
+						}
+						bl += 3;
+					}
+				}
+				else             
+					bl += smax3;
+			}
+			                        
+			if (stained)
+				model->brushq1.lightmapupdateflags[surface - model->data_surfaces] = true;
+		}
+	}
+
+	if (node->children[0]->plane)
+	{
+		if (node->children[1]->plane)
+		{
+			R_StainNode(node->children[0], model, origin, radius, fcolor);
+			node = node->children[1];
+			goto loc0;
+		}
+		else
+		{
+			node = node->children[0];
+			goto loc0;
+		}
+	}
+	else if (node->children[1]->plane)
+	{
+		node = node->children[1];
+		goto loc0;
+	}
+}
+
+void R_Stain (const vec3_t origin, float radius, int cr1, int cg1, int cb1, int ca1, int cr2, int cg2, int cb2, int ca2)
+{
+	int n;
+	float fcolor[8];
+	entity_render_t *ent;
+	dp_model_t *model;
+	vec3_t org;
+	if (r_refdef.scene.worldmodel == NULL || !r_refdef.scene.worldmodel->brush.data_nodes || !r_refdef.scene.worldmodel->brushq1.lightdata)
+		return;
+	fcolor[0] = cr1;
+	fcolor[1] = cg1;
+	fcolor[2] = cb1;
+	fcolor[3] = ca1 * (1.0f / 64.0f);
+	fcolor[4] = cr2 - cr1;
+	fcolor[5] = cg2 - cg1;
+	fcolor[6] = cb2 - cb1;
+	fcolor[7] = (ca2 - ca1) * (1.0f / 64.0f);
+
+	R_StainNode(r_refdef.scene.worldmodel->brush.data_nodes + r_refdef.scene.worldmodel->brushq1.hulls[0].firstclipnode, r_refdef.scene.worldmodel, origin, radius, fcolor);
+
+	                            
+	for (n = 0;n < cl.num_brushmodel_entities;n++)
+	{
+		ent = &cl.entities[cl.brushmodel_entities[n]].render;
+		model = ent->model;
+		if (model && model->name[0] == '*')
+		{
+			if (model->brush.data_nodes)
+			{
+				Matrix4x4_Transform(&ent->inversematrix, origin, org);
+				R_StainNode(model->brush.data_nodes + model->brushq1.hulls[0].firstclipnode, model, org, radius, fcolor);
+			}
+		}
+	}
+}
+
+
+  
+                                                             
+
+             
+
+                                                             
+  
+
+static void R_DrawPortal_Callback(const entity_render_t *ent, const rtlight_t *rtlight, int numsurfaces, int *surfacelist)
+{
+	                                                                       
+	                                                                       
+	                                                    
+	const mportal_t *portal = (mportal_t *)ent;
+	qboolean isvis;
+	int i, numpoints;
+	float *v;
+	float vertex3f[POLYGONELEMENTS_MAXPOINTS*3];
+	CHECKGLERROR
+	GL_BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL_DepthMask(false);
+	GL_DepthRange(0, 1);
+	GL_PolygonOffset(r_refdef.polygonfactor, r_refdef.polygonoffset);
+	GL_DepthTest(true);
+	GL_CullFace(GL_NONE);
+	R_EntityMatrix(&identitymatrix);
+
+	numpoints = min(portal->numpoints, POLYGONELEMENTS_MAXPOINTS);
+
+                              
+
+	isvis = (portal->here->clusterindex >= 0 && portal->past->clusterindex >= 0 && portal->here->clusterindex != portal->past->clusterindex);
+
+	i = surfacelist[0] >> 1;
+	GL_Color(((i & 0x0007) >> 0) * (1.0f / 7.0f) * r_refdef.view.colorscale,
+			 ((i & 0x0038) >> 3) * (1.0f / 7.0f) * r_refdef.view.colorscale,
+			 ((i & 0x01C0) >> 6) * (1.0f / 7.0f) * r_refdef.view.colorscale,
+			 isvis ? 0.125f : 0.03125f);
+	for (i = 0, v = vertex3f;i < numpoints;i++, v += 3)
+		VectorCopy(portal->points[i].position, v);
+	R_Mesh_PrepareVertices_Generic_Arrays(numpoints, vertex3f, NULL, NULL);
+	R_SetupShader_Generic_NoTexture(false, false);
+	R_Mesh_Draw(0, numpoints, 0, numpoints - 2, polygonelement3i, NULL, 0, polygonelement3s, NULL, 0);
+}
+
+                                                           
+void R_DrawPortals(void)
+{
+	int i, leafnum;
+	mportal_t *portal;
+	float center[3], f;
+	dp_model_t *model = r_refdef.scene.worldmodel;
+	if (model == NULL)
+		return;
+	for (leafnum = 0;leafnum < r_refdef.scene.worldmodel->brush.num_leafs;leafnum++)
+	{
+		if (r_refdef.viewcache.world_leafvisible[leafnum])
+		{
+			                                                                                                                    
+			for (portal = r_refdef.scene.worldmodel->brush.data_leafs[leafnum].portals;portal;portal = portal->next)
+			{
+				if (portal->numpoints <= POLYGONELEMENTS_MAXPOINTS)
+				if (!R_CullBox(portal->mins, portal->maxs))
+				{
+					VectorClear(center);
+					for (i = 0;i < portal->numpoints;i++)
+						VectorAdd(center, portal->points[i].position, center);
+					f = ixtable[portal->numpoints];
+					VectorScale(center, f, center);
+					R_MeshQueue_AddTransparent(TRANSPARENTSORT_DISTANCE, center, R_DrawPortal_Callback, (entity_render_t *)portal, leafnum, rsurface.rtlight);
+				}
+			}
+		}
+	}
+}
+
+static void R_View_WorldVisibility_CullSurfaces(void)
+{
+	int surfaceindex;
+	int surfaceindexstart;
+	int surfaceindexend;
+	unsigned char *surfacevisible;
+	msurface_t *surfaces;
+	dp_model_t *model = r_refdef.scene.worldmodel;
+	if (!model)
+		return;
+	if (r_trippy.integer)
+		return;
+	if (r_usesurfaceculling.integer < 1)
+		return;
+	surfaceindexstart = model->firstmodelsurface;
+	surfaceindexend = surfaceindexstart + model->nummodelsurfaces;
+	surfaces = model->data_surfaces;
+	surfacevisible = r_refdef.viewcache.world_surfacevisible;
+	for (surfaceindex = surfaceindexstart;surfaceindex < surfaceindexend;surfaceindex++)
+		if (surfacevisible[surfaceindex] && R_CullBox(surfaces[surfaceindex].mins, surfaces[surfaceindex].maxs))
+			surfacevisible[surfaceindex] = 0;
+}
+
+void R_View_WorldVisibility(qboolean forcenovis)
+{
+	int i, j, *mark;
+	mleaf_t *leaf;
+	mleaf_t *viewleaf;
+	dp_model_t *model = r_refdef.scene.worldmodel;
+
+	if (!model)
+		return;
+
+	if (r_refdef.view.usecustompvs)
+	{
+		                                                  
+		memset(r_refdef.viewcache.world_surfacevisible, 0, model->num_surfaces);
+		memset(r_refdef.viewcache.world_leafvisible, 0, model->brush.num_leafs);
+		r_refdef.viewcache.world_novis = false;
+
+		                                                             
+		for (j = 0, leaf = model->brush.data_leafs;j < model->brush.num_leafs;j++, leaf++)
+		{
+			                                                                 
+			if (CHECKPVSBIT(r_refdef.viewcache.world_pvsbits, leaf->clusterindex) && !R_CullBox(leaf->mins, leaf->maxs))
+			{
+				r_refdef.stats[r_stat_world_leafs]++;
+				r_refdef.viewcache.world_leafvisible[j] = true;
+				if (leaf->numleafsurfaces)
+					for (i = 0, mark = leaf->firstleafsurface;i < leaf->numleafsurfaces;i++, mark++)
+						r_refdef.viewcache.world_surfacevisible[*mark] = true;
+			}
+		}
+		R_View_WorldVisibility_CullSurfaces();
+		return;
+	}
+
+	                                                  
+	viewleaf = model->brush.PointInLeaf ? model->brush.PointInLeaf(model, r_refdef.view.origin) : NULL;
+	                                             
+	if (!r_lockpvs.integer && model->brush.FatPVS)
+		model->brush.FatPVS(model, r_refdef.view.origin, 2, r_refdef.viewcache.world_pvsbits, (r_refdef.viewcache.world_numclusters+7)>>3, false);
+
+	if (!r_lockvisibility.integer)
+	{
+		                                                  
+		memset(r_refdef.viewcache.world_surfacevisible, 0, model->num_surfaces);
+		memset(r_refdef.viewcache.world_leafvisible, 0, model->brush.num_leafs);
+
+		r_refdef.viewcache.world_novis = false;
+
+		                                                                
+		                                                      
+		if (!viewleaf || viewleaf->clusterindex < 0 || forcenovis || r_trippy.integer)
+		{
+			                                                                
+			                                                      
+			                                                                 
+			r_refdef.viewcache.world_novis = true;
+			for (j = 0, leaf = model->brush.data_leafs;j < model->brush.num_leafs;j++, leaf++)
+			{
+				if (leaf->clusterindex < 0)
+					continue;
+				                                                                 
+				if (!R_CullBox(leaf->mins, leaf->maxs))
+				{
+					r_refdef.stats[r_stat_world_leafs]++;
+					r_refdef.viewcache.world_leafvisible[j] = true;
+					if (leaf->numleafsurfaces)
+						for (i = 0, mark = leaf->firstleafsurface;i < leaf->numleafsurfaces;i++, mark++)
+							r_refdef.viewcache.world_surfacevisible[*mark] = true;
+				}
+			}
+		}
+		                                                  
+		                                     
+		else if (!model->brush.data_portals || r_useportalculling.integer < 1 || (r_useportalculling.integer < 2 && !r_novis.integer))
+		{
+			              
+			                                                               
+			                                     
+			                                                                 
+			for (j = 0, leaf = model->brush.data_leafs;j < model->brush.num_leafs;j++, leaf++)
+			{
+				if (leaf->clusterindex < 0)
+					continue;
+				                                                                 
+				if (CHECKPVSBIT(r_refdef.viewcache.world_pvsbits, leaf->clusterindex) && !R_CullBox(leaf->mins, leaf->maxs))
+				{
+					r_refdef.stats[r_stat_world_leafs]++;
+					r_refdef.viewcache.world_leafvisible[j] = true;
+					if (leaf->numleafsurfaces)
+						for (i = 0, mark = leaf->firstleafsurface;i < leaf->numleafsurfaces;i++, mark++)
+							r_refdef.viewcache.world_surfacevisible[*mark] = true;
+				}
+			}
+		}
+		                                                                 
+		                                                                     
+		else
+		{
+			int leafstackpos;
+			mportal_t *p;
+			mleaf_t *leafstack[8192];
+			vec3_t cullmins, cullmaxs;
+			float cullbias = r_nearclip.value * 2.0f;                                                                                                                   
+			                                
+			                                                                  
+			                                                            
+			                                                                
+			                                                      
+			                                                               
+			                                              
+			leafstack[0] = viewleaf;
+			leafstackpos = 1;
+			while (leafstackpos)
+			{
+				leaf = leafstack[--leafstackpos];
+				if (r_refdef.viewcache.world_leafvisible[leaf - model->brush.data_leafs])
+					continue;
+				if (leaf->clusterindex < 0)
+					continue;
+				r_refdef.stats[r_stat_world_leafs]++;
+				r_refdef.viewcache.world_leafvisible[leaf - model->brush.data_leafs] = true;
+				                                       
+				if (leaf->numleafsurfaces)
+					for (i = 0, mark = leaf->firstleafsurface;i < leaf->numleafsurfaces;i++, mark++)
+						r_refdef.viewcache.world_surfacevisible[*mark] = true;
+				                                  
+				                  
+				                                    
+				                                     
+				                                                     
+				for (p = leaf->portals;p;p = p->next)
+				{
+					r_refdef.stats[r_stat_world_portals]++;
+					if (r_refdef.viewcache.world_leafvisible[p->past - model->brush.data_leafs])
+						continue;
+					if (!CHECKPVSBIT(r_refdef.viewcache.world_pvsbits, p->past->clusterindex))
+						continue;
+					cullmins[0] = p->mins[0] - cullbias;
+					cullmins[1] = p->mins[1] - cullbias;
+					cullmins[2] = p->mins[2] - cullbias;
+					cullmaxs[0] = p->maxs[0] + cullbias;
+					cullmaxs[1] = p->maxs[1] + cullbias;
+					cullmaxs[2] = p->maxs[2] + cullbias;
+					if (R_CullBox(cullmins, cullmaxs))
+						continue;
+					if (leafstackpos >= (int)(sizeof(leafstack) / sizeof(leafstack[0])))
+						break;
+					leafstack[leafstackpos++] = p->past;
+				}
+			}
+		}
+	}
+
+        R_View_WorldVisibility_CullSurfaces();
+}
+
+void R_Q1BSP_DrawSky(entity_render_t *ent)
+{
+	if (ent->model == NULL)
+		return;
+	R_DrawModelSurfaces(ent, true, true, false, false, false);
+}
+
+void R_Q1BSP_DrawAddWaterPlanes(entity_render_t *ent)
+{
+	int i, j, n, flagsmask;
+	dp_model_t *model = ent->model;
+	msurface_t *surfaces;
+	if (model == NULL)
+		return;
+
+	RSurf_ActiveModelEntity(ent, true, false, false);
+
+	surfaces = model->data_surfaces;
+	flagsmask = MATERIALFLAG_WATERSHADER | MATERIALFLAG_REFRACTION | MATERIALFLAG_REFLECTION | MATERIALFLAG_CAMERA;
+
+	                                    
+	if (ent == r_refdef.scene.worldentity)
+	{
+		for (i = 0;i < model->nummodelsurfaces;i++)
+		{
+			j = model->sortedmodelsurfaces[i];
+			if (r_refdef.viewcache.world_surfacevisible[j])
+				if (surfaces[j].texture->basematerialflags & flagsmask)
+					R_Water_AddWaterPlane(surfaces + j, 0);
+		}
+	}
+	else
+	{
+		if(ent->entitynumber >= MAX_EDICTS)                                                                             
+			n = ent->entitynumber;
+		else
+			n = 0;
+		for (i = 0;i < model->nummodelsurfaces;i++)
+		{
+			j = model->sortedmodelsurfaces[i];
+			if (surfaces[j].texture->basematerialflags & flagsmask)
+				R_Water_AddWaterPlane(surfaces + j, n);
+		}
+	}
+	rsurface.entity = NULL;                                                                
+}
+
+void R_Q1BSP_Draw(entity_render_t *ent)
+{
+	dp_model_t *model = ent->model;
+	if (model == NULL)
+		return;
+	R_DrawModelSurfaces(ent, false, true, false, false, false);
+}
+
+void R_Q1BSP_DrawDepth(entity_render_t *ent)
+{
+	dp_model_t *model = ent->model;
+	if (model == NULL || model->surfmesh.isanimated)
+		return;
+	GL_ColorMask(0,0,0,0);
+	GL_Color(1,1,1,1);
+	GL_DepthTest(true);
+	GL_BlendFunc(GL_ONE, GL_ZERO);
+	GL_DepthMask(true);
+                              
+	R_DrawModelSurfaces(ent, false, false, true, false, false);
+	GL_ColorMask(r_refdef.view.colormask[0], r_refdef.view.colormask[1], r_refdef.view.colormask[2], 1);
+}
+
+void R_Q1BSP_DrawDebug(entity_render_t *ent)
+{
+	if (ent->model == NULL)
+		return;
+	R_DrawModelSurfaces(ent, false, false, false, true, false);
+}
+
+void R_Q1BSP_DrawPrepass(entity_render_t *ent)
+{
+	dp_model_t *model = ent->model;
+	if (model == NULL)
+		return;
+	R_DrawModelSurfaces(ent, false, true, false, false, true);
+}
+
+typedef struct r_q1bsp_getlightinfo_s
+{
+	dp_model_t *model;
+	vec3_t relativelightorigin;
+	float lightradius;
+	int *outleaflist;
+	unsigned char *outleafpvs;
+	int outnumleafs;
+	unsigned char *visitingleafpvs;
+	int *outsurfacelist;
+	unsigned char *outsurfacepvs;
+	unsigned char *tempsurfacepvs;
+	unsigned char *outshadowtrispvs;
+	unsigned char *outlighttrispvs;
+	int outnumsurfaces;
+	vec3_t outmins;
+	vec3_t outmaxs;
+	vec3_t lightmins;
+	vec3_t lightmaxs;
+	const unsigned char *pvs;
+	qboolean svbsp_active;
+	qboolean svbsp_insertoccluder;
+	qboolean noocclusion;                      
+	qboolean frontsidecasting;                                                                             
+	int numfrustumplanes;
+	const mplane_t *frustumplanes;
+}
+r_q1bsp_getlightinfo_t;
+
+#define GETLIGHTINFO_MAXNODESTACK 4096
+
+static void R_Q1BSP_RecursiveGetLightInfo_BSP(r_q1bsp_getlightinfo_t *info, qboolean skipsurfaces)
+{
+	            
+	mnode_t *nodestack[GETLIGHTINFO_MAXNODESTACK];
+	int nodestackpos = 0;
+	                  
+	mplane_t *plane;
+	mnode_t *node;
+	int sides;
+	                  
+	mleaf_t *leaf;
+	const msurface_t *surface;
+	const msurface_t *surfaces = info->model->data_surfaces;
+	int numleafsurfaces;
+	int leafsurfaceindex;
+	int surfaceindex;
+	int triangleindex, t;
+	int currentmaterialflags;
+	qboolean castshadow;
+	const int *e;
+	const vec_t *v[3];
+	float v2[3][3];
+	qboolean insidebox;
+	qboolean noocclusion = info->noocclusion;
+	qboolean frontsidecasting = info->frontsidecasting;
+	qboolean svbspactive = info->svbsp_active;
+	qboolean svbspinsertoccluder = info->svbsp_insertoccluder;
+	const int *leafsurfaceindices;
+	qboolean addedtris;
+	int i;
+	mportal_t *portal;
+	static float points[128][3];
+	                                        
+	nodestack[nodestackpos++] = info->model->brush.data_nodes;
+	                                            
+	while (nodestackpos)
+	{
+		                                       
+		node = nodestack[--nodestackpos];
+		                          
+		plane = node->plane;
+		if (plane)
+		{
+			       
+#if 0
+			if (!BoxesOverlap(info->lightmins, info->lightmaxs, node->mins, node->maxs))
+				continue;
+#endif
+#if 0
+			if (!r_shadow_compilingrtlight && R_CullBoxCustomPlanes(node->mins, node->maxs, rtlight->cached_numfrustumplanes, rtlight->cached_frustumplanes))
+				continue;
+#endif
+			                                                  
+			if (plane->type < 3)
+			{
+				              
+				if (info->lightmins[plane->type] > plane->dist)
+					nodestack[nodestackpos++] = node->children[0];
+				else if (info->lightmaxs[plane->type] < plane->dist)
+					nodestack[nodestackpos++] = node->children[1];
+				else
+				{
+					                                                                 
+					if (info->relativelightorigin[plane->type] >= plane->dist)
+					{
+						if (nodestackpos < GETLIGHTINFO_MAXNODESTACK-1)
+							nodestack[nodestackpos++] = node->children[0];
+						nodestack[nodestackpos++] = node->children[1];
+					}
+					else
+					{
+						if (nodestackpos < GETLIGHTINFO_MAXNODESTACK-1)
+							nodestack[nodestackpos++] = node->children[1];
+						nodestack[nodestackpos++] = node->children[0];
+					}
+				}
+			}
+			else
+			{
+				               
+				sides = BoxOnPlaneSide(info->lightmins, info->lightmaxs, plane);
+				switch (sides)
+				{
+				default:
+					continue;                            
+				case 1:
+					nodestack[nodestackpos++] = node->children[0];
+					break;
+				case 2:
+					nodestack[nodestackpos++] = node->children[1];
+					break;
+				case 3:
+					                                                                 
+					if (PlaneDist(info->relativelightorigin, plane) >= 0)
+					{
+						if (nodestackpos < GETLIGHTINFO_MAXNODESTACK-1)
+							nodestack[nodestackpos++] = node->children[0];
+						nodestack[nodestackpos++] = node->children[1];
+					}
+					else
+					{
+						if (nodestackpos < GETLIGHTINFO_MAXNODESTACK-1)
+							nodestack[nodestackpos++] = node->children[1];
+						nodestack[nodestackpos++] = node->children[0];
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			       
+			leaf = (mleaf_t *)node;
+#if 1
+			if (!info->noocclusion && info->pvs != NULL && !CHECKPVSBIT(info->pvs, leaf->clusterindex))
+				continue;
+#endif
+#if 1
+			if (!BoxesOverlap(info->lightmins, info->lightmaxs, leaf->mins, leaf->maxs))
+				continue;
+#endif
+#if 1
+			if (!r_shadow_compilingrtlight && R_CullBoxCustomPlanes(leaf->mins, leaf->maxs, info->numfrustumplanes, info->frustumplanes))
+				continue;
+#endif
+
+			if (svbspactive)
+			{
+				                                                                   
+				                                                                
+				                                 
+				for (portal = leaf->portals;portal;portal = portal->next)
+				{
+					for (i = 0;i < portal->numpoints;i++)
+						VectorCopy(portal->points[i].position, points[i]);
+					if (SVBSP_AddPolygon(&r_svbsp, portal->numpoints, points[0], false, NULL, NULL, 0) & 2)
+						break;
+				}
+				if (leaf->portals && portal == NULL)
+					continue;                                   
+			}
+
+			                                            
+			info->outmins[0] = min(info->outmins[0], leaf->mins[0]);
+			info->outmins[1] = min(info->outmins[1], leaf->mins[1]);
+			info->outmins[2] = min(info->outmins[2], leaf->mins[2]);
+			info->outmaxs[0] = max(info->outmaxs[0], leaf->maxs[0]);
+			info->outmaxs[1] = max(info->outmaxs[1], leaf->maxs[1]);
+			info->outmaxs[2] = max(info->outmaxs[2], leaf->maxs[2]);
+
+			                                               
+			if (info->outleafpvs)
+			{
+				int leafindex = leaf - info->model->brush.data_leafs;
+				if (!CHECKPVSBIT(info->outleafpvs, leafindex))
+				{
+					SETPVSBIT(info->outleafpvs, leafindex);
+					info->outleaflist[info->outnumleafs++] = leafindex;
+				}
+			}
+
+			                                            
+			if (skipsurfaces)
+				continue;
+
+			                                                                     
+			leafsurfaceindices = leaf->firstleafsurface;
+			numleafsurfaces = leaf->numleafsurfaces;
+			if (svbspinsertoccluder)
+			{
+				for (leafsurfaceindex = 0;leafsurfaceindex < numleafsurfaces;leafsurfaceindex++)
+				{
+					surfaceindex = leafsurfaceindices[leafsurfaceindex];
+					if (CHECKPVSBIT(info->outsurfacepvs, surfaceindex))
+						continue;
+					SETPVSBIT(info->outsurfacepvs, surfaceindex);
+					surface = surfaces + surfaceindex;
+					if (!BoxesOverlap(info->lightmins, info->lightmaxs, surface->mins, surface->maxs))
+						continue;
+					currentmaterialflags = R_GetCurrentTexture(surface->texture)->currentmaterialflags;
+					castshadow = !(currentmaterialflags & MATERIALFLAG_NOSHADOW);
+					if (!castshadow)
+						continue;
+					insidebox = BoxInsideBox(surface->mins, surface->maxs, info->lightmins, info->lightmaxs);
+					for (triangleindex = 0, t = surface->num_firstshadowmeshtriangle, e = info->model->brush.shadowmesh->element3i + t * 3;triangleindex < surface->num_triangles;triangleindex++, t++, e += 3)
+					{
+						v[0] = info->model->brush.shadowmesh->vertex3f + e[0] * 3;
+						v[1] = info->model->brush.shadowmesh->vertex3f + e[1] * 3;
+						v[2] = info->model->brush.shadowmesh->vertex3f + e[2] * 3;
+						VectorCopy(v[0], v2[0]);
+						VectorCopy(v[1], v2[1]);
+						VectorCopy(v[2], v2[2]);
+						if (insidebox || TriangleBBoxOverlapsBox(v2[0], v2[1], v2[2], info->lightmins, info->lightmaxs))
+							SVBSP_AddPolygon(&r_svbsp, 3, v2[0], true, NULL, NULL, 0);
+					}
+				}
+			}
+			else
+			{
+				for (leafsurfaceindex = 0;leafsurfaceindex < numleafsurfaces;leafsurfaceindex++)
+				{
+					surfaceindex = leafsurfaceindices[leafsurfaceindex];
+					if (CHECKPVSBIT(info->outsurfacepvs, surfaceindex))
+						continue;
+					SETPVSBIT(info->outsurfacepvs, surfaceindex);
+					surface = surfaces + surfaceindex;
+					if (!BoxesOverlap(info->lightmins, info->lightmaxs, surface->mins, surface->maxs))
+						continue;
+					addedtris = false;
+					currentmaterialflags = R_GetCurrentTexture(surface->texture)->currentmaterialflags;
+					castshadow = !(currentmaterialflags & MATERIALFLAG_NOSHADOW);
+					insidebox = BoxInsideBox(surface->mins, surface->maxs, info->lightmins, info->lightmaxs);
+					for (triangleindex = 0, t = surface->num_firstshadowmeshtriangle, e = info->model->brush.shadowmesh->element3i + t * 3;triangleindex < surface->num_triangles;triangleindex++, t++, e += 3)
+					{
+						v[0] = info->model->brush.shadowmesh->vertex3f + e[0] * 3;
+						v[1] = info->model->brush.shadowmesh->vertex3f + e[1] * 3;
+						v[2] = info->model->brush.shadowmesh->vertex3f + e[2] * 3;
+						VectorCopy(v[0], v2[0]);
+						VectorCopy(v[1], v2[1]);
+						VectorCopy(v[2], v2[2]);
+						if (!insidebox && !TriangleBBoxOverlapsBox(v2[0], v2[1], v2[2], info->lightmins, info->lightmaxs))
+							continue;
+						if (svbspactive && !(SVBSP_AddPolygon(&r_svbsp, 3, v2[0], false, NULL, NULL, 0) & 2))
+							continue;
+						                                                         
+						                                                              
+						                                               
+						SETPVSBIT(info->outlighttrispvs, t);
+						addedtris = true;
+						if (castshadow)
+						{
+							if (noocclusion || (currentmaterialflags & MATERIALFLAG_NOCULLFACE))
+							{
+								                                     
+								                          
+								SETPVSBIT(info->outshadowtrispvs, t);
+							}
+							else if (frontsidecasting)
+							{
+								                                         
+								                                         
+								                           
+								if (PointInfrontOfTriangle(info->relativelightorigin, v2[0], v2[1], v2[2]))
+									SETPVSBIT(info->outshadowtrispvs, t);
+							}
+							else
+							{
+								                                     
+								                                         
+								if (!PointInfrontOfTriangle(info->relativelightorigin, v2[0], v2[1], v2[2]))
+									SETPVSBIT(info->outshadowtrispvs, t);
+							}
+						}
+					}
+					if (addedtris)
+						info->outsurfacelist[info->outnumsurfaces++] = surfaceindex;
+				}
+			}
+		}
+	}
+}
+
+static void R_Q1BSP_RecursiveGetLightInfo_BIH(r_q1bsp_getlightinfo_t *info, const bih_t *bih)
+{
+	bih_leaf_t *leaf;
+	bih_node_t *node;
+	int nodenum;
+	int axis;
+	int surfaceindex;
+	int t;
+	int nodeleafindex;
+	int currentmaterialflags;
+	qboolean castshadow;
+	qboolean noocclusion = info->noocclusion;
+	qboolean frontsidecasting = info->frontsidecasting;
+	msurface_t *surface;
+	const int *e;
+	const vec_t *v[3];
+	float v2[3][3];
+	int nodestack[GETLIGHTINFO_MAXNODESTACK];
+	int nodestackpos = 0;
+	                                                                         
+	                                                             
+	                            
+	nodestack[nodestackpos++] = bih->rootnode;
+	                                        
+	while (nodestackpos)
+	{
+		                                   
+		nodenum = nodestack[--nodestackpos];
+		       
+		node = bih->nodes + nodenum;
+		if (node->type == BIH_UNORDERED)
+		{
+			for (nodeleafindex = 0;nodeleafindex < BIH_MAXUNORDEREDCHILDREN && node->children[nodeleafindex] >= 0;nodeleafindex++)
+			{
+				leaf = bih->leafs + node->children[nodeleafindex];
+				if (leaf->type != BIH_RENDERTRIANGLE)
+					continue;
+#if 1
+				if (!BoxesOverlap(info->lightmins, info->lightmaxs, leaf->mins, leaf->maxs))
+					continue;
+#endif
+#if 1
+				if (!r_shadow_compilingrtlight && R_CullBoxCustomPlanes(leaf->mins, leaf->maxs, info->numfrustumplanes, info->frustumplanes))
+					continue;
+#endif
+				surfaceindex = leaf->surfaceindex;
+				surface = info->model->data_surfaces + surfaceindex;
+				currentmaterialflags = R_GetCurrentTexture(surface->texture)->currentmaterialflags;
+				castshadow = !(currentmaterialflags & MATERIALFLAG_NOSHADOW);
+				t = leaf->itemindex + surface->num_firstshadowmeshtriangle - surface->num_firsttriangle;
+				e = info->model->brush.shadowmesh->element3i + t * 3;
+				v[0] = info->model->brush.shadowmesh->vertex3f + e[0] * 3;
+				v[1] = info->model->brush.shadowmesh->vertex3f + e[1] * 3;
+				v[2] = info->model->brush.shadowmesh->vertex3f + e[2] * 3;
+				VectorCopy(v[0], v2[0]);
+				VectorCopy(v[1], v2[1]);
+				VectorCopy(v[2], v2[2]);
+				if (info->svbsp_insertoccluder)
+				{
+					if (castshadow)
+						SVBSP_AddPolygon(&r_svbsp, 3, v2[0], true, NULL, NULL, 0);
+					continue;
+				}
+				if (info->svbsp_active && !(SVBSP_AddPolygon(&r_svbsp, 3, v2[0], false, NULL, NULL, 0) & 2))
+					continue;
+				                                                
+				                                             
+				                                                  
+				                            
+				SETPVSBIT(info->outlighttrispvs, t);
+				if (castshadow)
+				{
+					if (noocclusion || (currentmaterialflags & MATERIALFLAG_NOCULLFACE))
+					{
+						                                     
+						                          
+						SETPVSBIT(info->outshadowtrispvs, t);
+					}
+					else if (frontsidecasting)
+					{
+						                                         
+						                                         
+						                           
+						if (PointInfrontOfTriangle(info->relativelightorigin, v2[0], v2[1], v2[2]))
+							SETPVSBIT(info->outshadowtrispvs, t);
+					}
+					else
+					{
+						                                     
+						                                         
+						if (!PointInfrontOfTriangle(info->relativelightorigin, v2[0], v2[1], v2[2]))
+							SETPVSBIT(info->outshadowtrispvs, t);
+					}
+				}
+				if (!CHECKPVSBIT(info->outsurfacepvs, surfaceindex))
+				{
+					SETPVSBIT(info->outsurfacepvs, surfaceindex);
+					info->outsurfacelist[info->outnumsurfaces++] = surfaceindex;
+				}
+			}
+		}
+		else
+		{
+			axis = node->type - BIH_SPLITX;
+#if 0
+			if (!BoxesOverlap(info->lightmins, info->lightmaxs, node->mins, node->maxs))
+				continue;
+#endif
+#if 0
+			if (!r_shadow_compilingrtlight && R_CullBoxCustomPlanes(node->mins, node->maxs, rtlight->cached_numfrustumplanes, rtlight->cached_frustumplanes))
+				continue;
+#endif
+			if (info->lightmins[axis] <= node->backmax)
+			{
+				if (info->lightmaxs[axis] >= node->frontmin && nodestackpos < GETLIGHTINFO_MAXNODESTACK-1)
+					nodestack[nodestackpos++] = node->front;
+				nodestack[nodestackpos++] = node->back;
+				continue;
+			}
+			else if (info->lightmaxs[axis] >= node->frontmin)
+			{
+				nodestack[nodestackpos++] = node->front;
+				continue;
+			}
+			else
+				continue;                                              
+		}
+	}
+}
+
+static void R_Q1BSP_CallRecursiveGetLightInfo(r_q1bsp_getlightinfo_t *info, qboolean use_svbsp)
+{
+	extern cvar_t r_shadow_usebihculling;
+	if (use_svbsp)
+	{
+		float origin[3];
+		VectorCopy(info->relativelightorigin, origin);
+		r_svbsp.maxnodes = max(r_svbsp.maxnodes, 1<<12);
+		r_svbsp.nodes = (svbsp_node_t*) R_FrameData_Alloc(r_svbsp.maxnodes * sizeof(svbsp_node_t));
+		info->svbsp_active = true;
+		info->svbsp_insertoccluder = true;
+		for (;;)
+		{
+			SVBSP_Init(&r_svbsp, origin, r_svbsp.maxnodes, r_svbsp.nodes);
+			R_Q1BSP_RecursiveGetLightInfo_BSP(info, false);
+			                                        
+			if (r_svbsp.ranoutofnodes)
+			{
+				                            
+				if (r_svbsp.maxnodes >= 2<<22)
+					break;
+				r_svbsp.maxnodes *= 2;
+				r_svbsp.nodes = (svbsp_node_t*) R_FrameData_Alloc(r_svbsp.maxnodes * sizeof(svbsp_node_t));
+				                          
+				                                                                                                  
+			}
+			else
+				break;
+		}
+		                                                             
+		info->outnumleafs = 0;
+		info->outnumsurfaces = 0;
+		memset(info->outleafpvs, 0, (info->model->brush.num_leafs + 7) >> 3);
+		memset(info->outsurfacepvs, 0, (info->model->nummodelsurfaces + 7) >> 3);
+		if (info->model->brush.shadowmesh)
+			memset(info->outshadowtrispvs, 0, (info->model->brush.shadowmesh->numtriangles + 7) >> 3);
+		else
+			memset(info->outshadowtrispvs, 0, (info->model->surfmesh.num_triangles + 7) >> 3);
+		memset(info->outlighttrispvs, 0, (info->model->surfmesh.num_triangles + 7) >> 3);
+	}
+	else
+		info->svbsp_active = false;
+
+	                                                                       
+	                                                          
+	                                      
+	{
+		mnode_t *node = info->model->brush.data_nodes;
+		mleaf_t *leaf;
+		while (node->plane)
+			node = node->children[(node->plane->type < 3 ? info->relativelightorigin[node->plane->type] : DotProduct(info->relativelightorigin,node->plane->normal)) < node->plane->dist];
+		leaf = (mleaf_t *)node;
+		info->outmins[0] = min(info->outmins[0], leaf->mins[0]);
+		info->outmins[1] = min(info->outmins[1], leaf->mins[1]);
+		info->outmins[2] = min(info->outmins[2], leaf->mins[2]);
+		info->outmaxs[0] = max(info->outmaxs[0], leaf->maxs[0]);
+		info->outmaxs[1] = max(info->outmaxs[1], leaf->maxs[1]);
+		info->outmaxs[2] = max(info->outmaxs[2], leaf->maxs[2]);
+		if (info->outleafpvs)
+		{
+			int leafindex = leaf - info->model->brush.data_leafs;
+			if (!CHECKPVSBIT(info->outleafpvs, leafindex))
+			{
+				SETPVSBIT(info->outleafpvs, leafindex);
+				info->outleaflist[info->outnumleafs++] = leafindex;
+			}
+		}
+	}
+
+	info->svbsp_insertoccluder = false;
+	                                                                                                                                                   
+	if (r_shadow_usebihculling.integer > 0 && (r_shadow_usebihculling.integer == 2 || info->model->brush.num_leafs == 1) && info->model->render_bih.leafs != NULL)
+	{
+		R_Q1BSP_RecursiveGetLightInfo_BSP(info, true);
+		R_Q1BSP_RecursiveGetLightInfo_BIH(info, &info->model->render_bih);
+	}
+	else
+		R_Q1BSP_RecursiveGetLightInfo_BSP(info, false);
+	                                                                                         
+	r_svbsp.nodes = NULL;
+	if (developer_extra.integer && use_svbsp)
+	{
+		Con_DPrintf("GetLightInfo: svbsp built with %i nodes, polygon stats:\n", r_svbsp.numnodes);
+		Con_DPrintf("occluders: %i accepted, %i rejected, %i fragments accepted, %i fragments rejected.\n", r_svbsp.stat_occluders_accepted, r_svbsp.stat_occluders_rejected, r_svbsp.stat_occluders_fragments_accepted, r_svbsp.stat_occluders_fragments_rejected);
+		Con_DPrintf("queries  : %i accepted, %i rejected, %i fragments accepted, %i fragments rejected.\n", r_svbsp.stat_queries_accepted, r_svbsp.stat_queries_rejected, r_svbsp.stat_queries_fragments_accepted, r_svbsp.stat_queries_fragments_rejected);
+	}
+}
+
+static msurface_t *r_q1bsp_getlightinfo_surfaces;
+
+static int R_Q1BSP_GetLightInfo_comparefunc(const void *ap, const void *bp)
+{
+	int a = *(int*)ap;
+	int b = *(int*)bp;
+	const msurface_t *as = r_q1bsp_getlightinfo_surfaces + a;
+	const msurface_t *bs = r_q1bsp_getlightinfo_surfaces + b;
+	if (as->texture < bs->texture)
+		return -1;
+	if (as->texture > bs->texture)
+		return 1;
+	return a - b;
+}
+
+extern cvar_t r_shadow_sortsurfaces;
+
+void R_Q1BSP_GetLightInfo(entity_render_t *ent, vec3_t relativelightorigin, float lightradius, vec3_t outmins, vec3_t outmaxs, int *outleaflist, unsigned char *outleafpvs, int *outnumleafspointer, int *outsurfacelist, unsigned char *outsurfacepvs, int *outnumsurfacespointer, unsigned char *outshadowtrispvs, unsigned char *outlighttrispvs, unsigned char *visitingleafpvs, int numfrustumplanes, const mplane_t *frustumplanes, qboolean noocclusion)
+{
+	r_q1bsp_getlightinfo_t info;
+	info.frontsidecasting = r_shadow_frontsidecasting.integer != 0;
+	info.noocclusion = noocclusion || !info.frontsidecasting;
+	VectorCopy(relativelightorigin, info.relativelightorigin);
+	info.lightradius = lightradius;
+	info.lightmins[0] = info.relativelightorigin[0] - info.lightradius;
+	info.lightmins[1] = info.relativelightorigin[1] - info.lightradius;
+	info.lightmins[2] = info.relativelightorigin[2] - info.lightradius;
+	info.lightmaxs[0] = info.relativelightorigin[0] + info.lightradius;
+	info.lightmaxs[1] = info.relativelightorigin[1] + info.lightradius;
+	info.lightmaxs[2] = info.relativelightorigin[2] + info.lightradius;
+	if (ent->model == NULL)
+	{
+		VectorCopy(info.lightmins, outmins);
+		VectorCopy(info.lightmaxs, outmaxs);
+		*outnumleafspointer = 0;
+		*outnumsurfacespointer = 0;
+		return;
+	}
+	info.model = ent->model;
+	info.outleaflist = outleaflist;
+	info.outleafpvs = outleafpvs;
+	info.outnumleafs = 0;
+	info.visitingleafpvs = visitingleafpvs;
+	info.outsurfacelist = outsurfacelist;
+	info.outsurfacepvs = outsurfacepvs;
+	info.outshadowtrispvs = outshadowtrispvs;
+	info.outlighttrispvs = outlighttrispvs;
+	info.outnumsurfaces = 0;
+	info.numfrustumplanes = numfrustumplanes;
+	info.frustumplanes = frustumplanes;
+	VectorCopy(info.relativelightorigin, info.outmins);
+	VectorCopy(info.relativelightorigin, info.outmaxs);
+	memset(visitingleafpvs, 0, (info.model->brush.num_leafs + 7) >> 3);
+	memset(outleafpvs, 0, (info.model->brush.num_leafs + 7) >> 3);
+	memset(outsurfacepvs, 0, (info.model->nummodelsurfaces + 7) >> 3);
+	if (info.model->brush.shadowmesh)
+		memset(outshadowtrispvs, 0, (info.model->brush.shadowmesh->numtriangles + 7) >> 3);
+	else
+		memset(outshadowtrispvs, 0, (info.model->surfmesh.num_triangles + 7) >> 3);
+	memset(outlighttrispvs, 0, (info.model->surfmesh.num_triangles + 7) >> 3);
+	if (info.model->brush.GetPVS && !info.noocclusion)
+		info.pvs = info.model->brush.GetPVS(info.model, info.relativelightorigin);
+	else
+		info.pvs = NULL;
+	RSurf_ActiveModelEntity(r_refdef.scene.worldentity, false, false, false);
+
+	if (!info.noocclusion && r_shadow_compilingrtlight && r_shadow_realtime_world_compileportalculling.integer && info.model->brush.data_portals)
+	{
+		                                                                                  
+		Portal_Visibility(info.model, info.relativelightorigin, info.outleaflist, info.outleafpvs, &info.outnumleafs, info.outsurfacelist, info.outsurfacepvs, &info.outnumsurfaces, NULL, 0, true, info.lightmins, info.lightmaxs, info.outmins, info.outmaxs, info.outshadowtrispvs, info.outlighttrispvs, info.visitingleafpvs);
+	}
+	else if (!info.noocclusion && r_shadow_realtime_dlight_portalculling.integer && info.model->brush.data_portals)
+	{
+		                                                                                                    
+		Portal_Visibility(info.model, info.relativelightorigin, info.outleaflist, info.outleafpvs, &info.outnumleafs, info.outsurfacelist, info.outsurfacepvs, &info.outnumsurfaces, NULL, 0, r_shadow_realtime_dlight_portalculling.integer >= 2, info.lightmins, info.lightmaxs, info.outmins, info.outmaxs, info.outshadowtrispvs, info.outlighttrispvs, info.visitingleafpvs);
+	}
+	else
+	{
+		                                                                   
+		                                                              
+		                                                                    
+		                             
+		R_Q1BSP_CallRecursiveGetLightInfo(&info, !info.noocclusion && (r_shadow_compilingrtlight ? r_shadow_realtime_world_compilesvbsp.integer : r_shadow_realtime_dlight_svbspculling.integer) != 0);
+	}
+
+	rsurface.entity = NULL;                                                                
+
+	                                              
+	outmins[0] = max(info.outmins[0] - 1, info.lightmins[0]);
+	outmins[1] = max(info.outmins[1] - 1, info.lightmins[1]);
+	outmins[2] = max(info.outmins[2] - 1, info.lightmins[2]);
+	outmaxs[0] = min(info.outmaxs[0] + 1, info.lightmaxs[0]);
+	outmaxs[1] = min(info.outmaxs[1] + 1, info.lightmaxs[1]);
+	outmaxs[2] = min(info.outmaxs[2] + 1, info.lightmaxs[2]);
+
+	*outnumleafspointer = info.outnumleafs;
+	*outnumsurfacespointer = info.outnumsurfaces;
+
+	                                                    
+	r_q1bsp_getlightinfo_surfaces = info.model->data_surfaces;
+	if (r_shadow_sortsurfaces.integer)
+		qsort(info.outsurfacelist, info.outnumsurfaces, sizeof(*info.outsurfacelist), R_Q1BSP_GetLightInfo_comparefunc);
+}
+
+void R_Q1BSP_CompileShadowVolume(entity_render_t *ent, vec3_t relativelightorigin, vec3_t relativelightdirection, float lightradius, int numsurfaces, const int *surfacelist)
+{
+	dp_model_t *model = ent->model;
+	msurface_t *surface;
+	int surfacelistindex;
+	float projectdistance = relativelightdirection ? lightradius : lightradius + model->radius*2 + r_shadow_projectdistance.value;
+	                                                                 
+	if (!model->brush.shadowmesh->neighbor3i)
+		return;
+	r_shadow_compilingrtlight->static_meshchain_shadow_zfail = Mod_ShadowMesh_Begin(r_main_mempool, 32768, 32768, NULL, NULL, NULL, false, false, true);
+	R_Shadow_PrepareShadowMark(model->brush.shadowmesh->numtriangles);
+	for (surfacelistindex = 0;surfacelistindex < numsurfaces;surfacelistindex++)
+	{
+		surface = model->data_surfaces + surfacelist[surfacelistindex];
+		if (surface->texture->basematerialflags & MATERIALFLAG_NOSHADOW)
+			continue;
+		R_Shadow_MarkVolumeFromBox(surface->num_firstshadowmeshtriangle, surface->num_triangles, model->brush.shadowmesh->vertex3f, model->brush.shadowmesh->element3i, relativelightorigin, relativelightdirection, r_shadow_compilingrtlight->cullmins, r_shadow_compilingrtlight->cullmaxs, surface->mins, surface->maxs);
+	}
+	R_Shadow_VolumeFromList(model->brush.shadowmesh->numverts, model->brush.shadowmesh->numtriangles, model->brush.shadowmesh->vertex3f, model->brush.shadowmesh->element3i, model->brush.shadowmesh->neighbor3i, relativelightorigin, relativelightdirection, projectdistance, numshadowmark, shadowmarklist, ent->mins, ent->maxs);
+	r_shadow_compilingrtlight->static_meshchain_shadow_zfail = Mod_ShadowMesh_Finish(r_main_mempool, r_shadow_compilingrtlight->static_meshchain_shadow_zfail, false, false, true);
+}
+
+extern cvar_t r_polygonoffset_submodel_factor;
+extern cvar_t r_polygonoffset_submodel_offset;
+void R_Q1BSP_DrawShadowVolume(entity_render_t *ent, const vec3_t relativelightorigin, const vec3_t relativelightdirection, float lightradius, int modelnumsurfaces, const int *modelsurfacelist, const vec3_t lightmins, const vec3_t lightmaxs)
+{
+	dp_model_t *model = ent->model;
+	const msurface_t *surface;
+	int modelsurfacelistindex;
+	float projectdistance = relativelightdirection ? lightradius : lightradius + model->radius*2 + r_shadow_projectdistance.value;
+	                                                                    
+	if (!BoxesOverlap(model->normalmins, model->normalmaxs, lightmins, lightmaxs))
+		return;
+	R_FrameData_SetMark();
+	if (ent->model->brush.submodel)
+		GL_PolygonOffset(r_refdef.shadowpolygonfactor + r_polygonoffset_submodel_factor.value, r_refdef.shadowpolygonoffset + r_polygonoffset_submodel_offset.value);
+	if (model->brush.shadowmesh)
+	{
+		                                                                 
+		if (!model->brush.shadowmesh->neighbor3i)
+			return;
+		R_Shadow_PrepareShadowMark(model->brush.shadowmesh->numtriangles);
+		for (modelsurfacelistindex = 0;modelsurfacelistindex < modelnumsurfaces;modelsurfacelistindex++)
+		{
+			surface = model->data_surfaces + modelsurfacelist[modelsurfacelistindex];
+			if (R_GetCurrentTexture(surface->texture)->currentmaterialflags & MATERIALFLAG_NOSHADOW)
+				continue;
+			R_Shadow_MarkVolumeFromBox(surface->num_firstshadowmeshtriangle, surface->num_triangles, model->brush.shadowmesh->vertex3f, model->brush.shadowmesh->element3i, relativelightorigin, relativelightdirection, lightmins, lightmaxs, surface->mins, surface->maxs);
+		}
+		R_Shadow_VolumeFromList(model->brush.shadowmesh->numverts, model->brush.shadowmesh->numtriangles, model->brush.shadowmesh->vertex3f, model->brush.shadowmesh->element3i, model->brush.shadowmesh->neighbor3i, relativelightorigin, relativelightdirection, projectdistance, numshadowmark, shadowmarklist, ent->mins, ent->maxs);
+	}
+	else
+	{
+		                                                                 
+		if (!model->surfmesh.data_neighbor3i)
+			return;
+		projectdistance = lightradius + model->radius*2;
+		R_Shadow_PrepareShadowMark(model->surfmesh.num_triangles);
+		                                             
+		for (modelsurfacelistindex = 0;modelsurfacelistindex < modelnumsurfaces;modelsurfacelistindex++)
+		{
+			surface = model->data_surfaces + modelsurfacelist[modelsurfacelistindex];
+			rsurface.texture = R_GetCurrentTexture(surface->texture);
+			if (rsurface.texture->currentmaterialflags & MATERIALFLAG_NOSHADOW)
+				continue;
+			R_Shadow_MarkVolumeFromBox(surface->num_firsttriangle, surface->num_triangles, rsurface.modelvertex3f, rsurface.modelelement3i, relativelightorigin, relativelightdirection, lightmins, lightmaxs, surface->mins, surface->maxs);
+		}
+		R_Shadow_VolumeFromList(model->surfmesh.num_vertices, model->surfmesh.num_triangles, rsurface.modelvertex3f, model->surfmesh.data_element3i, model->surfmesh.data_neighbor3i, relativelightorigin, relativelightdirection, projectdistance, numshadowmark, shadowmarklist, ent->mins, ent->maxs);
+	}
+	if (ent->model->brush.submodel)
+		GL_PolygonOffset(r_refdef.shadowpolygonfactor, r_refdef.shadowpolygonoffset);
+	R_FrameData_ReturnToMark();
+}
+
+void R_Q1BSP_CompileShadowMap(entity_render_t *ent, vec3_t relativelightorigin, vec3_t relativelightdirection, float lightradius, int numsurfaces, const int *surfacelist)
+{
+	dp_model_t *model = ent->model;
+	msurface_t *surface;
+	int surfacelistindex;
+	int sidetotals[6] = { 0, 0, 0, 0, 0, 0 }, sidemasks = 0;
+	int i;
+	if (!model->brush.shadowmesh)
+		return;
+	r_shadow_compilingrtlight->static_meshchain_shadow_shadowmap = Mod_ShadowMesh_Begin(r_main_mempool, 32768, 32768, NULL, NULL, NULL, false, false, true);
+	R_Shadow_PrepareShadowSides(model->brush.shadowmesh->numtriangles);
+	for (surfacelistindex = 0;surfacelistindex < numsurfaces;surfacelistindex++)
+	{
+		surface = model->data_surfaces + surfacelist[surfacelistindex];
+		sidemasks |= R_Shadow_ChooseSidesFromBox(surface->num_firstshadowmeshtriangle, surface->num_triangles, model->brush.shadowmesh->vertex3f, model->brush.shadowmesh->element3i, &r_shadow_compilingrtlight->matrix_worldtolight, relativelightorigin, relativelightdirection, r_shadow_compilingrtlight->cullmins, r_shadow_compilingrtlight->cullmaxs, surface->mins, surface->maxs, surface->texture->basematerialflags & MATERIALFLAG_NOSHADOW ? NULL : sidetotals);
+	}
+	R_Shadow_ShadowMapFromList(model->brush.shadowmesh->numverts, model->brush.shadowmesh->numtriangles, model->brush.shadowmesh->vertex3f, model->brush.shadowmesh->element3i, numshadowsides, sidetotals, shadowsides, shadowsideslist);
+	r_shadow_compilingrtlight->static_meshchain_shadow_shadowmap = Mod_ShadowMesh_Finish(r_main_mempool, r_shadow_compilingrtlight->static_meshchain_shadow_shadowmap, false, false, true);
+	r_shadow_compilingrtlight->static_shadowmap_receivers &= sidemasks;
+	for(i = 0;i<6;i++)
+		if(!sidetotals[i])
+			r_shadow_compilingrtlight->static_shadowmap_casters &= ~(1 << i);
+}
+
+#define RSURF_MAX_BATCHSURFACES 8192
+
+static const msurface_t *batchsurfacelist[RSURF_MAX_BATCHSURFACES];
+
+void R_Q1BSP_DrawShadowMap(int side, entity_render_t *ent, const vec3_t relativelightorigin, const vec3_t relativelightdirection, float lightradius, int modelnumsurfaces, const int *modelsurfacelist, const unsigned char *surfacesides, const vec3_t lightmins, const vec3_t lightmaxs)
+{
+	dp_model_t *model = ent->model;
+	const msurface_t *surface;
+	int modelsurfacelistindex, batchnumsurfaces;
+	                                                                    
+	if (!BoxesOverlap(model->normalmins, model->normalmaxs, lightmins, lightmaxs))
+		return;
+	R_FrameData_SetMark();
+	                                             
+	for (modelsurfacelistindex = 0;modelsurfacelistindex < modelnumsurfaces;modelsurfacelistindex++)
+	{
+		surface = model->data_surfaces + modelsurfacelist[modelsurfacelistindex];
+		if (surfacesides && !(surfacesides[modelsurfacelistindex] && (1 << side)))
+			continue;
+		rsurface.texture = R_GetCurrentTexture(surface->texture);
+		if (rsurface.texture->currentmaterialflags & MATERIALFLAG_NOSHADOW)
+			continue;
+		if (!BoxesOverlap(lightmins, lightmaxs, surface->mins, surface->maxs))
+			continue;
+		r_refdef.stats[r_stat_lights_dynamicshadowtriangles] += surface->num_triangles;
+		r_refdef.stats[r_stat_lights_shadowtriangles] += surface->num_triangles;
+		batchsurfacelist[0] = surface;
+		batchnumsurfaces = 1;
+		while(++modelsurfacelistindex < modelnumsurfaces && batchnumsurfaces < RSURF_MAX_BATCHSURFACES)
+		{
+			surface = model->data_surfaces + modelsurfacelist[modelsurfacelistindex];
+			if (surfacesides && !(surfacesides[modelsurfacelistindex] & (1 << side)))
+				continue;
+			if (surface->texture != batchsurfacelist[0]->texture)
+				break;
+			if (!BoxesOverlap(lightmins, lightmaxs, surface->mins, surface->maxs))
+				continue;
+			r_refdef.stats[r_stat_lights_dynamicshadowtriangles] += surface->num_triangles;
+			r_refdef.stats[r_stat_lights_shadowtriangles] += surface->num_triangles;
+			batchsurfacelist[batchnumsurfaces++] = surface;
+		}
+		--modelsurfacelistindex;
+		GL_CullFace(rsurface.texture->currentmaterialflags & MATERIALFLAG_NOCULLFACE ? GL_NONE : r_refdef.view.cullface_back);
+		RSurf_PrepareVerticesForBatch(BATCHNEED_ARRAY_VERTEX | BATCHNEED_ALLOWMULTIDRAW, batchnumsurfaces, batchsurfacelist);
+		R_Mesh_PrepareVertices_Vertex3f(rsurface.batchnumvertices, rsurface.batchvertex3f, rsurface.batchvertex3f_vertexbuffer, rsurface.batchvertex3f_bufferoffset);
+		RSurf_DrawBatch();
+	}
+	R_FrameData_ReturnToMark();
+}
+
+#define BATCHSIZE 1024
+
+static void R_Q1BSP_DrawLight_TransparentCallback(const entity_render_t *ent, const rtlight_t *rtlight, int numsurfaces, int *surfacelist)
+{
+	int i, j, endsurface;
+	texture_t *t;
+	const msurface_t *surface;
+	R_FrameData_SetMark();
+	                                                         
+	R_Shadow_RenderMode_Begin();
+	R_Shadow_RenderMode_ActiveLight(rtlight);
+	R_Shadow_RenderMode_Lighting(false, true, rtlight->shadowmapatlassidesize != 0, (ent->flags & RENDER_NOSELFSHADOW) != 0);
+	R_Shadow_SetupEntityLight(ent);
+	for (i = 0;i < numsurfaces;i = j)
+	{
+		j = i + 1;
+		surface = rsurface.modelsurfaces + surfacelist[i];
+		t = surface->texture;
+		rsurface.texture = R_GetCurrentTexture(t);
+		endsurface = min(j + BATCHSIZE, numsurfaces);
+		for (j = i;j < endsurface;j++)
+		{
+			surface = rsurface.modelsurfaces + surfacelist[j];
+			if (t != surface->texture)
+				break;
+			R_Shadow_RenderLighting(1, &surface);
+		}
+	}
+	R_Shadow_RenderMode_End();
+	R_FrameData_ReturnToMark();
+}
+
+extern qboolean r_shadow_usingdeferredprepass;
+void R_Q1BSP_DrawLight(entity_render_t *ent, int numsurfaces, const int *surfacelist, const unsigned char *lighttrispvs)
+{
+	dp_model_t *model = ent->model;
+	const msurface_t *surface;
+	int i, k, kend, l, endsurface, batchnumsurfaces, texturenumsurfaces;
+	const msurface_t **texturesurfacelist;
+	texture_t *tex;
+	CHECKGLERROR
+	R_FrameData_SetMark();
+	                                                                       
+	                                                                         
+	                                                                          
+	                                                                       
+	for (i = 0;i < numsurfaces;)
+	{
+		batchnumsurfaces = 0;
+		endsurface = min(i + RSURF_MAX_BATCHSURFACES, numsurfaces);
+		if (ent == r_refdef.scene.worldentity)
+		{
+			for (;i < endsurface;i++)
+				if (r_refdef.viewcache.world_surfacevisible[surfacelist[i]])
+					batchsurfacelist[batchnumsurfaces++] = model->data_surfaces + surfacelist[i];
+		}
+		else
+		{
+			for (;i < endsurface;i++)
+				batchsurfacelist[batchnumsurfaces++] = model->data_surfaces + surfacelist[i];
+		}
+		if (!batchnumsurfaces)
+			continue;
+		for (k = 0;k < batchnumsurfaces;k = kend)
+		{
+			surface = batchsurfacelist[k];
+			tex = surface->texture;
+			rsurface.texture = R_GetCurrentTexture(tex);
+			                                     
+			for (kend = k;kend < batchnumsurfaces && tex == batchsurfacelist[kend]->texture;kend++)
+				;
+			                                                                   
+			                                       
+			if ((rsurface.texture->currentmaterialflags & (MATERIALFLAG_WALL | MATERIALFLAG_NORTLIGHT)) != MATERIALFLAG_WALL)
+				continue;
+			if (r_fb.water.renderingscene && (rsurface.texture->currentmaterialflags & (MATERIALFLAG_WATERSHADER | MATERIALFLAG_REFRACTION | MATERIALFLAG_REFLECTION | MATERIALFLAG_CAMERA)))
+				continue;
+			if (rsurface.texture->currentmaterialflags & MATERIALFLAGMASK_DEPTHSORTED)
+			{
+				vec3_t tempcenter, center;
+				for (l = k;l < kend;l++)
+				{
+					surface = batchsurfacelist[l];
+					if (r_transparent_sortsurfacesbynearest.integer)
+					{
+						tempcenter[0] = bound(surface->mins[0], rsurface.localvieworigin[0], surface->maxs[0]);
+						tempcenter[1] = bound(surface->mins[1], rsurface.localvieworigin[1], surface->maxs[1]);
+						tempcenter[2] = bound(surface->mins[2], rsurface.localvieworigin[2], surface->maxs[2]);
+					}
+					else
+					{
+						tempcenter[0] = (surface->mins[0] + surface->maxs[0]) * 0.5f;
+						tempcenter[1] = (surface->mins[1] + surface->maxs[1]) * 0.5f;
+						tempcenter[2] = (surface->mins[2] + surface->maxs[2]) * 0.5f;
+					}
+					Matrix4x4_Transform(&rsurface.matrix, tempcenter, center);
+					if (ent->transparent_offset)                      
+					{
+						center[0] += r_refdef.view.forward[0]*ent->transparent_offset;
+						center[1] += r_refdef.view.forward[1]*ent->transparent_offset;
+						center[2] += r_refdef.view.forward[2]*ent->transparent_offset;
+					}
+					R_MeshQueue_AddTransparent((rsurface.entity->flags & RENDER_WORLDOBJECT) ? TRANSPARENTSORT_SKY : ((rsurface.texture->currentmaterialflags & MATERIALFLAG_NODEPTHTEST) ? TRANSPARENTSORT_HUD : rsurface.texture->transparentsort), center, R_Q1BSP_DrawLight_TransparentCallback, ent, surface - rsurface.modelsurfaces, rsurface.rtlight);
+				}
+				continue;
+			}
+			if (r_shadow_usingdeferredprepass)
+				continue;
+			texturenumsurfaces = kend - k;
+			texturesurfacelist = batchsurfacelist + k;
+			R_Shadow_RenderLighting(texturenumsurfaces, texturesurfacelist);
+		}
+	}
+	R_FrameData_ReturnToMark();
+}
+
+               
+static void R_ReplaceWorldTexture (void)
+{
+	dp_model_t		*m;
+	texture_t	*t;
+	int			i;
+	const char	*r, *newt;
+	skinframe_t *skinframe;
+	if (!r_refdef.scene.worldmodel)
+	{
+		Con_Printf("There is no worldmodel\n");
+		return;
+	}
+	m = r_refdef.scene.worldmodel;
+
+	if(Cmd_Argc() < 2)
+	{
+		Con_Print("r_replacemaptexture <texname> <newtexname> - replaces texture\n");
+		Con_Print("r_replacemaptexture <texname> - switch back to default texture\n");
+		return;
+	}
+	if(!cl.islocalgame || !cl.worldmodel)
+	{
+		Con_Print("This command works only in singleplayer\n");
+		return;
+	}
+	r = Cmd_Argv(1);
+	newt = Cmd_Argv(2);
+	if(!newt[0])
+		newt = r;
+	for(i=0,t=m->data_textures;i<m->num_textures;i++,t++)
+	{
+		if(                                        matchpattern( t->name, r, true ) )
+		{
+			if ((skinframe = R_SkinFrame_LoadExternal(newt, TEXF_MIPMAP | TEXF_ALPHA | TEXF_PICMIP, true)))
+			{
+                                   
+				t->currentskinframe = skinframe;
+				Con_Printf("%s replaced with %s\n", r, newt);
+			}
+			else
+			{
+				Con_Printf("%s was not found\n", newt);
+				return;
+			}
+		}
+	}
+}
+
+               
+static void R_ListWorldTextures (void)
+{
+	dp_model_t		*m;
+	texture_t	*t;
+	int			i;
+	if (!r_refdef.scene.worldmodel)
+	{
+		Con_Printf("There is no worldmodel\n");
+		return;
+	}
+	m = r_refdef.scene.worldmodel;
+
+	Con_Print("Worldmodel textures :\n");
+	for(i=0,t=m->data_textures;i<m->num_textures;i++,t++)
+		if (t->name[0] && strcasecmp(t->name, "NO TEXTURE FOUND"))
+			Con_Printf("%s\n", t->name);
+}
+
+#if 0
+static void gl_surf_start(void)
+{
+}
+
+static void gl_surf_shutdown(void)
+{
+}
+
+static void gl_surf_newmap(void)
+{
+}
+#endif
+
+void GL_Surf_Init(void)
+{
+
+	Cvar_RegisterVariable(&r_ambient);
+	Cvar_RegisterVariable(&r_lockpvs);
+	Cvar_RegisterVariable(&r_lockvisibility);
+	Cvar_RegisterVariable(&r_useportalculling);
+	Cvar_RegisterVariable(&r_usesurfaceculling);
+	Cvar_RegisterVariable(&r_q3bsp_renderskydepth);
+
+	Cmd_AddCommand ("r_replacemaptexture", R_ReplaceWorldTexture, "override a map texture for testing purposes");
+	Cmd_AddCommand ("r_listmaptextures", R_ListWorldTextures, "list all textures used by the current map");
+
+	                                                                               
+}
+

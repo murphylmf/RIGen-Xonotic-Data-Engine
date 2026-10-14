@@ -1,0 +1,64 @@
+#pragma once
+
+bool autocvar_sv_minigames;
+bool autocvar_sv_minigames_observer;
+
+                                 
+                                   
+entity start_minigame(entity player, string minigame );
+
+                                     
+                                   
+entity join_minigame(entity player, string game_id );
+
+                                         
+                        
+string invite_minigame(entity inviter, entity player);
+
+                        
+void part_minigame(entity player);
+
+                          
+void end_minigame(entity minigame_session);
+
+                             
+void end_minigames();
+
+                                                         
+                                                        
+bool minigame_CheckSend(entity this, entity client);
+
+                              
+bool MinigameImpulse(entity this, int imp);
+
+                                              
+void ClientCommand_minigame(entity caller, int request, int argc, string command);
+
+                                                              
+entity minigame_find_player(entity client);
+
+                                      
+.entity active_minigame;
+
+                                          
+                                      
+.entity minigame_players;
+
+entity minigame_sessions;
+
+bool minigame_SendEntity(entity this, entity to, int sf);
+
+REGISTRY(Minigames, BITS(4))
+REGISTER_REGISTRY(Minigames)
+REGISTRY_CHECK(Minigames)
+
+REGISTRY_DEFINE_GET(Minigames, NULL)
+#define REGISTER_MINIGAME(name,nicename) \
+    REGISTER(Minigames, MINIGAME_##name, m_id, new_pure(minigame_descriptor)); \
+    int name##_server_event(entity, string, ...); \
+    REGISTER_INIT(MINIGAME_##name) { \
+        this.netname = strzone(strtolower(#name)); \
+        this.message = nicename; \
+		this.minigame_event = name##_server_event; \
+    } \
+    REGISTER_INIT(MINIGAME_##name)

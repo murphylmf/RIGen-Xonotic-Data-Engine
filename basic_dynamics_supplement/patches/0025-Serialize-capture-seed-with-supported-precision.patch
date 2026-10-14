@@ -1,0 +1,22 @@
+From 0f2bad5c4b6bf9e264c7fb32e0f19e443e582e98 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 00:48:05 +0800
+Subject: [PATCH 25/36] Serialize capture seed with supported precision
+
+---
+ source/qcsrc/server/capture.qc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 43f31ba..9d766f5 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -305,7 +305,7 @@ bool Capture_TryReset()
+ 	string reset_row = sprintf(
+ 		"{\"kind\":\"reset\",\"episode_id\":\"%s\",\"server_time\":%.9f,"
+ 		"\"server_tick\":0,\"map\":\"%s\",\"player_entity\":%d,\"enemy_entity\":%d,"
+-		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",\"seed\":%.0f,",
++		"\"weapon\":\"%s\",\"enemy_model\":\"%s\",\"seed\":%.6f,",
+ 		autocvar_capture_episode_id, time, GetMapname(),
+ 		etof(capture_player), etof(capture_enemy),
+ 		autocvar_capture_weapon, autocvar_capture_enemy_model,

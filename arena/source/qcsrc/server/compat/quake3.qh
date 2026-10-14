@@ -1,0 +1,40 @@
+#pragma once
+
+int q3compat = 0;
+#define Q3COMPAT_ARENA BIT(0)
+#define Q3COMPAT_DEFI BIT(1)
+
+bool autocvar_sv_q3compat_changehitbox;
+
+bool DoesQ3ARemoveThisEntity(entity this);
+int GetAmmoConsumptionQ3(string netname);
+
+.int fragsfilter_cnt;
+
+                                                                      
+                                                                            
+                                                                      
+   
+                           
+#define SPAWNFUNC_Q3AMMO(ammo_classname, xonwep) \
+	spawnfunc(ammo_classname) \
+	{ \
+		if(this.count && xonwep.ammo_type) \
+			SetResource(this, xonwep.ammo_type, this.count * GetAmmoConsumptionQ3(xonwep.netname)); \
+		SPAWNFUNC_BODY(GetAmmoItem(xonwep.ammo_type)) \
+	}
+
+                         
+#define SPAWNFUNC_Q3AMMO_COND(ammo_classname, cond, xonwep1, xonwep0) \
+	SPAWNFUNC_Q3AMMO(ammo_classname, (cond ? xonwep1 : xonwep0))
+
+                               
+#define SPAWNFUNC_Q3(weapon_classname, ammo_classname, xonwep) \
+	SPAWNFUNC_WEAPON(weapon_classname, xonwep) \
+	SPAWNFUNC_Q3AMMO(ammo_classname, xonwep)
+
+                             
+#define SPAWNFUNC_Q3_COND(weapon_classname, ammo_classname, cond, xonwep1, xonwep0) \
+	SPAWNFUNC_WEAPON_COND(weapon_classname, cond, xonwep1, xonwep0) \
+	SPAWNFUNC_Q3AMMO_COND(ammo_classname, cond, xonwep1, xonwep0)
+

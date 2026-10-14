@@ -1,0 +1,62 @@
+{
+  "schema_version": "xonotic-stage2-long60-multimap-hitscan-v1",
+  "source_short_release": "stage2_short_randomfire_visualfix_42000_5x0p8s_20260826_v15_nocrosshair_nocasings_visibilityprompt_v2",
+  "source_short_ar_manifest": "./rigen_data/manifests/stage2_short_randomfire_visualfix_42000_5x0p8s_20260826_v15_nocrosshair_nocasings_visibilityprompt_v2/ar_training_manifest.jsonl",
+  "source_short_ar_manifest_sha256": "49e95e68bf80cf73aceadd8a3ad1c03add5448d15878fc4b578a2bbb1a69d301",
+  "maps": {
+    "geoplanetary": {
+      "gametype": "ctf",
+      "anchor_id": "geoplanetary_long60_open_608_1429",
+      "player_origin": [608.4, 1429.2, -104.0],
+      "enemy_reference_origin": [874.9525038849215, 1472.2088673726576, -104.0],
+      "environment_text": "A sci-fi space station environment built from textured concrete, glowing digital grid panels, and metallic structural beams. Its minimalist digital-industrial design uses dark grey, deep space blue, and vibrant digital green. Low-key night lighting combines ambient starlight with artificial neon accents, creating an isolated, cold, technological atmosphere. Common structures include flat dark ground, low green-textured barriers, blue-lit edges, ramps, and multi-level blocky station architecture.",
+      "prompt_provenance_sample_id": "s2short42v15r1_s2mtv42v14r4_000013"
+    },
+    "courtfun": {
+      "gametype": "ctf",
+      "anchor_id": "courtfun_long60_flat_-2911_4498",
+      "player_origin": [-2910.6, 4497.5, 88.0],
+      "enemy_reference_origin": [-2540.420213667585, 4411.669202550089, 88.0],
+      "environment_text": "An industrial sci-fi environment built from concrete, rusted metal, industrial steel, and grating. Its utilitarian low-poly brutalist design uses monochromatic grey, dark brown, muted rust, and occasional blue accents. Harsh artificial spotlights cast deep shadows, creating a claustrophobic, abandoned industrial atmosphere. Common structures include boxy metallic machinery, textured walls, dark paneled pillars, flat concrete floors, raised platforms, yellow railings, and blue ceiling panels.",
+      "prompt_provenance_sample_id": "s2short42v15r1_s2mtv42v14r4_000005"
+    },
+    "bromine": {
+      "gametype": "dm",
+      "anchor_id": "bromine_long60_flat_-1408_80",
+      "player_origin": [-1408.0, 80.0, 280.1],
+      "enemy_reference_origin": [-1256.4266595855968, -207.4900264588096, 280.1],
+      "environment_text": "An industrial facility environment built from rusted steel plating, corrugated metal, concrete, and painted pipes. Its utilitarian sci-fi design uses muted browns, dark greys, oxidized greens, and rusty oranges. Dim artificial yellow lights, high-contrast shadows, and ambient orange illumination create a gritty abandoned atmosphere. Common structures include dark metallic walls, rough stone surfaces, tiled or sandy ground, stair structures, yellow fixtures, and sparse vegetation.",
+      "prompt_provenance_sample_id": "s2short42v15r1_s2mtv42v14r4_000003"
+    }
+  },
+  "weapons": {
+    "MachineGun": {
+      "weapon_netname": "machinegun",
+      "instant_hit": true,
+      "weapon_text": "A long narrow rifle with a dark angular receiver, perforated honeycomb barrel shroud, slim top strip, metallic edges, and small colored accents that vary between renders. Its primary fire is fully automatic hitscan gunfire, dealing direct bullet damage without an explosion.",
+      "prompt_provenance_sample_id": "s2short42v15r1_s2mtv42v14r4_000013",
+      "controlled_return_slot1_kill_health": 60.0
+    },
+    "Shotgun": {
+      "weapon_netname": "shotgun",
+      "instant_hit": true,
+      "weapon_text": "A compact thick-barreled firearm with a squared dark receiver, paired forward tubes, a small raised top sight, metallic edge highlights, and restrained variable-color luminous accents. Each primary shot produces a 12-pellet hitscan spread that deals direct damage without an explosion.",
+      "prompt_provenance_sample_id": "s2short42v15r1_s2mtv42v14r4_000017",
+      "controlled_return_slot1_kill_health": 120.0
+    },
+    "Vortex": {
+      "weapon_netname": "vortex",
+      "instant_hit": true,
+      "weapon_text": "A long angular precision rifle with parallel forward barrel rails, a rectangular rear display panel, recessed luminous vents, layered metallic plating, and accent colors that vary between renders. Its primary fire emits one instantaneous hitscan rail beam per shot, dealing direct damage without an explosion.",
+      "prompt_provenance_sample_id": "s2short42v15r1_s2mtv42v14r4_000007",
+      "controlled_return_slot1_kill_health": 120.0
+    }
+  },
+  "distribution": {
+    "episode_count": 1800,
+    "map_count_each": 600,
+    "weapon_count_each": 600,
+    "map_weapon_count_each": 200,
+    "template_map_weapon_count_each": 100
+  }
+}

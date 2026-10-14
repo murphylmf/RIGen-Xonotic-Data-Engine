@@ -1,0 +1,32 @@
+From 58ecdfb9c3642ca050aa2d3f4601842c50c09968 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 01:11:18 +0800
+Subject: [PATCH 32/36] Zone episode seed before closing its input
+
+---
+ source/qcsrc/server/capture.qc | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index e2ef3a8..ee3b1fa 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -165,15 +165,16 @@ bool Capture_LoadEpisodeSeed()
+ 			autocvar_capture_server_seed_file);
+ 		return false;
+ 	}
+-	string line = fgets(fh);
++	string line = strzone(fgets(fh));
+ 	fclose(fh);
+ 	if(line == "")
+ 	{
+ 		LOG_WARN("capture: episode seed file is empty ",
+ 			autocvar_capture_server_seed_file);
++		strunzone(line);
+ 		return false;
+ 	}
+-	capture_episode_seed_text = strzone(line);
++	capture_episode_seed_text = line;
+ 	capture_weapon_random_seed = crc16(false, capture_episode_seed_text);
+ 	return true;
+ }

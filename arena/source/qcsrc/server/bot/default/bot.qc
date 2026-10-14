@@ -1,0 +1,919 @@
+#include "bot.qh"
+
+#include <common/constants.qh>
+#include <common/mapinfo.qh>
+#include <common/net_linked.qh>
+#include <common/physics/player.qh>
+#include <common/stats.qh>
+#include <common/teams.qh>
+#include <common/util.qh>
+#include <common/weapons/_all.qh>
+#include <lib/csqcmodel/sv_model.qh>
+#include <lib/warpzone/common.qh>
+#include <lib/warpzone/util_server.qh>
+#include <server/antilag.qh>
+#include <server/bot/default/aim.qh>
+#include <server/bot/default/cvars.qh>
+#include <server/bot/default/havocbot/havocbot.qh>
+#include <server/bot/default/havocbot/scripting.qh>
+#include <server/bot/default/navigation.qh>
+#include <server/bot/default/scripting.qh>
+#include <server/bot/default/waypoints.qh>
+#include <server/campaign.qh>
+#include <server/client.qh>
+#include <server/damage.qh>
+#include <server/items/items.qh>
+#include <server/mutators/_mod.qh>
+#include <server/race.qh>
+#include <server/scores_rules.qh>
+#include <server/teamplay.qh>
+#include <server/weapons/accuracy.qh>
+#include <server/weapons/selection.qh>
+#include <server/world.qh>
+#include <server/command/vote.qh>
+
+STATIC_INIT(bot) { bot_calculate_stepheightvec(); }
+
+                                                                                                                                
+void bot_setclientfields(entity this)
+{
+	CS_CVAR(this).cvar_cl_accuracy_data_share = 1;                                                       
+	CS_CVAR(this).cvar_cl_accuracy_data_receive = 0;                                           
+}
+
+entity bot_spawn()
+{
+	entity bot = spawnclient();
+	if (bot)
+	{
+		setItemGroupCount();
+		currentbots = currentbots + 1;
+		bot_setnameandstuff(bot);
+		ClientConnect(bot);
+		bot_setclientfields(bot);
+		PutClientInServer(bot);
+	}
+	return bot;
+}
+
+void bot_think(entity this)
+{
+	if (this.bot_nextthink > time)
+		return;
+
+	this.flags &= ~FL_GODMODE;
+	if(autocvar_bot_god)
+		this.flags |= FL_GODMODE;
+
+	                                                                
+	if (SUPERBOT)
+		this.bot_nextthink = max(time, this.bot_nextthink) + 0.005;
+	else
+		this.bot_nextthink = max(time, this.bot_nextthink) + max(0.01, autocvar_bot_ai_thinkinterval * min(14 / (skill + this.bot_aiskill + 14), 1));
+
+	if (!IS_PLAYER(this) || (autocvar_g_campaign && !campaign_bots_may_start))
+	{
+		CS(this).movement = '0 0 0';
+		this.bot_nextthink = time + 0.5;
+		return;
+	}
+
+	if (this.fixangle)
+	{
+		this.v_angle = this.angles;
+		this.v_angle_z = 0;
+		this.fixangle = false;
+	}
+
+	this.dmg_take = 0;
+	this.dmg_save = 0;
+	this.dmg_inflictor = NULL;
+
+	                                                           
+	if (SUPERBOT)
+		CS(this).ping = 0;
+	else
+	{
+		                                                         
+		                                                           
+		                                                                                                             
+		                            
+		CS(this).ping = bound(0,0.07 - bound(0, (skill + this.bot_pingskill) * 0.005,0.05)+random()*0.01,0.65);                                                                                   
+		                                   
+		                                      
+	}
+
+	                
+	PHYS_INPUT_BUTTON_ATCK(this) = false;
+	                                                                     
+	PHYS_INPUT_BUTTON_JUMP(this) = (!IS_DEAD(this) && time < this.bot_jump_time + 0.2);
+	PHYS_INPUT_BUTTON_ATCK2(this) = false;
+	PHYS_INPUT_BUTTON_ZOOM(this) = false;
+	PHYS_INPUT_BUTTON_CROUCH(this) = false;
+	PHYS_INPUT_BUTTON_HOOK(this) = false;
+	PHYS_INPUT_BUTTON_INFO(this) = false;
+	PHYS_INPUT_BUTTON_DRAG(this) = false;
+	PHYS_INPUT_BUTTON_CHAT(this) = false;
+	PHYS_INPUT_BUTTON_USE(this) = false;
+
+	if (time < game_starttime)
+	{
+		                                                   
+		CS(this).movement = '0 0 0';
+		return;
+	}
+
+	                                          
+	if (IS_DEAD(this) || IS_OBSERVER(this))
+	{
+		if (bot_waypoint_queue_owner == this)
+			bot_waypoint_queue_owner = NULL;
+		this.aistatus = 0;
+		CS(this).movement = '0 0 0';
+		if (IS_OBSERVER(this))
+			return;
+		if (IS_DEAD(this))
+		{
+			if (!navigation_goalrating_timeout(this))
+				navigation_goalrating_timeout_force(this);
+			                                                               
+			                                           
+			if (this.deadflag == DEAD_DYING)
+				PHYS_INPUT_BUTTON_JUMP(this) = false;
+			else if (this.deadflag == DEAD_DEAD)
+				PHYS_INPUT_BUTTON_JUMP(this) = true;                         
+		}
+	}
+	else if(this.aistatus & AI_STATUS_STUCK)
+		navigation_unstuck(this);
+
+	if (warmup_stage && !this.ready)
+	{
+		this.ready = true;
+		ReadyCount();                                                  
+	}
+
+	                                                     
+	vector duel_view_before_ai = this.v_angle;
+	this.bot_ai(this);
+	if (!IS_DEAD(this)
+		&& (autocvar_duel_max_turn_speed > 0 || autocvar_duel_max_turn_accel > 0))
+	{
+		                                                                          
+		                                                                          
+		                                  
+		vector turn_delta = this.v_angle - duel_view_before_ai;
+		turn_delta.y = turn_delta.y - floor(turn_delta.y / 360) * 360;
+		if (turn_delta.y >= 180)
+			turn_delta.y -= 360;
+		vector desired_rate = turn_delta / frametime;
+		if (autocvar_duel_max_turn_speed > 0)
+		{
+			desired_rate.x = bound(
+				-autocvar_duel_max_turn_speed,
+				desired_rate.x,
+				autocvar_duel_max_turn_speed);
+			desired_rate.y = bound(
+				-autocvar_duel_max_turn_speed,
+				desired_rate.y,
+				autocvar_duel_max_turn_speed);
+		}
+		if (autocvar_duel_max_turn_accel > 0)
+		{
+			float max_rate_delta = autocvar_duel_max_turn_accel * frametime;
+			desired_rate.x = bound(
+				this.duel_final_turn_rate.x - max_rate_delta,
+				desired_rate.x,
+				this.duel_final_turn_rate.x + max_rate_delta);
+			desired_rate.y = bound(
+				this.duel_final_turn_rate.y - max_rate_delta,
+				desired_rate.y,
+				this.duel_final_turn_rate.y + max_rate_delta);
+		}
+		this.duel_final_turn_rate = desired_rate;
+		this.v_angle = duel_view_before_ai + desired_rate * frametime;
+		this.v_angle_z = 0;
+		this.v_angle_y = this.v_angle.y - floor(this.v_angle.y / 360) * 360;
+	}
+	if (autocvar_duel_move_input_scale > 0 && autocvar_duel_move_input_scale < 1)
+	{
+		                                                                  
+		                                                                        
+		                                                                   
+		CS(this).movement.x *= autocvar_duel_move_input_scale;
+		CS(this).movement.y *= autocvar_duel_move_input_scale;
+	}
+	if (autocvar_duel_move_input_limit > 0)
+	{
+		vector horizontal_move =
+			CS(this).movement.x * '1 0 0' + CS(this).movement.y * '0 1 0';
+		float horizontal_length = vlen(horizontal_move);
+		if (horizontal_length > autocvar_duel_move_input_limit)
+		{
+			float move_ratio = autocvar_duel_move_input_limit / horizontal_length;
+			CS(this).movement.x *= move_ratio;
+			CS(this).movement.y *= move_ratio;
+		}
+	}
+	if (autocvar_duel_clean_bot_controls)
+	{
+		                                                                        
+		                                                                      
+		                                                     
+		PHYS_INPUT_BUTTON_ATCK2(this) = false;
+		PHYS_INPUT_BUTTON_ZOOM(this) = false;
+		PHYS_INPUT_BUTTON_CROUCH(this) = false;
+		PHYS_INPUT_BUTTON_HOOK(this) = false;
+		PHYS_INPUT_BUTTON_INFO(this) = false;
+		PHYS_INPUT_BUTTON_DRAG(this) = false;
+		PHYS_INPUT_BUTTON_CHAT(this) = false;
+		PHYS_INPUT_BUTTON_USE(this) = false;
+		PHYS_INPUT_BUTTON_ZOOMSCRIPT(this) = false;
+		PHYS_INPUT_BUTTON_JETPACK(this) = false;
+		PHYS_INPUT_BUTTON_DODGE(this) = false;
+		PHYS_INPUT_BUTTON_MINIGAME(this) = false;
+		PHYS_INPUT_BUTTON_PRYDON(this) = false;
+		CS(this).button13 = false;
+		CS(this).button14 = false;
+		CS(this).button15 = false;
+		CS(this).button16 = false;
+		                                                                        
+		                                                                         
+		CS(this).movement.z = 0;
+		CS(this).impulse = 0;
+	}
+}
+
+void bot_setnameandstuff(entity this)
+{
+	string readfile, s;
+	int file, tokens, prio;
+
+	file = fopen(autocvar_bot_config_file, FILE_READ);
+
+	if(file < 0)
+	{
+		LOG_INFOF("Error: Can not open the bot configuration file '%s'", autocvar_bot_config_file);
+		readfile = "";
+	}
+	else
+	{
+		entity balance = TeamBalance_CheckAllowedTeams(NULL);
+		TeamBalance_GetTeamCounts(balance, NULL);
+		int smallest_team = -1;
+		int smallest_count = -1;
+		if (teamplay)
+		{
+			for (int i = 1; i <= AVAILABLE_TEAMS; ++i)
+			{
+				                                                                      
+				                                                                                
+				                                                                
+				int count = TeamBalance_GetNumberOfPlayers(balance, i);
+				if (smallest_count < 0 || count < smallest_count)
+				{
+					smallest_team = i;
+					smallest_count = count;
+				}
+			}
+		}
+		TeamBalance_Destroy(balance);
+		RandomSelection_Init();
+		while((readfile = fgets(file)))
+		{
+			if(substring(readfile, 0, 2) == "//")
+				continue;
+			if(substring(readfile, 0, 1) == "#")
+				continue;
+			                                                                
+			                                                                
+			if (readfile == "")
+				continue;
+			tokens = tokenizebyseparator(readfile, "\t");
+			if(tokens == 0)
+				continue;
+			s = argv(0);
+			prio = 0;
+			bool conflict = false;
+			FOREACH_CLIENT(IS_BOT_CLIENT(it), {
+				if (s == it.cleanname)
+				{
+					conflict = true;
+					break;
+				}
+			});
+			if (!conflict)
+				prio += 1;
+			if (teamplay && !(autocvar_bot_vs_human && AVAILABLE_TEAMS == 2))
+			{
+				int forced_team = stof(argv(5));
+				if (!Team_IsValidIndex(forced_team))
+					forced_team = 0;
+				if (!forced_team || forced_team == smallest_team)
+					prio += 2;
+			}
+			RandomSelection_AddString(readfile, 1, prio);
+		}
+		readfile = RandomSelection_chosen_string;
+		fclose(file);
+	}
+
+	string bot_name, bot_model, bot_skin, bot_shirt, bot_pants;
+
+	tokens = tokenizebyseparator(readfile, "\t");
+	if(argv(0) != "") bot_name = argv(0);
+	else bot_name = "Bot";
+
+	if(argv(1) != "") bot_model = argv(1);
+	else bot_model = "";
+
+	if(argv(2) != "") bot_skin = argv(2);
+	else bot_skin = "0";
+
+	if(argv(3) != "" && stof(argv(3)) >= 0) bot_shirt = argv(3);
+	else bot_shirt = ftos(floor(random() * 15));
+
+	if(argv(4) != "" && stof(argv(4)) >= 0) bot_pants = argv(4);
+	else bot_pants = ftos(floor(random() * 15));
+
+	if (teamplay && !(autocvar_bot_vs_human && AVAILABLE_TEAMS == 2))
+	{
+		this.bot_forced_team = stof(argv(5));
+		if (!Team_IsValidIndex(this.bot_forced_team))
+			this.bot_forced_team = 0;
+	}
+	else
+		this.bot_forced_team = 0;
+
+	prio = 6;
+
+	#define READSKILL(f, w, r) MACRO_BEGIN \
+		if(argv(prio) != "") \
+			this.f = stof(argv(prio)) * w; \
+		else \
+			this.f = (!autocvar_g_campaign) * (2 * random() - 1) * r * w; \
+		prio++; \
+	MACRO_END
+	                                            
+
+	READSKILL(havocbot_keyboardskill, 0.5, 0.5);                  
+	READSKILL(bot_moveskill, 2, 0);              
+	READSKILL(bot_dodgeskill, 2, 0);               
+
+	READSKILL(bot_pingskill, 0.5, 0);              
+
+	READSKILL(bot_weaponskill, 2, 0);                
+	READSKILL(bot_aggresskill, 1, 0);               
+	READSKILL(bot_rangepreference, 1, 0);              
+
+	READSKILL(bot_aimskill, 2, 0);             
+	READSKILL(bot_offsetskill, 2, 0.5);                
+	READSKILL(bot_mouseskill, 1, 0.5);               
+
+	READSKILL(bot_thinkskill, 1, 0.5);               
+	READSKILL(bot_aiskill, 2, 0);              
+
+	                                                      
+	if (SUPERBOT)
+	{
+		                                                               
+		                                                   
+		                                   
+		                                                                           
+		                           
+		                          
+		                            
+		                            
+		this.bot_rangepreference = 1;                                    
+		                         
+		                            
+		                           
+		                           
+		                        
+	}
+	if (file >= 0 && argv(prio) != "")
+		LOG_INFOF("^1Warning^7: too many parameters for bot %s, please check format of %s", bot_name, autocvar_bot_config_file);
+
+	this.bot_config_loaded = true;
+
+	                                                                          
+	setcolor(this, stof(bot_shirt) * 16 + stof(bot_pants));
+	this.bot_preferredcolors = this.clientcolors;
+
+	string prefix = (autocvar_g_campaign ? "" : autocvar_bot_prefix);
+	string suffix = (autocvar_g_campaign ? "" : autocvar_bot_suffix);
+	string name = (autocvar_bot_usemodelnames ? bot_model : bot_name);
+
+	if (name == "")
+	{
+		name = ftos(etof(this));
+		this.netname = this.netname_freeme = strzone(strcat(prefix, name, suffix));
+	}
+	else
+	{
+		                                   
+		int j = 0;
+		FOREACH_CLIENT(IS_BOT_CLIENT(it), {
+			if(it.cleanname == name)
+				++j;
+		});
+		if (j)
+			this.netname = this.netname_freeme = strzone(strcat(prefix, name, "(", ftos(j), ")", suffix));
+		else
+			this.netname = this.netname_freeme = strzone(strcat(prefix, name, suffix));
+	}
+	this.cleanname = strzone(name);
+
+	                          
+	if(substring(bot_model, -4, 1) != ".")
+		bot_model = strcat(bot_model, ".iqm");
+	this.playermodel = this.playermodel_freeme = strzone(strcat("models/player/", bot_model));
+	this.playerskin = this.playerskin_freeme = strzone(bot_skin);
+}
+
+void bot_custom_weapon_priority_setup()
+{
+	static string bot_priority_far_prev;
+	static string bot_priority_mid_prev;
+	static string bot_priority_close_prev;
+	static string bot_priority_distances_prev;
+	float tokens, i, w;
+
+	bot_custom_weapon = false;
+
+	if(	autocvar_bot_ai_custom_weapon_priority_far == "" ||
+		autocvar_bot_ai_custom_weapon_priority_mid == "" ||
+		autocvar_bot_ai_custom_weapon_priority_close == "" ||
+		autocvar_bot_ai_custom_weapon_priority_distances == ""
+	)
+		return;
+
+	if (bot_priority_distances_prev != autocvar_bot_ai_custom_weapon_priority_distances)
+	{
+		strcpy(bot_priority_distances_prev, autocvar_bot_ai_custom_weapon_priority_distances);
+		tokens = tokenizebyseparator(autocvar_bot_ai_custom_weapon_priority_distances," ");
+
+		if (tokens!=2)
+			return;
+
+		bot_distance_far = stof(argv(0));
+		bot_distance_close = stof(argv(1));
+
+		if(bot_distance_far < bot_distance_close){
+			bot_distance_far = stof(argv(1));
+			bot_distance_close = stof(argv(0));
+		}
+	}
+
+	int c;
+
+	#define PARSE_WEAPON_PRIORITIES(dist) MACRO_BEGIN \
+		if (bot_priority_##dist##_prev != autocvar_bot_ai_custom_weapon_priority_##dist) { \
+			strcpy(bot_priority_##dist##_prev, autocvar_bot_ai_custom_weapon_priority_##dist); \
+			tokens = tokenizebyseparator(W_NumberWeaponOrder(autocvar_bot_ai_custom_weapon_priority_##dist)," "); \
+			bot_weapons_##dist[0] = -1; \
+			c = 0; \
+			for(i = 0; i < tokens && c < REGISTRY_COUNT(Weapons); ++i) { \
+				w = stof(argv(i)); \
+				if (w >= WEP_FIRST && w <= WEP_LAST) { \
+					bot_weapons_##dist[c] = w; \
+					++c; \
+				} \
+			} \
+			if (c < REGISTRY_COUNT(Weapons)) \
+				bot_weapons_##dist[c] = -1; \
+		} \
+	MACRO_END
+
+	PARSE_WEAPON_PRIORITIES(far);
+	PARSE_WEAPON_PRIORITIES(mid);
+	PARSE_WEAPON_PRIORITIES(close);
+
+	bot_custom_weapon = true;
+}
+
+void bot_endgame()
+{
+	bot_relinkplayerlist();
+	entity e = bot_list;
+	while (e)
+	{
+		setcolor(e, e.bot_preferredcolors);
+		e = e.nextbot;
+	}
+	                                                            
+}
+
+void bot_relinkplayerlist()
+{
+	player_count = 0;
+	currentbots = 0;
+	bot_list = NULL;
+
+	entity prevbot = NULL;
+	FOREACH_CLIENT(true,
+	{
+		++player_count;
+
+		if(IS_BOT_CLIENT(it))
+		{
+			if (!IS_OBSERVER(it) && !bot_ispaused(it))
+			{
+				if(prevbot)
+					prevbot.nextbot = it;
+				else
+					bot_list = it;
+				prevbot = it;
+			}
+			++currentbots;
+		}
+	});
+	if(prevbot)
+		prevbot.nextbot = NULL;
+	bot_strategytoken = bot_list;
+	bot_strategytoken_taken = true;
+}
+
+void bot_clientdisconnect(entity this)
+{
+	if (!IS_BOT_CLIENT(this))
+		return;
+	bot_clearqueue(this);
+	strfree(this.cleanname);
+	strfree(this.netname_freeme);
+	strfree(this.playermodel_freeme);
+	strfree(this.playerskin_freeme);
+	if(this.bot_cmd_current)
+		delete(this.bot_cmd_current);
+	if(bot_waypoint_queue_owner == this)
+		bot_waypoint_queue_owner = NULL;
+}
+
+void bot_clientconnect(entity this)
+{
+	if (!IS_BOT_CLIENT(this)) return;
+	this.bot_preferredcolors = this.clientcolors;
+	this.bot_nextthink = time - random();
+	this.isbot = true;
+	this.createdtime = this.bot_nextthink;
+
+	if(!this.bot_config_loaded)                                                                  
+	{
+		bot_setnameandstuff(this);
+		bot_setclientfields(this);
+	}
+
+	havocbot_setupbot(this);
+}
+
+void bot_removefromlargestteam()
+{
+	entity balance = TeamBalance_CheckAllowedTeams(NULL);
+	TeamBalance_GetTeamCounts(balance, NULL);
+
+	entity best = NULL;
+	float besttime = 0;
+	int bestcount = 0;
+
+	int bcount = 0;
+	FOREACH_CLIENT(it.isbot,
+	{
+		++bcount;
+
+		if(!best)
+		{
+			best = it;
+			besttime = it.createdtime;
+		}
+
+		int thiscount = 0;
+
+		if (Team_IsValidTeam(it.team))
+		{
+			thiscount = TeamBalance_GetNumberOfPlayers(balance,
+				Team_TeamToIndex(it.team));
+		}
+
+		if(thiscount > bestcount)
+		{
+			bestcount = thiscount;
+			besttime = it.createdtime;
+			best = it;
+		}
+		else if(thiscount == bestcount && besttime < it.createdtime)
+		{
+			besttime = it.createdtime;
+			best = it;
+		}
+	});
+	TeamBalance_Destroy(balance);
+	if(!bcount)
+		return;                     
+	currentbots = currentbots - 1;
+	dropclient(best);
+}
+
+void bot_removenewest()
+{
+	if(teamplay)
+	{
+		bot_removefromlargestteam();
+		return;
+	}
+
+	float besttime = 0;
+	entity best = NULL;
+	int bcount = 0;
+
+	FOREACH_CLIENT(it.isbot,
+	{
+		++bcount;
+
+		if(!best)
+		{
+			best = it;
+			besttime = it.createdtime;
+		}
+
+		if(besttime < it.createdtime)
+		{
+			besttime = it.createdtime;
+			best = it;
+		}
+	});
+
+	if(!bcount)
+		return;                     
+
+	currentbots = currentbots - 1;
+	dropclient(best);
+}
+
+void autoskill(float factor)
+{
+	int bestbot = -1;
+	int bestplayer = -1;
+	FOREACH_CLIENT(IS_PLAYER(it), {
+		if(IS_REAL_CLIENT(it))
+			bestplayer = max(bestplayer, it.totalfrags - it.totalfrags_lastcheck);
+		else
+			bestbot = max(bestbot, it.totalfrags - it.totalfrags_lastcheck);
+	});
+
+	string msg = strcat("autoskill: best player got ", ftos(bestplayer), ", ""best bot got ", ftos(bestbot), "; ");
+	if(bestbot < 0 || bestplayer < 0)
+	{
+		msg = strcat(msg, "not doing anything");
+		                                                
+	}
+	else if(bestbot <= bestplayer * factor - 2)
+	{
+		if(autocvar_skill < 17)
+		{
+			msg = strcat(msg, "2 frags difference, increasing skill");
+			cvar_set("skill", ftos(autocvar_skill + 1));
+			bprint("^2BOT SKILL UP!^7 Now at level ", ftos(autocvar_skill), "\n");
+		}
+	}
+	else if(bestbot >= bestplayer * factor + 2)
+	{
+		if(autocvar_skill > 0)
+		{
+			msg = strcat(msg, "2 frags difference, decreasing skill");
+			cvar_set("skill", ftos(autocvar_skill - 1));
+			bprint("^1BOT SKILL DOWN!^7 Now at level ", ftos(autocvar_skill), "\n");
+		}
+	}
+	else
+	{
+		msg = strcat(msg, "not doing anything");
+		return;
+		                                                    
+	}
+	LOG_DEBUG(msg);
+
+	FOREACH_CLIENT(IS_PLAYER(it), { it.totalfrags_lastcheck = it.totalfrags; });
+}
+
+void bot_calculate_stepheightvec()
+{
+	stepheightvec = autocvar_sv_stepheight * '0 0 1';
+	jumpheight_vec = (autocvar_sv_jumpvelocity ** 2) / (2 * autocvar_sv_gravity) * '0 0 1';
+	jumpstepheightvec = stepheightvec + jumpheight_vec * 0.85;                                          
+	jumpheight_time = autocvar_sv_jumpvelocity / autocvar_sv_gravity;
+}
+
+bool bot_fixcount(bool multiple_per_frame)
+{
+	int activerealplayers = 0;
+	int realplayers = 0;
+	if (MUTATOR_CALLHOOK(Bot_FixCount, activerealplayers, realplayers)) {
+		activerealplayers = M_ARGV(0, int);
+		realplayers = M_ARGV(1, int);
+	} else {
+		FOREACH_CLIENT(IS_REAL_CLIENT(it), {
+			if(IS_PLAYER(it))
+				++activerealplayers;
+			++realplayers;
+		});
+	}
+
+	int bots;
+	                                                                         
+	                               
+	bots_would_leave = false;
+	if (autocvar_bot_vs_human && AVAILABLE_TEAMS == 2)
+		bots = min(ceil(fabs(autocvar_bot_vs_human) * activerealplayers), maxclients - realplayers);
+	else if ((realplayers || autocvar_bot_join_empty || (currentbots > 0 && time < 5)))
+	{
+		int minplayers = max(0, floor(autocvar_minplayers));
+		if (teamplay)
+			minplayers = max(0, floor(autocvar_minplayers_per_team) * AVAILABLE_TEAMS);
+		int minbots = max(0, floor(autocvar_bot_number));
+
+		                                         
+		bots = max(minbots, minplayers - activerealplayers);
+		                                                    
+		int player_limit = GetPlayerLimit();
+		if(player_limit)
+			bots = min(bots, max(player_limit - activerealplayers, 0));
+		bots = min(bots, maxclients - realplayers);
+
+		if(bots > minbots)
+			bots_would_leave = true;
+	}
+	else
+	{
+		                                       
+		bots = 0;
+	}
+
+	                                                  
+	if(time > botframe_nextthink)
+	{
+		while (currentbots < bots)
+		{
+			if (bot_spawn() == NULL)
+			{
+				bprint("Can not add bot, server full.\n");
+				return false;
+			}
+			if (!multiple_per_frame)
+			{
+				break;
+			}
+		}
+		while (currentbots > bots && bots >= 0)
+			bot_removenewest();
+	}
+
+	return true;
+}
+
+void bot_serverframe()
+{
+	if (intermission_running && currentbots > 0)
+	{
+		                                                                               
+		int realplayers = 0;
+		FOREACH_CLIENT(IS_REAL_CLIENT(it), { ++realplayers; });
+		if (!realplayers)
+		{
+			FOREACH_CLIENT(IS_BOT_CLIENT(it), { dropclient(it); });
+			currentbots = 0;
+		}
+		return;
+	}
+
+	if (game_stopped)
+		return;
+
+	                                                                                                  
+	                                                                                                 
+	                                                                                          
+	                                                        
+	                                                                                          
+	if (time < 2.5)
+	{
+		currentbots = -1;
+		return;
+	}
+
+	if (currentbots == -1)
+	{
+		                                                           
+		currentbots = 0;
+		FOREACH_CLIENT(IS_BOT_CLIENT(it), { ++currentbots; });
+	}
+
+	if(autocvar_skill != skill)
+	{
+		float wpcost_update = false;
+		if(skill >= autocvar_bot_ai_bunnyhop_skilloffset && autocvar_skill < autocvar_bot_ai_bunnyhop_skilloffset)
+			wpcost_update = true;
+		if(skill < autocvar_bot_ai_bunnyhop_skilloffset && autocvar_skill >= autocvar_bot_ai_bunnyhop_skilloffset)
+			wpcost_update = true;
+
+		skill = autocvar_skill;
+		if (wpcost_update)
+			waypoint_updatecost_foralllinks();
+	}
+
+	bot_calculate_stepheightvec();
+	bot_navigation_movemode = ((autocvar_bot_navigation_ignoreplayers) ? MOVE_NOMONSTERS : MOVE_NORMAL);
+
+	if(time > autoskill_nextthink)
+	{
+		float a;
+		a = autocvar_skill_auto;
+		if(a)
+			autoskill(a);
+		autoskill_nextthink = time + 5;
+	}
+
+	if(time > botframe_nextthink)
+	{
+		if(!bot_fixcount(false))
+			botframe_nextthink = time + 10;
+	}
+
+	if(botframe_spawnedwaypoints)
+	{
+		if(autocvar_waypoint_benchmark)
+			localcmd("quit\n");
+	}
+
+	if (currentbots > 0 || waypointeditor_enabled || autocvar_g_waypointeditor_auto)
+	if (botframe_spawnedwaypoints)
+	{
+		if(botframe_cachedwaypointlinks)
+		{
+			if(!botframe_loadedforcedlinks)
+				waypoint_load_hardwiredlinks();
+		}
+		else
+		{
+			                                
+			IL_EACH(g_waypoints, time - it.nextthink > 10,
+			{
+				waypoint_save_links();
+				break;
+			});
+		}
+	}
+	else
+	{
+		botframe_spawnedwaypoints = true;
+		waypoint_loadall();
+		waypoint_load_links();
+	}
+
+	if (bot_list)
+	{
+		                                                           
+		                                                                             
+		                                          
+		if (bot_strategytoken_taken)
+		{
+			                                                                         
+			                                                               
+			bot_strategytoken_taken = false;
+			entity bot_strategytoken_save = bot_strategytoken;
+			while (true)
+			{
+				if (bot_strategytoken)
+					bot_strategytoken = bot_strategytoken.nextbot;
+				if (!bot_strategytoken)
+					bot_strategytoken = bot_list;
+
+				if (!(IS_DEAD(bot_strategytoken) || STAT(FROZEN, bot_strategytoken))
+					&& !bot_strategytoken.goalcurrent)
+					break;
+
+				if (!bot_strategytoken_save)                                                 
+					break;
+				if (bot_strategytoken == bot_strategytoken_save)
+					bot_strategytoken_save = NULL;                               
+			}
+		}
+
+		if (botframe_nextdangertime < time)
+		{
+			float interval;
+			interval = autocvar_bot_ai_dangerdetectioninterval;
+			if (botframe_nextdangertime < time - interval * 1.5)
+				botframe_nextdangertime = time;
+			botframe_nextdangertime = botframe_nextdangertime + interval;
+			botframe_updatedangerousobjects(autocvar_bot_ai_dangerdetectionupdates);
+		}
+	}
+
+	if (waypointeditor_enabled)
+		botframe_showwaypointlinks();
+
+	if (autocvar_g_waypointeditor_auto)
+		botframe_autowaypoints();
+
+	if (currentbots > 0)
+		bot_custom_weapon_priority_setup();
+}

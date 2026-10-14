@@ -1,0 +1,2336 @@
+  
+                                         
+
+                                                             
+                                                           
+                                                              
+                                                      
+
+                                                               
+                                                              
+                                                    
+
+                                                    
+
+                                                                 
+                                                           
+                                                                           
+
+  
+                                                                           
+
+                                                                            
+                   
+
+#include "quakedef.h"
+#include "capture_telemetry.h"
+#include "csprogs.h"
+#include "thread.h"
+
+  
+                                                                               
+
+           
+
+                                                                              
+                                                                          
+                                                                    
+                                
+
+                                                                             
+                                                                         
+            
+
+                                           
+                                                          
+                                                          
+
+                                                                               
+  
+
+
+kbutton_t	in_mlook, in_klook;
+kbutton_t	in_left, in_right, in_forward, in_back;
+kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
+kbutton_t	in_strafe, in_speed, in_jump, in_attack, in_use;
+kbutton_t	in_up, in_down;
+                                 
+kbutton_t	in_button3, in_button4, in_button5, in_button6, in_button7, in_button8;
+           
+kbutton_t	in_button9, in_button10, in_button11, in_button12, in_button13, in_button14, in_button15, in_button16;
+
+int			in_impulse;
+
+
+
+static void KeyDown (kbutton_t *b)
+{
+	int k;
+	const char *c;
+
+	c = Cmd_Argv(1);
+	if (c[0])
+		k = atoi(c);
+	else
+		k = -1;		                                                    
+
+	if (k == b->down[0] || k == b->down[1])
+		return;		                
+
+	if (!b->down[0])
+		b->down[0] = k;
+	else if (!b->down[1])
+		b->down[1] = k;
+	else
+	{
+		Con_Print("Three keys down for a button!\n");
+		return;
+	}
+
+	if (b->state & 1)
+		return;		             
+	b->state |= 1 + 2;	                      
+}
+
+static void KeyUp (kbutton_t *b)
+{
+	int k;
+	const char *c;
+
+	c = Cmd_Argv(1);
+	if (c[0])
+		k = atoi(c);
+	else
+	{                                                                      
+		b->down[0] = b->down[1] = 0;
+		b->state = 4;	             
+		return;
+	}
+
+	if (b->down[0] == k)
+		b->down[0] = 0;
+	else if (b->down[1] == k)
+		b->down[1] = 0;
+	else
+		return;		                                                       
+	if (b->down[0] || b->down[1])
+		return;		                                          
+
+	if (!(b->state & 1))
+		return;		                                    
+	b->state &= ~1;		         
+	b->state |= 4; 		             
+}
+
+static void IN_KLookDown (void) {KeyDown(&in_klook);}
+static void IN_KLookUp (void) {KeyUp(&in_klook);}
+static void IN_MLookDown (void) {KeyDown(&in_mlook);}
+static void IN_MLookUp (void)
+{
+	KeyUp(&in_mlook);
+	if ( !(in_mlook.state&1) && lookspring.value)
+		V_StartPitchDrift();
+}
+static void IN_UpDown(void) {KeyDown(&in_up);}
+static void IN_UpUp(void) {KeyUp(&in_up);}
+static void IN_DownDown(void) {KeyDown(&in_down);}
+static void IN_DownUp(void) {KeyUp(&in_down);}
+static void IN_LeftDown(void) {KeyDown(&in_left);}
+static void IN_LeftUp(void) {KeyUp(&in_left);}
+static void IN_RightDown(void) {KeyDown(&in_right);}
+static void IN_RightUp(void) {KeyUp(&in_right);}
+static void IN_ForwardDown(void) {KeyDown(&in_forward);}
+static void IN_ForwardUp(void) {KeyUp(&in_forward);}
+static void IN_BackDown(void) {KeyDown(&in_back);}
+static void IN_BackUp(void) {KeyUp(&in_back);}
+static void IN_LookupDown(void) {KeyDown(&in_lookup);}
+static void IN_LookupUp(void) {KeyUp(&in_lookup);}
+static void IN_LookdownDown(void) {KeyDown(&in_lookdown);}
+static void IN_LookdownUp(void) {KeyUp(&in_lookdown);}
+static void IN_MoveleftDown(void) {KeyDown(&in_moveleft);}
+static void IN_MoveleftUp(void) {KeyUp(&in_moveleft);}
+static void IN_MoverightDown(void) {KeyDown(&in_moveright);}
+static void IN_MoverightUp(void) {KeyUp(&in_moveright);}
+
+static void IN_SpeedDown(void) {KeyDown(&in_speed);}
+static void IN_SpeedUp(void) {KeyUp(&in_speed);}
+static void IN_StrafeDown(void) {KeyDown(&in_strafe);}
+static void IN_StrafeUp(void) {KeyUp(&in_strafe);}
+
+static void IN_AttackDown(void) {KeyDown(&in_attack);}
+static void IN_AttackUp(void) {KeyUp(&in_attack);}
+
+static void IN_UseDown(void) {KeyDown(&in_use);}
+static void IN_UseUp(void) {KeyUp(&in_use);}
+
+                                 
+static void IN_Button3Down(void) {KeyDown(&in_button3);}
+static void IN_Button3Up(void) {KeyUp(&in_button3);}
+static void IN_Button4Down(void) {KeyDown(&in_button4);}
+static void IN_Button4Up(void) {KeyUp(&in_button4);}
+static void IN_Button5Down(void) {KeyDown(&in_button5);}
+static void IN_Button5Up(void) {KeyUp(&in_button5);}
+static void IN_Button6Down(void) {KeyDown(&in_button6);}
+static void IN_Button6Up(void) {KeyUp(&in_button6);}
+static void IN_Button7Down(void) {KeyDown(&in_button7);}
+static void IN_Button7Up(void) {KeyUp(&in_button7);}
+static void IN_Button8Down(void) {KeyDown(&in_button8);}
+static void IN_Button8Up(void) {KeyUp(&in_button8);}
+
+static void IN_Button9Down(void) {KeyDown(&in_button9);}
+static void IN_Button9Up(void) {KeyUp(&in_button9);}
+static void IN_Button10Down(void) {KeyDown(&in_button10);}
+static void IN_Button10Up(void) {KeyUp(&in_button10);}
+static void IN_Button11Down(void) {KeyDown(&in_button11);}
+static void IN_Button11Up(void) {KeyUp(&in_button11);}
+static void IN_Button12Down(void) {KeyDown(&in_button12);}
+static void IN_Button12Up(void) {KeyUp(&in_button12);}
+static void IN_Button13Down(void) {KeyDown(&in_button13);}
+static void IN_Button13Up(void) {KeyUp(&in_button13);}
+static void IN_Button14Down(void) {KeyDown(&in_button14);}
+static void IN_Button14Up(void) {KeyUp(&in_button14);}
+static void IN_Button15Down(void) {KeyDown(&in_button15);}
+static void IN_Button15Up(void) {KeyUp(&in_button15);}
+static void IN_Button16Down(void) {KeyDown(&in_button16);}
+static void IN_Button16Up(void) {KeyUp(&in_button16);}
+
+static void IN_JumpDown (void) {KeyDown(&in_jump);}
+static void IN_JumpUp (void) {KeyUp(&in_jump);}
+
+static void IN_Impulse (void) {in_impulse=atoi(Cmd_Argv(1));}
+
+in_bestweapon_info_t in_bestweapon_info[IN_BESTWEAPON_MAX];
+
+static void IN_BestWeapon_Register(const char *name, int impulse, int weaponbit, int activeweaponcode, int ammostat, int ammomin)
+{
+	int i;
+	for(i = 0; i < IN_BESTWEAPON_MAX && in_bestweapon_info[i].impulse; ++i)
+		if(in_bestweapon_info[i].impulse == impulse)
+			break;
+	if(i >= IN_BESTWEAPON_MAX)
+	{
+		Con_Printf("no slot left for weapon definition; increase IN_BESTWEAPON_MAX\n");
+		return;         
+	}
+	strlcpy(in_bestweapon_info[i].name, name, sizeof(in_bestweapon_info[i].name));
+	in_bestweapon_info[i].impulse = impulse;
+	if(weaponbit != -1)
+		in_bestweapon_info[i].weaponbit = weaponbit;
+	if(activeweaponcode != -1)
+		in_bestweapon_info[i].activeweaponcode = activeweaponcode;
+	if(ammostat != -1)
+		in_bestweapon_info[i].ammostat = ammostat;
+	if(ammomin != -1)
+		in_bestweapon_info[i].ammomin = ammomin;
+}
+
+void IN_BestWeapon_ResetData (void)
+{
+	memset(in_bestweapon_info, 0, sizeof(in_bestweapon_info));
+	IN_BestWeapon_Register("1", 1, IT_AXE, IT_AXE, STAT_SHELLS, 0);
+	IN_BestWeapon_Register("2", 2, IT_SHOTGUN, IT_SHOTGUN, STAT_SHELLS, 1);
+	IN_BestWeapon_Register("3", 3, IT_SUPER_SHOTGUN, IT_SUPER_SHOTGUN, STAT_SHELLS, 1);
+	IN_BestWeapon_Register("4", 4, IT_NAILGUN, IT_NAILGUN, STAT_NAILS, 1);
+	IN_BestWeapon_Register("5", 5, IT_SUPER_NAILGUN, IT_SUPER_NAILGUN, STAT_NAILS, 1);
+	IN_BestWeapon_Register("6", 6, IT_GRENADE_LAUNCHER, IT_GRENADE_LAUNCHER, STAT_ROCKETS, 1);
+	IN_BestWeapon_Register("7", 7, IT_ROCKET_LAUNCHER, IT_ROCKET_LAUNCHER, STAT_ROCKETS, 1);
+	IN_BestWeapon_Register("8", 8, IT_LIGHTNING, IT_LIGHTNING, STAT_CELLS, 1);
+	IN_BestWeapon_Register("9", 9, 128, 128, STAT_CELLS, 1);                                  
+	IN_BestWeapon_Register("p", 209, 128, 128, STAT_CELLS, 1);                    
+	IN_BestWeapon_Register("w", 210, 8388608, 8388608, STAT_CELLS, 1);                            
+	IN_BestWeapon_Register("l", 225, HIT_LASER_CANNON, HIT_LASER_CANNON, STAT_CELLS, 1);                         
+	IN_BestWeapon_Register("h", 226, HIT_MJOLNIR, HIT_MJOLNIR, STAT_CELLS, 0);                           
+}
+
+static void IN_BestWeapon_Register_f (void)
+{
+	if(Cmd_Argc() == 7)
+	{
+		IN_BestWeapon_Register(
+			Cmd_Argv(1),
+			atoi(Cmd_Argv(2)),
+			atoi(Cmd_Argv(3)),
+			atoi(Cmd_Argv(4)),
+			atoi(Cmd_Argv(5)),
+			atoi(Cmd_Argv(6))
+		);
+	}
+	else if(Cmd_Argc() == 2 && !strcmp(Cmd_Argv(1), "clear"))
+	{
+		memset(in_bestweapon_info, 0, sizeof(in_bestweapon_info));
+	}
+	else if(Cmd_Argc() == 2 && !strcmp(Cmd_Argv(1), "quake"))
+	{
+		IN_BestWeapon_ResetData();
+	}
+	else
+	{
+		Con_Printf("Usage: %s weaponshortname impulse itemcode activeweaponcode ammostat ammomin; %s clear; %s quake\n", Cmd_Argv(0), Cmd_Argv(0), Cmd_Argv(0));
+	}
+}
+
+static void IN_BestWeapon (void)
+{
+	int i, n;
+	const char *t;
+	if (Cmd_Argc() < 2)
+	{
+		Con_Printf("bestweapon requires 1 or more parameters\n");
+		return;
+	}
+	for (i = 1;i < Cmd_Argc();i++)
+	{
+		t = Cmd_Argv(i);
+		                                                   
+		for (n = 0;n < IN_BESTWEAPON_MAX && in_bestweapon_info[n].impulse;n++)
+		{
+			if (!strcmp(in_bestweapon_info[n].name, t))
+			{
+				                                                    
+				                                                             
+				if ((cl.stats[STAT_ITEMS] & in_bestweapon_info[n].weaponbit) && (cl.stats[in_bestweapon_info[n].ammostat] >= in_bestweapon_info[n].ammomin))
+				{
+					                                                
+					                                  
+					in_impulse = in_bestweapon_info[n].impulse;
+					return;
+				}
+				break;
+			}
+		}
+		                                                                                               
+	}
+	                                                                            
+}
+
+#if 0
+void IN_CycleWeapon (void)
+{
+	int i, n;
+	int first = -1;
+	qboolean found = false;
+	const char *t;
+	if (Cmd_Argc() < 2)
+	{
+		Con_Printf("bestweapon requires 1 or more parameters\n");
+		return;
+	}
+	for (i = 1;i < Cmd_Argc();i++)
+	{
+		t = Cmd_Argv(i);
+		                                                   
+		for (n = 0;n < IN_BESTWEAPON_MAX && in_bestweapon_info[n].impulse;n++)
+		{
+			if (!strcmp(in_bestweapon_info[n].name, t))
+			{
+				                                                    
+				                                                             
+				if ((cl.stats[STAT_ITEMS] & in_bestweapon_info[n].weaponbit) && (cl.stats[in_bestweapon_info[n].ammostat] >= in_bestweapon_info[n].ammomin))
+				{
+					                                                
+					if(first == -1)
+						first = n;
+					if(found)
+					{
+						in_impulse = in_bestweapon_info[n].impulse;
+						return;
+					}
+					if(cl.stats[STAT_ACTIVEWEAPON] == in_bestweapon_info[n].activeweaponcode)
+						found = true;
+				}
+				break;
+			}
+		}
+		                                                                                               
+	}
+	if(first != -1)
+	{
+		in_impulse = in_bestweapon_info[first].impulse;
+		return;
+	}
+	                                                                            
+}
+#endif
+
+  
+               
+           
+
+                                                                
+                              
+                            
+                               
+               
+  
+float CL_KeyState (kbutton_t *key)
+{
+	float		val;
+	qboolean	impulsedown, impulseup, down;
+
+	impulsedown = (key->state & 2) != 0;
+	impulseup = (key->state & 4) != 0;
+	down = (key->state & 1) != 0;
+	val = 0;
+
+	if (impulsedown && !impulseup)
+	{
+		if (down)
+			val = 0.5;	                              
+		else
+			val = 0;	              
+	}
+	if (impulseup && !impulsedown)
+	{
+		if (down)
+			val = 0;	              
+		else
+			val = 0;	                      
+	}
+	if (!impulsedown && !impulseup)
+	{
+		if (down)
+			val = 1.0;	                        
+		else
+			val = 0;	                      
+	}
+	if (impulsedown && impulseup)
+	{
+		if (down)
+			val = 0.75;	                                     
+		else
+			val = 0.25;	                                  
+	}
+
+	key->state &= 1;		                 
+
+	return val;
+}
+
+
+
+
+                                                                            
+
+cvar_t cl_upspeed = {CVAR_SAVE, "cl_upspeed","400","vertical movement speed (while swimming or flying)"};
+cvar_t cl_forwardspeed = {CVAR_SAVE, "cl_forwardspeed","400","forward movement speed"};
+cvar_t cl_backspeed = {CVAR_SAVE, "cl_backspeed","400","backward movement speed"};
+cvar_t cl_sidespeed = {CVAR_SAVE, "cl_sidespeed","350","strafe movement speed"};
+
+cvar_t cl_movespeedkey = {CVAR_SAVE, "cl_movespeedkey","2.0","how much +speed multiplies keyboard movement speed"};
+cvar_t cl_movecliptokeyboard = {0, "cl_movecliptokeyboard", "0", "if set to 1, any move is clipped to the nine keyboard states; if set to 2, only the direction is clipped, not the amount"};
+
+cvar_t cl_yawspeed = {CVAR_SAVE, "cl_yawspeed","140","keyboard yaw turning speed"};
+cvar_t cl_pitchspeed = {CVAR_SAVE, "cl_pitchspeed","150","keyboard pitch turning speed"};
+
+cvar_t cl_anglespeedkey = {CVAR_SAVE, "cl_anglespeedkey","1.5","how much +speed multiplies keyboard turning speed"};
+
+cvar_t cl_movement = {CVAR_SAVE, "cl_movement", "0", "enables clientside prediction of your player movement on DP servers (use cl_nopred for QWSV servers)"};
+cvar_t cl_movement_replay = {0, "cl_movement_replay", "1", "use engine prediction"};
+cvar_t cl_movement_nettimeout = {CVAR_SAVE, "cl_movement_nettimeout", "0.3", "stops predicting moves when server is lagging badly (avoids major performance problems), timeout in seconds"};
+cvar_t cl_movement_minping = {CVAR_SAVE, "cl_movement_minping", "0", "whether to use prediction when ping is lower than this value in milliseconds"};
+cvar_t cl_movement_track_canjump = {CVAR_SAVE, "cl_movement_track_canjump", "1", "track if the player released the jump key between two jumps to decide if he is able to jump or not; when off, this causes some \"sliding\" slightly above the floor when the jump key is held too long; if the mod allows repeated jumping by holding space all the time, this has to be set to zero too"};
+cvar_t cl_movement_maxspeed = {0, "cl_movement_maxspeed", "320", "how fast you can move (should match sv_maxspeed)"};
+cvar_t cl_movement_maxairspeed = {0, "cl_movement_maxairspeed", "30", "how fast you can move while in the air (should match sv_maxairspeed)"};
+cvar_t cl_movement_stopspeed = {0, "cl_movement_stopspeed", "100", "speed below which you will be slowed rapidly to a stop rather than sliding endlessly (should match sv_stopspeed)"};
+cvar_t cl_movement_friction = {0, "cl_movement_friction", "4", "how fast you slow down (should match sv_friction)"};
+cvar_t cl_movement_wallfriction = {0, "cl_movement_wallfriction", "1", "how fast you slow down while sliding along a wall (should match sv_wallfriction)"};
+cvar_t cl_movement_waterfriction = {0, "cl_movement_waterfriction", "-1", "how fast you slow down (should match sv_waterfriction), if less than 0 the cl_movement_friction variable is used instead"};
+cvar_t cl_movement_edgefriction = {0, "cl_movement_edgefriction", "1", "how much to slow down when you may be about to fall off a ledge (should match edgefriction)"};
+cvar_t cl_movement_stepheight = {0, "cl_movement_stepheight", "18", "how tall a step you can step in one instant (should match sv_stepheight)"};
+cvar_t cl_movement_accelerate = {0, "cl_movement_accelerate", "10", "how fast you accelerate (should match sv_accelerate)"};
+cvar_t cl_movement_airaccelerate = {0, "cl_movement_airaccelerate", "-1", "how fast you accelerate while in the air (should match sv_airaccelerate), if less than 0 the cl_movement_accelerate variable is used instead"};
+cvar_t cl_movement_wateraccelerate = {0, "cl_movement_wateraccelerate", "-1", "how fast you accelerate while in water (should match sv_wateraccelerate), if less than 0 the cl_movement_accelerate variable is used instead"};
+cvar_t cl_movement_jumpvelocity = {0, "cl_movement_jumpvelocity", "270", "how fast you move upward when you begin a jump (should match the quakec code)"};
+cvar_t cl_movement_airaccel_qw = {0, "cl_movement_airaccel_qw", "1", "ratio of QW-style air control as opposed to simple acceleration (reduces speed gain when zigzagging) (should match sv_airaccel_qw); when < 0, the speed is clamped against the maximum allowed forward speed after the move"};
+cvar_t cl_movement_airaccel_sideways_friction = {0, "cl_movement_airaccel_sideways_friction", "0", "anti-sideways movement stabilization (should match sv_airaccel_sideways_friction); when < 0, only so much friction is applied that braking (by accelerating backwards) cannot be stronger"};
+cvar_t cl_nopred = {CVAR_SAVE, "cl_nopred", "0", "(QWSV only) disables player movement prediction when playing on QWSV servers (this setting is separate from cl_movement because player expectations are different when playing on DP vs QW servers)"};
+
+cvar_t in_pitch_min = {0, "in_pitch_min", "-90", "how far you can aim upward (quake used -70)"};
+cvar_t in_pitch_max = {0, "in_pitch_max", "90", "how far you can aim downward (quake used 80)"};
+
+cvar_t m_filter = {CVAR_SAVE, "m_filter","0", "smoothes mouse movement, less responsive but smoother aiming"}; 
+cvar_t m_accelerate = {CVAR_SAVE, "m_accelerate","1", "linear mouse acceleration factor (set to 1 to disable the linear acceleration and use only the power acceleration; set to 0 to disable all acceleration)"};
+cvar_t m_accelerate_minspeed = {CVAR_SAVE, "m_accelerate_minspeed","5000", "below this speed in px/s, no acceleration is done, with a linear slope between (applied only on linear acceleration)"};
+cvar_t m_accelerate_maxspeed = {CVAR_SAVE, "m_accelerate_maxspeed","10000", "above this speed in px/s, full acceleration is done, with a linear slope between (applied only on linear acceleration)"};
+cvar_t m_accelerate_filter = {CVAR_SAVE, "m_accelerate_filter","0", "linear mouse acceleration factor filtering lowpass constant in seconds (set to 0 for no filtering)"};
+cvar_t m_accelerate_power_offset = {CVAR_SAVE, "m_accelerate_power_offset","0", "below this speed in px/ms, no power acceleration is done"};
+cvar_t m_accelerate_power = {CVAR_SAVE, "m_accelerate_power","2", "acceleration power (must be above 1 to be useful)"};
+cvar_t m_accelerate_power_senscap = {CVAR_SAVE, "m_accelerate_power_senscap", "0", "maximum acceleration factor generated by power acceleration; use 0 for unbounded"};
+cvar_t m_accelerate_power_strength = {CVAR_SAVE, "m_accelerate_power_strength", "0", "strength of the power mouse acceleration effect"};
+
+cvar_t cl_netfps = {CVAR_SAVE, "cl_netfps","72", "how many input packets to send to server each second"};
+cvar_t cl_netrepeatinput = {CVAR_SAVE, "cl_netrepeatinput", "1", "how many packets in a row can be lost without movement issues when using cl_movement (technically how many input messages to repeat in each packet that have not yet been acknowledged by the server), only affects DP7 and later servers (Quake uses 0, QuakeWorld uses 2, and just for comparison Quake3 uses 1)"};
+cvar_t cl_netimmediatebuttons = {CVAR_SAVE, "cl_netimmediatebuttons", "1", "sends extra packets whenever your buttons change or an impulse is used (basically: whenever you click fire or change weapon)"};
+
+cvar_t cl_nodelta = {0, "cl_nodelta", "0", "disables delta compression of non-player entities in QW network protocol"};
+
+cvar_t cl_csqc_generatemousemoveevents = {0, "cl_csqc_generatemousemoveevents", "1", "enables calls to CSQC_InputEvent with type 2, for compliance with EXT_CSQC spec"};
+
+extern cvar_t v_flipped;
+
+  
+                
+               
+
+                               
+                
+  
+static void CL_AdjustAngles (void)
+{
+	float	speed;
+	float	up, down;
+
+	if (in_speed.state & 1)
+		speed = cl.realframetime * cl_anglespeedkey.value;
+	else
+		speed = cl.realframetime;
+
+	if (!(in_strafe.state & 1))
+	{
+		cl.viewangles[YAW] -= speed*cl_yawspeed.value*CL_KeyState (&in_right);
+		cl.viewangles[YAW] += speed*cl_yawspeed.value*CL_KeyState (&in_left);
+	}
+	if (in_klook.state & 1)
+	{
+		V_StopPitchDrift ();
+		cl.viewangles[PITCH] -= speed*cl_pitchspeed.value * CL_KeyState (&in_forward);
+		cl.viewangles[PITCH] += speed*cl_pitchspeed.value * CL_KeyState (&in_back);
+	}
+
+	up = CL_KeyState (&in_lookup);
+	down = CL_KeyState(&in_lookdown);
+
+	cl.viewangles[PITCH] -= speed*cl_pitchspeed.value * up;
+	cl.viewangles[PITCH] += speed*cl_pitchspeed.value * down;
+
+	if (up || down)
+		V_StopPitchDrift ();
+
+	cl.viewangles[YAW] = ANGLEMOD(cl.viewangles[YAW]);
+	cl.viewangles[PITCH] = ANGLEMOD(cl.viewangles[PITCH]);
+	if (cl.viewangles[YAW] >= 180)
+		cl.viewangles[YAW] -= 360;
+	if (cl.viewangles[PITCH] >= 180)
+		cl.viewangles[PITCH] -= 360;
+                                                                                     
+                                                                                                                       
+	cl.viewangles[PITCH] = bound(in_pitch_min.value, cl.viewangles[PITCH], in_pitch_max.value);
+	cl.viewangles[ROLL] = bound(-180, cl.viewangles[ROLL], 180);
+}
+
+int cl_ignoremousemoves = 2;
+
+  
+                
+        
+
+                                                
+                
+  
+void CL_Input (void)
+{
+	float mx, my;
+	static float old_mouse_x = 0, old_mouse_y = 0;
+
+	                                                            
+	CL_AdjustAngles ();
+
+	if(v_flipped.integer)
+		cl.viewangles[YAW] = -cl.viewangles[YAW];
+
+	                                   
+	cl.cmd.forwardmove = 0;
+	cl.cmd.sidemove = 0;
+	cl.cmd.upmove = 0;
+
+	                                   
+	if (in_strafe.state & 1)
+	{
+		cl.cmd.sidemove += cl_sidespeed.value * CL_KeyState (&in_right);
+		cl.cmd.sidemove -= cl_sidespeed.value * CL_KeyState (&in_left);
+	}
+
+	cl.cmd.sidemove += cl_sidespeed.value * CL_KeyState (&in_moveright);
+	cl.cmd.sidemove -= cl_sidespeed.value * CL_KeyState (&in_moveleft);
+
+	cl.cmd.upmove += cl_upspeed.value * CL_KeyState (&in_up);
+	cl.cmd.upmove -= cl_upspeed.value * CL_KeyState (&in_down);
+
+	if (! (in_klook.state & 1) )
+	{
+		cl.cmd.forwardmove += cl_forwardspeed.value * CL_KeyState (&in_forward);
+		cl.cmd.forwardmove -= cl_backspeed.value * CL_KeyState (&in_back);
+	}
+
+	                       
+	if (in_speed.state & 1)
+	{
+		cl.cmd.forwardmove *= cl_movespeedkey.value;
+		cl.cmd.sidemove *= cl_movespeedkey.value;
+		cl.cmd.upmove *= cl_movespeedkey.value;
+	}
+
+	                                                              
+	IN_Move ();
+
+	                          
+	if (cl.csqc_loaded && cl_csqc_generatemousemoveevents.integer)
+	{
+		if (cl.csqc_wantsmousemove)
+		{
+			                                  
+			static int oldwindowmouse[2];
+			if (oldwindowmouse[0] != in_windowmouse_x || oldwindowmouse[1] != in_windowmouse_y)
+			{
+				CL_VM_InputEvent(3, in_windowmouse_x * vid_conwidth.value / vid.width, in_windowmouse_y * vid_conheight.value / vid.height);
+				oldwindowmouse[0] = in_windowmouse_x;
+				oldwindowmouse[1] = in_windowmouse_y;
+			}
+		}
+		else
+		{
+			if (in_mouse_x || in_mouse_y)
+				CL_VM_InputEvent(2, in_mouse_x, in_mouse_y);
+		}
+	}
+
+                                        
+	if(m_accelerate.value > 0)
+	{
+		float mouse_deltadist = sqrtf(in_mouse_x * in_mouse_x + in_mouse_y * in_mouse_y);
+		float speed = mouse_deltadist / cl.realframetime;
+		static float averagespeed = 0;
+		float f, mi, ma;
+		if(m_accelerate_filter.value > 0)
+		        f = bound(0, cl.realframetime / m_accelerate_filter.value, 1);
+		else
+		        f = 1;
+		averagespeed = speed * f + averagespeed * (1 - f);
+
+		                                                                                                
+		if (m_accelerate.value != 1.0f)
+		{
+			                                                          
+			                                                          
+			                                                             
+
+			mi = max(1, m_accelerate_minspeed.value);
+			ma = max(m_accelerate_minspeed.value + 1, m_accelerate_maxspeed.value);
+
+			if(averagespeed <= mi)
+			{
+				f = 1;
+			}
+			else if(averagespeed >= ma)
+			{
+				f = m_accelerate.value;
+			}
+			else
+			{
+				f = averagespeed;
+				f = (f - mi) / (ma - mi) * (m_accelerate.value - 1) + 1;
+			}
+			in_mouse_x *= f;
+			in_mouse_y *= f;
+		}
+
+		                                                                                                
+		if (m_accelerate_power_strength.value != 0.0f)
+		{
+			                                               
+			                                             
+			                                                  
+			                                                     
+			                     
+			float accelsens = 1.0f;
+			float adjusted_speed_pxms = (averagespeed * 0.001f - m_accelerate_power_offset.value) * m_accelerate_power_strength.value;
+			float inv_sensitivity = 1.0f / sensitivity.value;
+			if (adjusted_speed_pxms > 0)
+			{
+				if (m_accelerate_power.value > 1.0f)
+				{
+					                                                                           
+					                                                                       
+					accelsens += expf((m_accelerate_power.value - 1.0f) * logf(adjusted_speed_pxms)) * inv_sensitivity;
+				}
+				else
+				{
+					                                                            
+					accelsens += inv_sensitivity;
+					                                      
+					                                       
+				}
+			}
+			else
+			{
+				                                                        
+				                     
+			}
+			if (m_accelerate_power_senscap.value > 0.0f && accelsens > m_accelerate_power_senscap.value * inv_sensitivity)
+			{
+				                                                                           
+				                                                                                                  
+			        accelsens = m_accelerate_power_senscap.value * inv_sensitivity;
+			}
+
+			in_mouse_x *= accelsens;
+			in_mouse_y *= accelsens;
+		}
+	}
+
+	                             
+	mx = in_mouse_x;
+	my = in_mouse_y;
+	if (m_filter.integer)
+	{
+		in_mouse_x = (mx + old_mouse_x) * 0.5;
+		in_mouse_y = (my + old_mouse_y) * 0.5;
+	}
+	old_mouse_x = mx;
+	old_mouse_y = my;
+
+	                                                                    
+	if (cl_ignoremousemoves)
+	{
+		cl_ignoremousemoves--;
+		in_mouse_x = old_mouse_x = 0;
+		in_mouse_y = old_mouse_y = 0;
+	}
+
+	                                                          
+	if (!key_consoleactive && key_dest == key_game && !cl.csqc_wantsmousemove && cl_prydoncursor.integer <= 0)
+	{
+		float modulatedsensitivity = sensitivity.value * cl.sensitivityscale;
+		if (in_strafe.state & 1)
+		{
+			                                         
+			V_StopPitchDrift();
+			cl.cmd.sidemove += m_side.value * in_mouse_x * modulatedsensitivity;
+			if (noclip_anglehack)
+				cl.cmd.upmove -= m_forward.value * in_mouse_y * modulatedsensitivity;
+			else
+				cl.cmd.forwardmove -= m_forward.value * in_mouse_y * modulatedsensitivity;
+		}
+		else if ((in_mlook.state & 1) || freelook.integer)
+		{
+			                                                          
+			V_StopPitchDrift();
+			if (lookstrafe.integer)
+				cl.cmd.sidemove += m_side.value * in_mouse_x * modulatedsensitivity;
+			else
+				cl.viewangles[YAW] -= m_yaw.value * in_mouse_x * modulatedsensitivity * cl.viewzoom;
+			cl.viewangles[PITCH] += m_pitch.value * in_mouse_y * modulatedsensitivity * cl.viewzoom;
+		}
+		else
+		{
+			                                                       
+			cl.viewangles[YAW] -= m_yaw.value * in_mouse_x * modulatedsensitivity * cl.viewzoom;
+			cl.cmd.forwardmove -= m_forward.value * in_mouse_y * modulatedsensitivity;
+		}
+	}
+	else                                                        
+	{
+		                                                           
+		V_StopPitchDrift();
+		                       
+		cl.cmd.cursor_screen[0] = in_windowmouse_x * 2.0 / vid.width - 1.0;
+		cl.cmd.cursor_screen[1] = in_windowmouse_y * 2.0 / vid.height - 1.0;
+	}
+
+	if(v_flipped.integer)
+	{
+		cl.viewangles[YAW] = -cl.viewangles[YAW];
+		cl.cmd.sidemove = -cl.cmd.sidemove;
+	}
+
+	                                                            
+	CL_AdjustAngles ();
+
+	if(cl_movecliptokeyboard.integer)
+	{
+		vec_t f = 1;
+		if (in_speed.state & 1)
+			f *= cl_movespeedkey.value;
+		if(cl_movecliptokeyboard.integer == 2)
+		{
+			                                   
+			vec_t wishvel_x, wishvel_y;
+			wishvel_x = fabs(cl.cmd.forwardmove);
+			wishvel_y = fabs(cl.cmd.sidemove);
+			if(wishvel_x != 0 && wishvel_y != 0 && wishvel_x != wishvel_y)
+			{
+				vec_t wishspeed = sqrt(wishvel_x * wishvel_x + wishvel_y * wishvel_y);
+				if(wishvel_x >= 2 * wishvel_y)
+				{
+					                
+					if(cl.cmd.forwardmove > 0)
+						cl.cmd.forwardmove = wishspeed;
+					else
+						cl.cmd.forwardmove = -wishspeed;
+					cl.cmd.sidemove = 0;
+				}
+				else if(wishvel_y >= 2 * wishvel_x)
+				{
+					                
+					cl.cmd.forwardmove = 0;
+					if(cl.cmd.sidemove > 0)
+						cl.cmd.sidemove = wishspeed;
+					else
+						cl.cmd.sidemove = -wishspeed;
+				}
+				else
+				{
+					           
+					if(cl.cmd.forwardmove > 0)
+						cl.cmd.forwardmove = 0.70710678118654752440 * wishspeed;
+					else
+						cl.cmd.forwardmove = -0.70710678118654752440 * wishspeed;
+					if(cl.cmd.sidemove > 0)
+						cl.cmd.sidemove = 0.70710678118654752440 * wishspeed;
+					else
+						cl.cmd.sidemove = -0.70710678118654752440 * wishspeed;
+				}
+			}
+		}
+		else if(cl_movecliptokeyboard.integer)
+		{
+			                                    
+			if(cl.cmd.sidemove >= cl_sidespeed.value * f * 0.5)
+				cl.cmd.sidemove = cl_sidespeed.value * f;
+			else if(cl.cmd.sidemove <= -cl_sidespeed.value * f * 0.5)
+				cl.cmd.sidemove = -cl_sidespeed.value * f;
+			else
+				cl.cmd.sidemove = 0;
+			if(cl.cmd.forwardmove >= cl_forwardspeed.value * f * 0.5)
+				cl.cmd.forwardmove = cl_forwardspeed.value * f;
+			else if(cl.cmd.forwardmove <= -cl_backspeed.value * f * 0.5)
+				cl.cmd.forwardmove = -cl_backspeed.value * f;
+			else
+				cl.cmd.forwardmove = 0;
+		}
+	}
+}
+
+#include "cl_collision.h"
+
+static void CL_UpdatePrydonCursor(void)
+{
+	vec3_t temp;
+
+	if (cl_prydoncursor.integer <= 0)
+		VectorClear(cl.cmd.cursor_screen);
+
+	  
+                                  
+  
+                                                                                                                   
+                               
+  
+                                 
+  
+                                                                                                                  
+                              
+  
+                                  
+  
+                                                                                                                        
+                               
+  
+                                 
+  
+                                                                                                                       
+                              
+  
+   
+	cl.cmd.cursor_screen[0] = bound(-1, cl.cmd.cursor_screen[0], 1);
+	cl.cmd.cursor_screen[1] = bound(-1, cl.cmd.cursor_screen[1], 1);
+	cl.cmd.cursor_screen[2] = 1;
+
+	                                
+	Matrix4x4_OriginFromMatrix(&r_refdef.view.matrix, cl.cmd.cursor_start);
+	                                                                            
+	VectorSet(temp, cl.cmd.cursor_screen[2] * 1000000, (v_flipped.integer ? -1 : 1) * cl.cmd.cursor_screen[0] * -r_refdef.view.frustum_x * 1000000, cl.cmd.cursor_screen[1] * -r_refdef.view.frustum_y * 1000000);
+	Matrix4x4_Transform(&r_refdef.view.matrix, temp, cl.cmd.cursor_end);
+	                                       
+	if (cl_prydoncursor_notrace.integer)
+	{
+		cl.cmd.cursor_fraction = 1.0f;
+		VectorCopy(cl.cmd.cursor_end, cl.cmd.cursor_impact);
+		VectorClear(cl.cmd.cursor_normal);
+		cl.cmd.cursor_entitynumber = 0;
+	}
+	else
+		cl.cmd.cursor_fraction = CL_SelectTraceLine(cl.cmd.cursor_start, cl.cmd.cursor_end, cl.cmd.cursor_impact, cl.cmd.cursor_normal, &cl.cmd.cursor_entitynumber, (chase_active.integer || cl.intermission) ? &cl.entities[cl.playerentity].render : NULL);
+}
+
+#define NUMOFFSETS 27
+static vec3_t offsets[NUMOFFSETS] =
+{
+                                                            
+	{ 0.000,  0.000,  0.000},
+                  
+	{ 0.000,  0.000,  0.125}, { 0.000,  0.000, -0.125},
+	{-0.125,  0.000,  0.000}, { 0.125,  0.000,  0.000},
+	{ 0.000, -0.125,  0.000}, { 0.000,  0.125,  0.000},
+                         
+	{-0.125, -0.125,  0.000}, { 0.125, -0.125,  0.000},
+	{-0.125,  0.125,  0.000}, { 0.125,  0.125,  0.000},
+                           
+	{-0.125,  0.000,  0.125}, { 0.125,  0.000,  0.125},
+	{ 0.000, -0.125,  0.125}, { 0.000,  0.125,  0.125},
+	{-0.125, -0.125,  0.125}, { 0.125, -0.125,  0.125},
+	{-0.125,  0.125,  0.125}, { 0.125,  0.125,  0.125},
+                             
+	{-0.125,  0.000, -0.125}, { 0.125,  0.000, -0.125},
+	{ 0.000, -0.125, -0.125}, { 0.000,  0.125, -0.125},
+	{-0.125, -0.125, -0.125}, { 0.125, -0.125, -0.125},
+	{-0.125,  0.125, -0.125}, { 0.125,  0.125, -0.125},
+};
+
+static qboolean CL_ClientMovement_Unstick(cl_clientmovement_state_t *s)
+{
+	int i;
+	vec3_t neworigin;
+	for (i = 0;i < NUMOFFSETS;i++)
+	{
+		VectorAdd(offsets[i], s->origin, neworigin);
+		if (!CL_TraceBox(neworigin, cl.playercrouchmins, cl.playercrouchmaxs, neworigin, MOVE_NORMAL, s->self, SUPERCONTENTS_SOLID | SUPERCONTENTS_PLAYERCLIP, 0, 0, collision_extendmovelength.value, true, true, NULL, true).startsolid)
+		{
+			VectorCopy(neworigin, s->origin);
+			return true;
+		}
+	}
+	                                 
+	return false;
+}
+
+static void CL_ClientMovement_UpdateStatus(cl_clientmovement_state_t *s)
+{
+	vec_t f;
+	vec3_t origin1, origin2;
+	trace_t trace;
+
+	                                
+	CL_ClientMovement_Unstick(s);
+
+	               
+	if (s->cmd.crouch)
+	{
+		                                       
+		if (!s->crouched)
+			s->crouched = true;
+	}
+	else
+	{
+		                                                                
+		                    
+		if (s->crouched)
+		{
+			trace = CL_TraceBox(s->origin, cl.playerstandmins, cl.playerstandmaxs, s->origin, MOVE_NORMAL, s->self, SUPERCONTENTS_SOLID | SUPERCONTENTS_BODY | SUPERCONTENTS_PLAYERCLIP, 0, 0, collision_extendmovelength.value, true, true, NULL, true);
+			if (!trace.startsolid)
+				s->crouched = false;
+		}
+	}
+	if (s->crouched)
+	{
+		VectorCopy(cl.playercrouchmins, s->mins);
+		VectorCopy(cl.playercrouchmaxs, s->maxs);
+	}
+	else
+	{
+		VectorCopy(cl.playerstandmins, s->mins);
+		VectorCopy(cl.playerstandmaxs, s->maxs);
+	}
+
+	               
+	VectorSet(origin1, s->origin[0], s->origin[1], s->origin[2] + 1);
+	VectorSet(origin2, s->origin[0], s->origin[1], s->origin[2] - 1);                                                                                  
+	trace = CL_TraceBox(origin1, s->mins, s->maxs, origin2, MOVE_NORMAL, s->self, SUPERCONTENTS_SOLID | SUPERCONTENTS_BODY | SUPERCONTENTS_PLAYERCLIP, 0, 0, collision_extendmovelength.value, true, true, NULL, true);
+	if(trace.fraction < 1 && trace.plane.normal[2] > 0.7)
+	{
+		s->onground = true;
+
+		                                                                        
+		f = DotProduct(s->velocity, trace.plane.normal);
+		if(f < 0)                                     
+			VectorMA(s->velocity, -f, trace.plane.normal, s->velocity);
+	}
+	else
+		s->onground = false;
+
+	                           
+	VectorSet(origin1, s->origin[0], s->origin[1], s->origin[2] + s->mins[2] + 1);
+	s->waterlevel = WATERLEVEL_NONE;
+	s->watertype = CL_TracePoint(origin1, MOVE_NOMONSTERS, s->self, 0, 0, 0, true, false, NULL, false).startsupercontents & SUPERCONTENTS_LIQUIDSMASK;
+	if (s->watertype)
+	{
+		s->waterlevel = WATERLEVEL_WETFEET;
+		origin1[2] = s->origin[2] + (s->mins[2] + s->maxs[2]) * 0.5f;
+		if (CL_TracePoint(origin1, MOVE_NOMONSTERS, s->self, 0, 0, 0, true, false, NULL, false).startsupercontents & SUPERCONTENTS_LIQUIDSMASK)
+		{
+			s->waterlevel = WATERLEVEL_SWIMMING;
+			origin1[2] = s->origin[2] + 22;
+			if (CL_TracePoint(origin1, MOVE_NOMONSTERS, s->self, 0, 0, 0, true, false, NULL, false).startsupercontents & SUPERCONTENTS_LIQUIDSMASK)
+				s->waterlevel = WATERLEVEL_SUBMERGED;
+		}
+	}
+
+	                        
+	if (s->onground || s->velocity[2] <= 0 || s->waterjumptime <= 0)
+		s->waterjumptime = 0;
+}
+
+static void CL_ClientMovement_Move(cl_clientmovement_state_t *s)
+{
+	int bump;
+	double t;
+	vec_t f;
+	vec3_t neworigin;
+	vec3_t currentorigin2;
+	vec3_t neworigin2;
+	vec3_t primalvelocity;
+	trace_t trace;
+	trace_t trace2;
+	trace_t trace3;
+	CL_ClientMovement_UpdateStatus(s);
+	VectorCopy(s->velocity, primalvelocity);
+	for (bump = 0, t = s->cmd.frametime;bump < 8 && VectorLength2(s->velocity) > 0;bump++)
+	{
+		VectorMA(s->origin, t, s->velocity, neworigin);
+		trace = CL_TraceBox(s->origin, s->mins, s->maxs, neworigin, MOVE_NORMAL, s->self, SUPERCONTENTS_SOLID | SUPERCONTENTS_BODY | SUPERCONTENTS_PLAYERCLIP, 0, 0, collision_extendmovelength.value, true, true, NULL, true);
+		if (trace.fraction < 1 && trace.plane.normal[2] == 0)
+		{
+			                                         
+			                                       
+			VectorSet(currentorigin2, s->origin[0], s->origin[1], s->origin[2] + cl.movevars_stepheight);
+			VectorSet(neworigin2, neworigin[0], neworigin[1], s->origin[2] + cl.movevars_stepheight);
+			trace2 = CL_TraceBox(currentorigin2, s->mins, s->maxs, neworigin2, MOVE_NORMAL, s->self, SUPERCONTENTS_SOLID | SUPERCONTENTS_BODY | SUPERCONTENTS_PLAYERCLIP, 0, 0, collision_extendmovelength.value, true, true, NULL, true);
+			if (!trace2.startsolid)
+			{
+				                            
+				VectorCopy(trace2.endpos, currentorigin2);
+				VectorSet(neworigin2, trace2.endpos[0], trace2.endpos[1], s->origin[2]);
+				trace3 = CL_TraceBox(currentorigin2, s->mins, s->maxs, neworigin2, MOVE_NORMAL, s->self, SUPERCONTENTS_SOLID | SUPERCONTENTS_BODY | SUPERCONTENTS_PLAYERCLIP, 0, 0, collision_extendmovelength.value, true, true, NULL, true);
+				                                                                                                                                                                                                                                                                           
+				                                                
+				if (fabs(trace3.endpos[0] - trace.endpos[0]) >= 0.03125 || fabs(trace3.endpos[1] - trace.endpos[1]) >= 0.03125)
+				{
+					trace = trace2;
+					VectorCopy(trace3.endpos, trace.endpos);
+				}
+			}
+		}
+
+		                           
+		if (trace.fraction >= 0.001)
+			VectorCopy(trace.endpos, s->origin);
+
+		                                
+		if (trace.fraction == 1)
+			break;
+
+		                                                                                            
+		                                                                                    
+		                                                                                    
+		                                                                                         
+		if (trace.plane.normal[2] > 0.7)
+			s->onground = true;
+
+		t -= t * trace.fraction;
+
+		f = DotProduct(s->velocity, trace.plane.normal);
+		VectorMA(s->velocity, -f, trace.plane.normal, s->velocity);
+	}
+	if (s->waterjumptime > 0)
+		VectorCopy(primalvelocity, s->velocity);
+}
+
+
+static void CL_ClientMovement_Physics_Swim(cl_clientmovement_state_t *s)
+{
+	vec_t wishspeed;
+	vec_t f;
+	vec3_t wishvel;
+	vec3_t wishdir;
+
+	                                        
+	                              
+	if (s->cmd.jump && s->waterlevel == 2 && s->velocity[2] >= -180)
+	{
+		vec3_t forward;
+		vec3_t yawangles;
+		vec3_t spot;
+		VectorSet(yawangles, 0, s->cmd.viewangles[1], 0);
+		AngleVectors(yawangles, forward, NULL, NULL);
+		VectorMA(s->origin, 24, forward, spot);
+		spot[2] += 8;
+		if (CL_TracePoint(spot, MOVE_NOMONSTERS, s->self, 0, 0, 0, true, false, NULL, false).startsolid)
+		{
+			spot[2] += 24;
+			if (!CL_TracePoint(spot, MOVE_NOMONSTERS, s->self, 0, 0, 0, true, false, NULL, false).startsolid)
+			{
+				VectorScale(forward, 50, s->velocity);
+				s->velocity[2] = 310;
+				s->waterjumptime = 2;
+				s->onground = false;
+				s->cmd.canjump = false;
+			}
+		}
+	}
+
+	if (!(s->cmd.forwardmove*s->cmd.forwardmove + s->cmd.sidemove*s->cmd.sidemove + s->cmd.upmove*s->cmd.upmove))
+	{
+		                       
+		VectorSet(wishvel, 0, 0, -60);
+	}
+	else
+	{
+		       
+		vec3_t forward;
+		vec3_t right;
+		vec3_t up;
+		                            
+		AngleVectors(s->cmd.viewangles, forward, right, up);
+		VectorSet(up, 0, 0, 1);
+		VectorMAMAM(s->cmd.forwardmove, forward, s->cmd.sidemove, right, s->cmd.upmove, up, wishvel);
+	}
+
+	                                           
+	wishspeed = VectorLength(wishvel);
+	if (wishspeed)
+		VectorScale(wishvel, 1 / wishspeed, wishdir);
+	else
+		VectorSet( wishdir, 0.0, 0.0, 0.0 );
+	wishspeed = min(wishspeed, cl.movevars_maxspeed) * 0.7;
+
+	if (s->crouched)
+		wishspeed *= 0.5;
+
+	if (s->waterjumptime <= 0)
+	{
+		                 
+		f = 1 - s->cmd.frametime * cl.movevars_waterfriction * (cls.protocol == PROTOCOL_QUAKEWORLD ? s->waterlevel : 1);
+		f = bound(0, f, 1);
+		VectorScale(s->velocity, f, s->velocity);
+
+		                     
+		f = wishspeed - DotProduct(s->velocity, wishdir);
+		if (f > 0)
+		{
+			f = min(cl.movevars_wateraccelerate * s->cmd.frametime * wishspeed, f);
+			VectorMA(s->velocity, f, wishdir, s->velocity);
+		}
+
+		                                          
+		if (s->cmd.jump)
+		{
+			if (s->watertype & SUPERCONTENTS_LAVA)
+				s->velocity[2] =  50;
+			else if (s->watertype & SUPERCONTENTS_SLIME)
+				s->velocity[2] =  80;
+			else
+			{
+				if (IS_NEXUIZ_DERIVED(gamemode))
+					s->velocity[2] = 200;
+				else
+					s->velocity[2] = 100;
+			}
+		}
+	}
+
+	CL_ClientMovement_Move(s);
+}
+
+static vec_t CL_IsMoveInDirection(vec_t forward, vec_t side, vec_t angle)
+{
+	if(forward == 0 && side == 0)
+		return 0;                          
+	angle -= RAD2DEG(atan2(side, forward));
+	angle = (ANGLEMOD(angle + 180) - 180) / 45;
+	if(angle >  1)
+		return 0;
+	if(angle < -1)
+		return 0;
+	return 1 - fabs(angle);
+}
+
+static vec_t CL_GeomLerp(vec_t a, vec_t lerp, vec_t b)
+{
+	if(a == 0)
+	{
+		if(lerp < 1)
+			return 0;
+		else
+			return b;
+	}
+	if(b == 0)
+	{
+		if(lerp > 0)
+			return 0;
+		else
+			return a;
+	}
+	return a * pow(fabs(b / a), lerp);
+}
+
+static void CL_ClientMovement_Physics_CPM_PM_Aircontrol(cl_clientmovement_state_t *s, vec3_t wishdir, vec_t wishspeed)
+{
+	vec_t zspeed, speed, dot, k;
+
+#if 0
+	                                           
+	if(s->cmd.forwardmove == 0 || s->cmd.sidemove != 0)
+		return;
+	k = 32;
+#else
+	k = 32 * (2 * CL_IsMoveInDirection(s->cmd.forwardmove, s->cmd.sidemove, 0) - 1);
+	if(k <= 0)
+		return;
+#endif
+
+	k *= bound(0, wishspeed / cl.movevars_maxairspeed, 1);
+
+	zspeed = s->velocity[2];
+	s->velocity[2] = 0;
+	speed = VectorNormalizeLength(s->velocity);
+
+	dot = DotProduct(s->velocity, wishdir);
+
+	if(dot > 0) {                                                
+		k *= pow(dot, cl.movevars_aircontrol_power)*s->cmd.frametime;
+		speed = max(0, speed - cl.movevars_aircontrol_penalty * sqrt(max(0, 1 - dot*dot)) * k/32);
+		k *= cl.movevars_aircontrol;
+		VectorMAM(speed, s->velocity, k, wishdir, s->velocity);
+		VectorNormalize(s->velocity);
+	}
+
+	VectorScale(s->velocity, speed, s->velocity);
+	s->velocity[2] = zspeed;
+}
+
+static float CL_ClientMovement_Physics_AdjustAirAccelQW(float accelqw, float factor)
+{
+	return
+		(accelqw < 0 ? -1 : +1)
+		*
+		bound(0.000001, 1 - (1 - fabs(accelqw)) * factor, 1);
+}
+
+static void CL_ClientMovement_Physics_PM_Accelerate(cl_clientmovement_state_t *s, vec3_t wishdir, vec_t wishspeed, vec_t wishspeed0, vec_t accel, vec_t accelqw, vec_t stretchfactor, vec_t sidefric, vec_t speedlimit)
+{
+	vec_t vel_straight;
+	vec_t vel_z;
+	vec3_t vel_perpend;
+	vec_t step;
+	vec3_t vel_xy;
+	vec_t vel_xy_current;
+	vec_t vel_xy_backward, vel_xy_forward;
+	vec_t speedclamp;
+
+	if(stretchfactor > 0)
+		speedclamp = stretchfactor;
+	else if(accelqw < 0)
+		speedclamp = 1;
+	else
+		speedclamp = -1;               
+
+	if(accelqw < 0)
+		accelqw = -accelqw;
+
+	if(cl.moveflags & MOVEFLAG_Q2AIRACCELERATE)
+		wishspeed0 = wishspeed;                                     
+
+	vel_straight = DotProduct(s->velocity, wishdir);
+	vel_z = s->velocity[2];
+	VectorCopy(s->velocity, vel_xy); vel_xy[2] -= vel_z;
+	VectorMA(vel_xy, -vel_straight, wishdir, vel_perpend);
+
+	step = accel * s->cmd.frametime * wishspeed0;
+
+	vel_xy_current  = VectorLength(vel_xy);
+	if(speedlimit > 0)
+		accelqw = CL_ClientMovement_Physics_AdjustAirAccelQW(accelqw, (speedlimit - bound(wishspeed, vel_xy_current, speedlimit)) / max(1, speedlimit - wishspeed));
+	vel_xy_forward  = vel_xy_current + bound(0, wishspeed - vel_xy_current, step) * accelqw + step * (1 - accelqw);
+	vel_xy_backward = vel_xy_current - bound(0, wishspeed + vel_xy_current, step) * accelqw - step * (1 - accelqw);
+	if(vel_xy_backward < 0)
+		vel_xy_backward = 0;                                                                              
+
+	vel_straight    = vel_straight   + bound(0, wishspeed - vel_straight,   step) * accelqw + step * (1 - accelqw);
+
+	if(sidefric < 0 && VectorLength2(vel_perpend))
+		                                                                                                    
+	{
+		vec_t f, fmin;
+		f = max(0, 1 + s->cmd.frametime * wishspeed * sidefric);
+		fmin = (vel_xy_backward*vel_xy_backward - vel_straight*vel_straight) / VectorLength2(vel_perpend);
+		                   
+		                                                                                        
+		                                                                                        
+		                                                    
+		                            
+		if(fmin <= 0)
+			VectorScale(vel_perpend, f, vel_perpend);
+		else
+		{
+			fmin = sqrt(fmin);
+			VectorScale(vel_perpend, max(fmin, f), vel_perpend);
+		}
+	}
+	else
+		VectorScale(vel_perpend, max(0, 1 - s->cmd.frametime * wishspeed * sidefric), vel_perpend);
+
+	VectorMA(vel_perpend, vel_straight, wishdir, s->velocity);
+
+	if(speedclamp >= 0)
+	{
+		vec_t vel_xy_preclamp;
+		vel_xy_preclamp = VectorLength(s->velocity);
+		if(vel_xy_preclamp > 0)                            
+		{
+			vel_xy_current += (vel_xy_forward - vel_xy_current) * speedclamp;
+			if(vel_xy_current < vel_xy_preclamp)
+				VectorScale(s->velocity, (vel_xy_current / vel_xy_preclamp), s->velocity);
+		}
+	}
+
+	s->velocity[2] += vel_z;
+}
+
+static void CL_ClientMovement_Physics_PM_AirAccelerate(cl_clientmovement_state_t *s, vec3_t wishdir, vec_t wishspeed)
+{
+    vec3_t curvel, wishvel, acceldir, curdir;
+    float addspeed, accelspeed, curspeed;
+    float dot;
+
+    float airforwardaccel = cl.movevars_warsowbunny_airforwardaccel;
+    float bunnyaccel = cl.movevars_warsowbunny_accel;
+    float bunnytopspeed = cl.movevars_warsowbunny_topspeed;
+    float turnaccel = cl.movevars_warsowbunny_turnaccel;
+    float backtosideratio = cl.movevars_warsowbunny_backtosideratio;
+
+    if( !wishspeed )
+        return;
+
+    VectorCopy( s->velocity, curvel );
+    curvel[2] = 0;
+    curspeed = VectorLength( curvel );
+
+    if( wishspeed > curspeed * 1.01f )
+    {
+        float faccelspeed = curspeed + airforwardaccel * cl.movevars_maxairspeed * s->cmd.frametime;
+        if( faccelspeed < wishspeed )
+            wishspeed = faccelspeed;
+    }
+    else
+    {
+        float f = ( bunnytopspeed - curspeed ) / ( bunnytopspeed - cl.movevars_maxairspeed );
+        if( f < 0 )
+            f = 0;
+        wishspeed = max( curspeed, cl.movevars_maxairspeed ) + bunnyaccel * f * cl.movevars_maxairspeed * s->cmd.frametime;
+    }
+    VectorScale( wishdir, wishspeed, wishvel );
+    VectorSubtract( wishvel, curvel, acceldir );
+    addspeed = VectorNormalizeLength( acceldir );
+
+    accelspeed = turnaccel * cl.movevars_maxairspeed                 * s->cmd.frametime;
+    if( accelspeed > addspeed )
+        accelspeed = addspeed;
+
+    if( backtosideratio < 1.0f )
+    {
+        VectorNormalize2( curvel, curdir );
+        dot = DotProduct( acceldir, curdir );
+        if( dot < 0 )
+            VectorMA( acceldir, -( 1.0f - backtosideratio ) * dot, curdir, acceldir );
+    }
+
+    VectorMA( s->velocity, accelspeed, acceldir, s->velocity );
+}
+
+static void CL_ClientMovement_Physics_Walk(cl_clientmovement_state_t *s)
+{
+	vec_t friction;
+	vec_t wishspeed;
+	vec_t addspeed;
+	vec_t accelspeed;
+	vec_t f;
+	vec_t gravity;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
+	vec3_t wishvel;
+	vec3_t wishdir;
+	vec3_t yawangles;
+	trace_t trace;
+
+	                                                                     
+	                                             
+	if (s->cmd.jump)
+	{
+		if (s->onground && (s->cmd.canjump || !cl_movement_track_canjump.integer))
+		{
+			s->velocity[2] += cl.movevars_jumpvelocity;
+			s->onground = false;
+			s->cmd.canjump = false;
+		}
+	}
+	else
+		s->cmd.canjump = true;
+
+	                            
+	VectorSet(yawangles, 0, s->cmd.viewangles[1], 0);
+	AngleVectors(yawangles, forward, right, up);
+	VectorMAM(s->cmd.forwardmove, forward, s->cmd.sidemove, right, wishvel);
+
+	                                           
+	wishspeed = VectorLength(wishvel);
+	if (wishspeed)
+		VectorScale(wishvel, 1 / wishspeed, wishdir);
+	else
+		VectorSet( wishdir, 0.0, 0.0, 0.0 );
+	                    
+	if (s->onground)
+	{
+		wishspeed = min(wishspeed, cl.movevars_maxspeed);
+		if (s->crouched)
+			wishspeed *= 0.5;
+
+		                      
+		f = sqrt(s->velocity[0] * s->velocity[0] + s->velocity[1] * s->velocity[1]);
+		if (f > 0)
+		{
+			friction = cl.movevars_friction;
+			if (cl.movevars_edgefriction != 1)
+			{
+				vec3_t neworigin2;
+				vec3_t neworigin3;
+				                                                                 
+				                                                               
+				                                   
+				VectorSet(neworigin2, s->origin[0] + s->velocity[0]*(16/f), s->origin[1] + s->velocity[1]*(16/f), s->origin[2] + s->mins[2]);
+				VectorSet(neworigin3, neworigin2[0], neworigin2[1], neworigin2[2] - 34);
+				if (cls.protocol == PROTOCOL_QUAKEWORLD)
+					trace = CL_TraceBox(neworigin2, s->mins, s->maxs, neworigin3, MOVE_NORMAL, s->self, SUPERCONTENTS_SOLID | SUPERCONTENTS_BODY | SUPERCONTENTS_PLAYERCLIP, 0, 0, collision_extendmovelength.value, true, true, NULL, true);
+				else
+					trace = CL_TraceLine(neworigin2, neworigin3, MOVE_NORMAL, s->self, SUPERCONTENTS_SOLID | SUPERCONTENTS_BODY | SUPERCONTENTS_PLAYERCLIP, 0, 0, collision_extendmovelength.value, true, true, NULL, true, false);
+				if (trace.fraction == 1 && !trace.startsolid)
+					friction *= cl.movevars_edgefriction;
+			}
+			                        
+			f = 1 - s->cmd.frametime * friction * ((f < cl.movevars_stopspeed) ? (cl.movevars_stopspeed / f) : 1);
+			f = max(f, 0);
+			VectorScale(s->velocity, f, s->velocity);
+		}
+		addspeed = wishspeed - DotProduct(s->velocity, wishdir);
+		if (addspeed > 0)
+		{
+			accelspeed = min(cl.movevars_accelerate * s->cmd.frametime * wishspeed, addspeed);
+			VectorMA(s->velocity, accelspeed, wishdir, s->velocity);
+		}
+		gravity = cl.movevars_gravity * cl.movevars_entgravity * s->cmd.frametime;
+		if(!(cl.moveflags & MOVEFLAG_NOGRAVITYONGROUND))
+		{
+			if(cl.moveflags & MOVEFLAG_GRAVITYUNAFFECTEDBYTICRATE)
+				s->velocity[2] -= gravity * 0.5f;
+			else
+				s->velocity[2] -= gravity;
+		}
+		if (cls.protocol == PROTOCOL_QUAKEWORLD)
+			s->velocity[2] = 0;
+		if (VectorLength2(s->velocity))
+			CL_ClientMovement_Move(s);
+		if(!(cl.moveflags & MOVEFLAG_NOGRAVITYONGROUND) || !s->onground)
+		{
+			if(cl.moveflags & MOVEFLAG_GRAVITYUNAFFECTEDBYTICRATE)
+				s->velocity[2] -= gravity * 0.5f;
+		}
+	}
+	else
+	{
+		if (s->waterjumptime <= 0)
+		{
+			                        
+			vec_t accel, wishspeed0, wishspeed2, accelqw, strafity;
+			qboolean accelerating;
+
+			accelqw = cl.movevars_airaccel_qw;
+			wishspeed0 = wishspeed;
+			wishspeed = min(wishspeed, cl.movevars_maxairspeed);
+			if (s->crouched)
+				wishspeed *= 0.5;
+			accel = cl.movevars_airaccelerate;
+
+			accelerating = (DotProduct(s->velocity, wishdir) > 0);
+			wishspeed2 = wishspeed;
+
+			                   
+			if(cl.movevars_airstopaccelerate != 0)
+			{
+				vec3_t curdir;
+				curdir[0] = s->velocity[0];
+				curdir[1] = s->velocity[1];
+				curdir[2] = 0;
+				VectorNormalize(curdir);
+				accel = accel + (cl.movevars_airstopaccelerate - accel) * max(0, -DotProduct(curdir, wishdir));
+			}
+			strafity = CL_IsMoveInDirection(s->cmd.forwardmove, s->cmd.sidemove, -90) + CL_IsMoveInDirection(s->cmd.forwardmove, s->cmd.sidemove, +90);                                           
+			if(cl.movevars_maxairstrafespeed)
+				wishspeed = min(wishspeed, CL_GeomLerp(cl.movevars_maxairspeed, strafity, cl.movevars_maxairstrafespeed));
+			if(cl.movevars_airstrafeaccelerate)
+				accel = CL_GeomLerp(cl.movevars_airaccelerate, strafity, cl.movevars_airstrafeaccelerate);
+			if(cl.movevars_airstrafeaccel_qw)
+				accelqw =
+					(((strafity > 0.5 ? cl.movevars_airstrafeaccel_qw : cl.movevars_airaccel_qw) >= 0) ? +1 : -1)
+					*
+					(1 - CL_GeomLerp(1 - fabs(cl.movevars_airaccel_qw), strafity, 1 - fabs(cl.movevars_airstrafeaccel_qw)));
+			       
+
+			if(cl.movevars_warsowbunny_turnaccel && accelerating && s->cmd.sidemove == 0 && s->cmd.forwardmove != 0)
+				CL_ClientMovement_Physics_PM_AirAccelerate(s, wishdir, wishspeed2);
+			else
+				CL_ClientMovement_Physics_PM_Accelerate(s, wishdir, wishspeed, wishspeed0, accel, accelqw, cl.movevars_airaccel_qw_stretchfactor, cl.movevars_airaccel_sideways_friction / cl.movevars_maxairspeed, cl.movevars_airspeedlimit_nonqw);
+
+			if(cl.movevars_aircontrol)
+				CL_ClientMovement_Physics_CPM_PM_Aircontrol(s, wishdir, wishspeed2);
+		}
+		gravity = cl.movevars_gravity * cl.movevars_entgravity * s->cmd.frametime;
+		if(cl.moveflags & MOVEFLAG_GRAVITYUNAFFECTEDBYTICRATE)
+			s->velocity[2] -= gravity * 0.5f;
+		else
+			s->velocity[2] -= gravity;
+		CL_ClientMovement_Move(s);
+		if(!(cl.moveflags & MOVEFLAG_NOGRAVITYONGROUND) || !s->onground)
+		{
+			if(cl.moveflags & MOVEFLAG_GRAVITYUNAFFECTEDBYTICRATE)
+				s->velocity[2] -= gravity * 0.5f;
+		}
+	}
+}
+
+static void CL_ClientMovement_PlayerMove(cl_clientmovement_state_t *s)
+{
+	                               
+	if (!s->cmd.jump)
+		s->cmd.canjump = true;
+	s->waterjumptime -= s->cmd.frametime;
+	CL_ClientMovement_UpdateStatus(s);
+	if (s->waterlevel >= WATERLEVEL_SWIMMING)
+		CL_ClientMovement_Physics_Swim(s);
+	else
+		CL_ClientMovement_Physics_Walk(s);
+}
+
+extern cvar_t slowmo;
+void CL_UpdateMoveVars(void)
+{
+	if (cls.protocol == PROTOCOL_QUAKEWORLD)
+	{
+		cl.moveflags = 0;
+	}
+	else if (cl.stats[STAT_MOVEVARS_TICRATE])
+	{
+		cl.moveflags = cl.stats[STAT_MOVEFLAGS];
+		cl.movevars_ticrate = cl.statsf[STAT_MOVEVARS_TICRATE];
+		cl.movevars_timescale = cl.statsf[STAT_MOVEVARS_TIMESCALE];
+		cl.movevars_gravity = cl.statsf[STAT_MOVEVARS_GRAVITY];
+		cl.movevars_stopspeed = cl.statsf[STAT_MOVEVARS_STOPSPEED] ;
+		cl.movevars_maxspeed = cl.statsf[STAT_MOVEVARS_MAXSPEED];
+		cl.movevars_spectatormaxspeed = cl.statsf[STAT_MOVEVARS_SPECTATORMAXSPEED];
+		cl.movevars_accelerate = cl.statsf[STAT_MOVEVARS_ACCELERATE];
+		cl.movevars_airaccelerate = cl.statsf[STAT_MOVEVARS_AIRACCELERATE];
+		cl.movevars_wateraccelerate = cl.statsf[STAT_MOVEVARS_WATERACCELERATE];
+		cl.movevars_entgravity = cl.statsf[STAT_MOVEVARS_ENTGRAVITY];
+		cl.movevars_jumpvelocity = cl.statsf[STAT_MOVEVARS_JUMPVELOCITY];
+		cl.movevars_edgefriction = cl.statsf[STAT_MOVEVARS_EDGEFRICTION];
+		cl.movevars_maxairspeed = cl.statsf[STAT_MOVEVARS_MAXAIRSPEED];
+		cl.movevars_stepheight = cl.statsf[STAT_MOVEVARS_STEPHEIGHT];
+		cl.movevars_airaccel_qw = cl.statsf[STAT_MOVEVARS_AIRACCEL_QW];
+		cl.movevars_airaccel_qw_stretchfactor = cl.statsf[STAT_MOVEVARS_AIRACCEL_QW_STRETCHFACTOR];
+		cl.movevars_airaccel_sideways_friction = cl.statsf[STAT_MOVEVARS_AIRACCEL_SIDEWAYS_FRICTION];
+		cl.movevars_friction = cl.statsf[STAT_MOVEVARS_FRICTION];
+		cl.movevars_wallfriction = cl.statsf[STAT_MOVEVARS_WALLFRICTION];
+		cl.movevars_waterfriction = cl.statsf[STAT_MOVEVARS_WATERFRICTION];
+		cl.movevars_airstopaccelerate = cl.statsf[STAT_MOVEVARS_AIRSTOPACCELERATE];
+		cl.movevars_airstrafeaccelerate = cl.statsf[STAT_MOVEVARS_AIRSTRAFEACCELERATE];
+		cl.movevars_maxairstrafespeed = cl.statsf[STAT_MOVEVARS_MAXAIRSTRAFESPEED];
+		cl.movevars_airstrafeaccel_qw = cl.statsf[STAT_MOVEVARS_AIRSTRAFEACCEL_QW];
+		cl.movevars_aircontrol = cl.statsf[STAT_MOVEVARS_AIRCONTROL];
+		cl.movevars_aircontrol_power = cl.statsf[STAT_MOVEVARS_AIRCONTROL_POWER];
+		cl.movevars_aircontrol_penalty = cl.statsf[STAT_MOVEVARS_AIRCONTROL_PENALTY];
+		cl.movevars_warsowbunny_airforwardaccel = cl.statsf[STAT_MOVEVARS_WARSOWBUNNY_AIRFORWARDACCEL];
+		cl.movevars_warsowbunny_accel = cl.statsf[STAT_MOVEVARS_WARSOWBUNNY_ACCEL];
+		cl.movevars_warsowbunny_topspeed = cl.statsf[STAT_MOVEVARS_WARSOWBUNNY_TOPSPEED];
+		cl.movevars_warsowbunny_turnaccel = cl.statsf[STAT_MOVEVARS_WARSOWBUNNY_TURNACCEL];
+		cl.movevars_warsowbunny_backtosideratio = cl.statsf[STAT_MOVEVARS_WARSOWBUNNY_BACKTOSIDERATIO];
+		cl.movevars_airspeedlimit_nonqw = cl.statsf[STAT_MOVEVARS_AIRSPEEDLIMIT_NONQW];
+	}
+	else
+	{
+		cl.moveflags = 0;
+		cl.movevars_ticrate = (cls.demoplayback ? 1.0f : slowmo.value) / bound(1.0f, cl_netfps.value, 1000.0f);
+		cl.movevars_timescale = (cls.demoplayback ? 1.0f : slowmo.value);
+		cl.movevars_gravity = sv_gravity.value;
+		cl.movevars_stopspeed = cl_movement_stopspeed.value;
+		cl.movevars_maxspeed = cl_movement_maxspeed.value;
+		cl.movevars_spectatormaxspeed = cl_movement_maxspeed.value;
+		cl.movevars_accelerate = cl_movement_accelerate.value;
+		cl.movevars_airaccelerate = cl_movement_airaccelerate.value < 0 ? cl_movement_accelerate.value : cl_movement_airaccelerate.value;
+		cl.movevars_wateraccelerate = cl_movement_wateraccelerate.value < 0 ? cl_movement_accelerate.value : cl_movement_wateraccelerate.value;
+		cl.movevars_friction = cl_movement_friction.value;
+		cl.movevars_wallfriction = cl_movement_wallfriction.value;
+		cl.movevars_waterfriction = cl_movement_waterfriction.value < 0 ? cl_movement_friction.value : cl_movement_waterfriction.value;
+		cl.movevars_entgravity = 1;
+		cl.movevars_jumpvelocity = cl_movement_jumpvelocity.value;
+		cl.movevars_edgefriction = cl_movement_edgefriction.value;
+		cl.movevars_maxairspeed = cl_movement_maxairspeed.value;
+		cl.movevars_stepheight = cl_movement_stepheight.value;
+		cl.movevars_airaccel_qw = cl_movement_airaccel_qw.value;
+		cl.movevars_airaccel_qw_stretchfactor = 0;
+		cl.movevars_airaccel_sideways_friction = cl_movement_airaccel_sideways_friction.value;
+		cl.movevars_airstopaccelerate = 0;
+		cl.movevars_airstrafeaccelerate = 0;
+		cl.movevars_maxairstrafespeed = 0;
+		cl.movevars_airstrafeaccel_qw = 0;
+		cl.movevars_aircontrol = 0;
+		cl.movevars_aircontrol_power = 2;
+		cl.movevars_aircontrol_penalty = 0;
+		cl.movevars_warsowbunny_airforwardaccel = 0;
+		cl.movevars_warsowbunny_accel = 0;
+		cl.movevars_warsowbunny_topspeed = 0;
+		cl.movevars_warsowbunny_turnaccel = 0;
+		cl.movevars_warsowbunny_backtosideratio = 0;
+		cl.movevars_airspeedlimit_nonqw = 0;
+	}
+
+	if(!(cl.moveflags & MOVEFLAG_VALID))
+	{
+		if(gamemode == GAME_NEXUIZ)                                                    
+			cl.moveflags = MOVEFLAG_Q2AIRACCELERATE;
+	}
+
+	if(cl.movevars_aircontrol_power <= 0)
+		cl.movevars_aircontrol_power = 2;                
+}
+
+void CL_ClientMovement_PlayerMove_Frame(cl_clientmovement_state_t *s)
+{
+	                                                                  
+	                                
+	if(s->cmd.frametime > 0.0005)
+	{
+		if (s->cmd.frametime > 0.05)
+		{
+			s->cmd.frametime /= 2;
+			CL_ClientMovement_PlayerMove(s);
+		}
+		CL_ClientMovement_PlayerMove(s);
+	}
+	else
+	{
+		                                                                           
+		if (!s->cmd.jump)
+			s->cmd.canjump = true;
+	}
+}
+
+void CL_ClientMovement_Replay(void)
+{
+	int i;
+	double totalmovemsec;
+	cl_clientmovement_state_t s;
+
+	VectorCopy(cl.mvelocity[0], cl.movement_velocity);
+
+	if (cl.movement_predicted && !cl.movement_replay)
+		return;
+
+	if (!cl_movement_replay.integer)
+		return;
+
+	                                                
+	memset(&s, 0, sizeof(s));
+	VectorCopy(cl.entities[cl.playerentity].state_current.origin, s.origin);
+	VectorCopy(cl.mvelocity[0], s.velocity);
+	s.crouched = true;                                 
+	                                                                                                                                                         
+
+	totalmovemsec = 0;
+	for (i = 0;i < CL_MAX_USERCMDS;i++)
+		if (cl.movecmd[i].sequence > cls.servermovesequence)
+			totalmovemsec += cl.movecmd[i].msec;
+	cl.movement_predicted = totalmovemsec >= cl_movement_minping.value && cls.servermovesequence && (cl_movement.integer && !cls.demoplayback && cls.signon == SIGNONS && cl.stats[STAT_HEALTH] > 0 && !cl.intermission);
+	                                                                                                                                                                                                                                                                                  
+	if (cl.movement_predicted)
+	{
+		                                           
+
+		                                                     
+		                                                                         
+
+		                                
+		for (i = 0;i < CL_MAX_USERCMDS;i++)
+			if (cl.movecmd[i].sequence <= cls.servermovesequence)
+				break;
+		                                          
+		for (i--;i >= 0;i--)
+		{
+			s.cmd = cl.movecmd[i];
+			if (i < CL_MAX_USERCMDS - 1)
+				s.cmd.canjump = cl.movecmd[i+1].canjump;
+
+			CL_ClientMovement_PlayerMove_Frame(&s);
+
+			cl.movecmd[i].canjump = s.cmd.canjump;
+		}
+		                   
+		CL_ClientMovement_UpdateStatus(&s);
+	}
+	else
+	{
+		                                                                        
+		s.cmd = cl.movecmd[0];
+	}
+
+	if (!cls.demoplayback)                        
+	{
+		cl.movement_replay = false;
+		                                                        
+		VectorCopy(s.origin, cl.movement_origin);
+		VectorCopy(s.velocity, cl.movement_velocity);
+	}
+
+	                                          
+	if (cl.movement_predicted)
+	{
+		                                                                      
+		cl.onground = s.onground;
+	}
+	else
+	{
+		                                                                     
+		                                                                  
+		                                              
+		                                                                      
+		                                                              
+		                                           
+		  
+		                                                                  
+		                                                              
+		if (s.onground)
+			cl.onground = true;
+	}
+}
+
+static void QW_MSG_WriteDeltaUsercmd(sizebuf_t *buf, usercmd_t *from, usercmd_t *to)
+{
+	int bits;
+
+	bits = 0;
+	if (to->viewangles[0] != from->viewangles[0])
+		bits |= QW_CM_ANGLE1;
+	if (to->viewangles[1] != from->viewangles[1])
+		bits |= QW_CM_ANGLE2;
+	if (to->viewangles[2] != from->viewangles[2])
+		bits |= QW_CM_ANGLE3;
+	if (to->forwardmove != from->forwardmove)
+		bits |= QW_CM_FORWARD;
+	if (to->sidemove != from->sidemove)
+		bits |= QW_CM_SIDE;
+	if (to->upmove != from->upmove)
+		bits |= QW_CM_UP;
+	if (to->buttons != from->buttons)
+		bits |= QW_CM_BUTTONS;
+	if (to->impulse != from->impulse)
+		bits |= QW_CM_IMPULSE;
+
+	MSG_WriteByte(buf, bits);
+	if (bits & QW_CM_ANGLE1)
+		MSG_WriteAngle16i(buf, to->viewangles[0]);
+	if (bits & QW_CM_ANGLE2)
+		MSG_WriteAngle16i(buf, to->viewangles[1]);
+	if (bits & QW_CM_ANGLE3)
+		MSG_WriteAngle16i(buf, to->viewangles[2]);
+	if (bits & QW_CM_FORWARD)
+		MSG_WriteShort(buf, (short) to->forwardmove);
+	if (bits & QW_CM_SIDE)
+		MSG_WriteShort(buf, (short) to->sidemove);
+	if (bits & QW_CM_UP)
+		MSG_WriteShort(buf, (short) to->upmove);
+	if (bits & QW_CM_BUTTONS)
+		MSG_WriteByte(buf, to->buttons);
+	if (bits & QW_CM_IMPULSE)
+		MSG_WriteByte(buf, to->impulse);
+	MSG_WriteByte(buf, to->msec);
+}
+
+void CL_NewFrameReceived(int num)
+{
+	if (developer_networkentities.integer >= 10)
+		Con_Printf("recv: svc_entities %i\n", num);
+	cl.latestframenums[cl.latestframenumsposition] = num;
+	cl.latestsendnums[cl.latestframenumsposition] = cl.cmd.sequence;
+	cl.latestframenumsposition = (cl.latestframenumsposition + 1) % LATESTFRAMENUMS;
+}
+
+void CL_RotateMoves(const matrix4x4_t *m)
+{
+	                                          
+	vec3_t v;
+	vec3_t f, r, u;
+	int i;
+	for (i = 0;i < CL_MAX_USERCMDS;i++)
+	{
+		if (cl.movecmd[i].sequence > cls.servermovesequence)
+		{
+			usercmd_t *c = &cl.movecmd[i];
+			AngleVectors(c->viewangles, f, r, u);
+			Matrix4x4_Transform(m, f, v); VectorCopy(v, f);
+			Matrix4x4_Transform(m, u, v); VectorCopy(v, u);
+			AnglesFromVectors(c->viewangles, f, u, false);
+		}
+	}
+}
+
+  
+              
+           
+              
+  
+usercmd_t nullcmd;                                     
+void CL_SendMove(void)
+{
+	int i, j, packetloss;
+	int checksumindex;
+	int bits;
+	int maxusercmds;
+	usercmd_t *cmd;
+	sizebuf_t buf;
+	unsigned char data[1024];
+	double packettime;
+	int msecdelta;
+	qboolean quemove;
+	qboolean important;
+
+	                                
+	if (!cls.netcon)
+		return;
+
+	                                                                    
+	quemove = realtime - cl.last_received_message < cl_movement_nettimeout.value;
+
+	                                                            
+	                                                                        
+	                                                       
+	cl.cmd.time = cl.time;
+	cl.cmd.sequence = cls.netcon->outgoing_unreliable_sequence;
+
+	                  
+	                                                                                           
+	bits = 0;
+	if (in_attack.state   & 3) bits |=   1;
+	if (in_jump.state     & 3) bits |=   2;
+	if (in_button3.state  & 3) bits |=   4;
+	if (in_button4.state  & 3) bits |=   8;
+	if (in_button5.state  & 3) bits |=  16;
+	if (in_button6.state  & 3) bits |=  32;
+	if (in_button7.state  & 3) bits |=  64;
+	if (in_button8.state  & 3) bits |= 128;
+	if (in_use.state      & 3) bits |= 256;
+	if (key_dest != key_game || key_consoleactive) bits |= 512;
+	if (cl_prydoncursor.integer > 0) bits |= 1024;
+	if (in_button9.state  & 3)  bits |=   2048;
+	if (in_button10.state  & 3) bits |=   4096;
+	if (in_button11.state  & 3) bits |=   8192;
+	if (in_button12.state  & 3) bits |=  16384;
+	if (in_button13.state  & 3) bits |=  32768;
+	if (in_button14.state  & 3) bits |=  65536;
+	if (in_button15.state  & 3) bits |= 131072;
+	if (in_button16.state  & 3) bits |= 262144;
+	                                     
+	                                                                                 
+	if(cl_prydoncursor.integer > 0)
+	{
+		if (cl.cmd.cursor_screen[0] <= -1) bits |= 8;
+		if (cl.cmd.cursor_screen[0] >=  1) bits |= 16;
+		if (cl.cmd.cursor_screen[1] <= -1) bits |= 32;
+		if (cl.cmd.cursor_screen[1] >=  1) bits |= 64;
+	}
+
+	                          
+	cl.cmd.buttons = bits;
+	cl.cmd.impulse = in_impulse;
+
+	                 
+	VectorCopy(cl.viewangles, cl.cmd.viewangles);
+	Capture_ApplyUsercmd(&cl.cmd);
+
+	msecdelta = (int)(floor(cl.cmd.time * 1000) - floor(cl.movecmd[1].time * 1000));
+	cl.cmd.msec = (unsigned char)bound(0, msecdelta, 255);
+	                                          
+	if (cl.cmd.msec > 250)
+		cl.cmd.msec = 100;
+	cl.cmd.frametime = cl.cmd.msec * (1.0 / 1000.0);
+
+	switch(cls.protocol)
+	{
+	case PROTOCOL_QUAKEWORLD:
+		                                                                            
+		cl.cmd.predicted = cl_nopred.integer == 0;
+		break;
+	case PROTOCOL_DARKPLACES6:
+	case PROTOCOL_DARKPLACES7:
+		cl.cmd.predicted = cl_movement.integer != 0;
+		break;
+	default:
+		cl.cmd.predicted = false;
+		break;
+	}
+
+	                                                              
+	                                                                                                
+	if (cl.cmd.sequence <= 2)
+		cl.cmd.forwardmove = cl.cmd.sidemove = cl.cmd.upmove = cl.cmd.impulse = cl.cmd.buttons = 0;
+
+	cl.cmd.jump = (cl.cmd.buttons & 2) != 0;
+	cl.cmd.crouch = 0;
+	switch (cls.protocol)
+	{
+	case PROTOCOL_QUAKEWORLD:
+	case PROTOCOL_QUAKE:
+	case PROTOCOL_QUAKEDP:
+	case PROTOCOL_NEHAHRAMOVIE:
+	case PROTOCOL_NEHAHRABJP:
+	case PROTOCOL_NEHAHRABJP2:
+	case PROTOCOL_NEHAHRABJP3:
+	case PROTOCOL_DARKPLACES1:
+	case PROTOCOL_DARKPLACES2:
+	case PROTOCOL_DARKPLACES3:
+	case PROTOCOL_DARKPLACES4:
+	case PROTOCOL_DARKPLACES5:
+		break;
+	case PROTOCOL_DARKPLACES6:
+	case PROTOCOL_DARKPLACES7:
+		                                                                  
+		cl.cmd.crouch = (cl.cmd.buttons & 16) != 0;
+		break;
+	case PROTOCOL_UNKNOWN:
+		break;
+	}
+
+	if (quemove)
+		cl.movecmd[0] = cl.cmd;
+
+	                                 
+	if (realtime >= cl.lastpackettime + 0.005)
+		cl.movement_replay = true;                       
+
+	                                                
+	                                        
+
+	                                                                        
+	                          
+	packettime = 1.0 / bound(1, cl_netfps.value, 1000);
+	if (cl.movevars_timescale && cl.movevars_ticrate)
+	{
+		float maxtic = cl.movevars_ticrate / cl.movevars_timescale;
+		packettime = min(packettime, maxtic);
+	}
+
+	                                                       
+	if(cl.cmd.msec == 0 && cl.time > cl.oldtime && (cls.protocol == PROTOCOL_QUAKEWORLD || cls.signon == SIGNONS))
+		return;
+	                                                          
+	                                      
+	important = (cl.cmd.impulse || (cl_netimmediatebuttons.integer && cl.cmd.buttons != cl.movecmd[1].buttons));
+	                                   
+	if (!important && realtime < cl.lastpackettime + packettime)
+		return;
+	                                                            
+	                                                                 
+	                                                                  
+	                                                       
+	                                        
+	if (!NetConn_CanSend(cls.netcon) && !important)
+		return;
+	                                                                           
+	                                                    
+	if (packettime > 0)
+		cl.lastpackettime = floor(realtime / packettime) * packettime;
+	else
+		cl.lastpackettime = realtime;
+
+	buf.maxsize = sizeof(data);
+	buf.cursize = 0;
+	buf.data = data;
+
+	                            
+	                                                  
+	                                                  
+	                                                  
+	                                                  
+	                                                  
+	                                                  
+	                                                  
+	                                                  
+	                                                  
+	                                                                                   
+	                                                                                                                  
+
+	                         
+	CL_UpdatePrydonCursor();
+
+	if (cls.protocol == PROTOCOL_QUAKEWORLD || cls.signon == SIGNONS)
+	{
+		switch (cls.protocol)
+		{
+		case PROTOCOL_QUAKEWORLD:
+			MSG_WriteByte(&buf, qw_clc_move);
+			                                        
+			checksumindex = buf.cursize;
+			MSG_WriteByte(&buf, 0);
+			                         
+			for (j = 0, packetloss = 0;j < NETGRAPH_PACKETS;j++)
+				if (cls.netcon->incoming_netgraph[j].unreliablebytes == NETGRAPH_LOSTPACKET)
+					packetloss++;
+			packetloss = packetloss * 100 / NETGRAPH_PACKETS;
+			MSG_WriteByte(&buf, packetloss);
+			                            
+			QW_MSG_WriteDeltaUsercmd(&buf, &nullcmd, &cl.movecmd[2]);
+			QW_MSG_WriteDeltaUsercmd(&buf, &cl.movecmd[2], &cl.movecmd[1]);
+			QW_MSG_WriteDeltaUsercmd(&buf, &cl.movecmd[1], &cl.cmd);
+			                         
+			buf.data[checksumindex] = COM_BlockSequenceCRCByteQW(buf.data + checksumindex + 1, buf.cursize - checksumindex - 1, cls.netcon->outgoing_unreliable_sequence);
+			                                                           
+			if (cls.netcon->outgoing_unreliable_sequence - cl.qw_validsequence >= QW_UPDATE_BACKUP-1)
+				cl.qw_validsequence = 0;
+			                                           
+			if (cl.qw_validsequence && !cl_nodelta.integer && cls.state == ca_connected && !cls.demorecording)
+			{
+				cl.qw_deltasequence[cls.netcon->outgoing_unreliable_sequence & QW_UPDATE_MASK] = cl.qw_validsequence;
+				MSG_WriteByte(&buf, qw_clc_delta);
+				MSG_WriteByte(&buf, cl.qw_validsequence & 255);
+			}
+			else
+				cl.qw_deltasequence[cls.netcon->outgoing_unreliable_sequence & QW_UPDATE_MASK] = -1;
+			break;
+		case PROTOCOL_QUAKE:
+		case PROTOCOL_QUAKEDP:
+		case PROTOCOL_NEHAHRAMOVIE:
+		case PROTOCOL_NEHAHRABJP:
+		case PROTOCOL_NEHAHRABJP2:
+		case PROTOCOL_NEHAHRABJP3:
+			          
+			MSG_WriteByte (&buf, clc_move);
+			MSG_WriteFloat (&buf, cl.cmd.time);                           
+			                                
+			if (cls.proquake_servermod == 1)                
+			{
+				for (i = 0;i < 3;i++)
+					MSG_WriteAngle16i (&buf, cl.cmd.viewangles[i]);
+			}
+			else
+			{
+				for (i = 0;i < 3;i++)
+					MSG_WriteAngle8i (&buf, cl.cmd.viewangles[i]);
+			}
+			          
+			MSG_WriteCoord16i (&buf, cl.cmd.forwardmove);
+			MSG_WriteCoord16i (&buf, cl.cmd.sidemove);
+			MSG_WriteCoord16i (&buf, cl.cmd.upmove);
+			          
+			MSG_WriteByte (&buf, cl.cmd.buttons);
+			MSG_WriteByte (&buf, cl.cmd.impulse);
+			break;
+		case PROTOCOL_DARKPLACES2:
+		case PROTOCOL_DARKPLACES3:
+			          
+			MSG_WriteByte (&buf, clc_move);
+			MSG_WriteFloat (&buf, cl.cmd.time);                           
+			           
+			for (i = 0;i < 3;i++)
+				MSG_WriteAngle32f (&buf, cl.cmd.viewangles[i]);
+			          
+			MSG_WriteCoord16i (&buf, cl.cmd.forwardmove);
+			MSG_WriteCoord16i (&buf, cl.cmd.sidemove);
+			MSG_WriteCoord16i (&buf, cl.cmd.upmove);
+			          
+			MSG_WriteByte (&buf, cl.cmd.buttons);
+			MSG_WriteByte (&buf, cl.cmd.impulse);
+			break;
+		case PROTOCOL_DARKPLACES1:
+		case PROTOCOL_DARKPLACES4:
+		case PROTOCOL_DARKPLACES5:
+			          
+			MSG_WriteByte (&buf, clc_move);
+			MSG_WriteFloat (&buf, cl.cmd.time);                           
+			          
+			for (i = 0;i < 3;i++)
+				MSG_WriteAngle16i (&buf, cl.cmd.viewangles[i]);
+			          
+			MSG_WriteCoord16i (&buf, cl.cmd.forwardmove);
+			MSG_WriteCoord16i (&buf, cl.cmd.sidemove);
+			MSG_WriteCoord16i (&buf, cl.cmd.upmove);
+			          
+			MSG_WriteByte (&buf, cl.cmd.buttons);
+			MSG_WriteByte (&buf, cl.cmd.impulse);
+		case PROTOCOL_DARKPLACES6:
+		case PROTOCOL_DARKPLACES7:
+			                                                                
+			maxusercmds = bound(1, cl_netrepeatinput.integer + 1, min(3, CL_MAX_USERCMDS));
+			                                                                                                            
+			if (!cl.cmd.predicted)
+				maxusercmds = 1;
+
+			                                                       
+			                                                            
+			                                             
+			  
+			                                               
+			for (j = 0, cmd = &cl.movecmd[maxusercmds-1];j < maxusercmds;j++, cmd--)
+			{
+				                               
+				if (cmd->sequence && cmd->sequence < cls.servermovesequence)
+					continue;
+				            
+				MSG_WriteByte (&buf, clc_move);
+				if (cls.protocol != PROTOCOL_DARKPLACES6)
+					MSG_WriteLong (&buf, cmd->predicted ? cmd->sequence : 0);
+				MSG_WriteFloat (&buf, cmd->time);                           
+				          
+				for (i = 0;i < 3;i++)
+					MSG_WriteAngle16i (&buf, cmd->viewangles[i]);
+				          
+				MSG_WriteCoord16i (&buf, cmd->forwardmove);
+				MSG_WriteCoord16i (&buf, cmd->sidemove);
+				MSG_WriteCoord16i (&buf, cmd->upmove);
+				          
+				MSG_WriteLong (&buf, cmd->buttons);
+				MSG_WriteByte (&buf, cmd->impulse);
+				                      
+				           
+				MSG_WriteShort (&buf, (short)(cmd->cursor_screen[0] * 32767.0f));
+				MSG_WriteShort (&buf, (short)(cmd->cursor_screen[1] * 32767.0f));
+				MSG_WriteFloat (&buf, cmd->cursor_start[0]);
+				MSG_WriteFloat (&buf, cmd->cursor_start[1]);
+				MSG_WriteFloat (&buf, cmd->cursor_start[2]);
+				MSG_WriteFloat (&buf, cmd->cursor_impact[0]);
+				MSG_WriteFloat (&buf, cmd->cursor_impact[1]);
+				MSG_WriteFloat (&buf, cmd->cursor_impact[2]);
+				MSG_WriteShort (&buf, cmd->cursor_entitynumber);
+			}
+			break;
+		case PROTOCOL_UNKNOWN:
+			break;
+		}
+	}
+
+	if (cls.protocol != PROTOCOL_QUAKEWORLD && buf.cursize)
+	{
+		                                                                  
+		                                                                
+		                                                                
+		                                                                 
+		                  
+		unsigned int oldsequence = cl.cmd.sequence;
+		unsigned int delta = bound(1, cl_netrepeatinput.integer + 1, 3);
+		if (oldsequence > delta)
+			oldsequence = oldsequence - delta;
+		else
+			oldsequence = 1;
+		for (i = 0;i < LATESTFRAMENUMS;i++)
+		{
+			j = (cl.latestframenumsposition + i) % LATESTFRAMENUMS;
+			if (cl.latestsendnums[j] >= oldsequence)
+			{
+				if (developer_networkentities.integer >= 10)
+					Con_Printf("send clc_ackframe %i\n", cl.latestframenums[j]);
+				MSG_WriteByte(&buf, clc_ackframe);
+				MSG_WriteLong(&buf, cl.latestframenums[j]);
+			}
+		}
+	}
+
+	                                             
+	                                             
+
+	                                                
+	for (i = 0;i < CL_MAX_DOWNLOADACKS && (cls.dp_downloadack[i].start || cls.dp_downloadack[i].size);i++)
+	{
+		MSG_WriteByte(&buf, clc_ackdownloaddata);
+		MSG_WriteLong(&buf, cls.dp_downloadack[i].start);
+		MSG_WriteShort(&buf, cls.dp_downloadack[i].size);
+		cls.dp_downloadack[i].start = 0;
+		cls.dp_downloadack[i].size = 0;
+	}
+
+	                                                                 
+	if (buf.cursize || cls.netcon->message.cursize)
+		NetConn_SendUnreliableMessage(cls.netcon, &buf, cls.protocol, max(20*(buf.cursize+40), cl_rate.integer), cl_rate_burstsize.integer, false);
+	if (buf.cursize)
+		Capture_UsercmdSent(&cl.cmd);
+
+	if (quemove)
+	{
+		                                                                 
+		                                                    
+		for (i = CL_MAX_USERCMDS - 1;i >= 1;i--)
+			cl.movecmd[i] = cl.movecmd[i-1];
+		cl.movecmd[0].msec = 0;
+		cl.movecmd[0].frametime = 0;
+	}
+
+	                              
+	in_attack.state  &= ~2;
+	in_jump.state    &= ~2;
+	in_button3.state &= ~2;
+	in_button4.state &= ~2;
+	in_button5.state &= ~2;
+	in_button6.state &= ~2;
+	in_button7.state &= ~2;
+	in_button8.state &= ~2;
+	in_use.state     &= ~2;
+	in_button9.state  &= ~2;
+	in_button10.state &= ~2;
+	in_button11.state &= ~2;
+	in_button12.state &= ~2;
+	in_button13.state &= ~2;
+	in_button14.state &= ~2;
+	in_button15.state &= ~2;
+	in_button16.state &= ~2;
+	                
+	in_impulse = 0;
+
+	if (cls.netcon->message.overflowed)
+	{
+		Con_Print("CL_SendMove: lost server connection\n");
+		CL_Disconnect();
+		SV_LockThreadMutex();
+		Host_ShutdownServer();
+		SV_UnlockThreadMutex();
+	}
+}
+
+  
+            
+            
+            
+  
+void CL_InitInput (void)
+{
+	Cmd_AddCommand ("+moveup",IN_UpDown, "swim upward");
+	Cmd_AddCommand ("-moveup",IN_UpUp, "stop swimming upward");
+	Cmd_AddCommand ("+movedown",IN_DownDown, "swim downward");
+	Cmd_AddCommand ("-movedown",IN_DownUp, "stop swimming downward");
+	Cmd_AddCommand ("+left",IN_LeftDown, "turn left");
+	Cmd_AddCommand ("-left",IN_LeftUp, "stop turning left");
+	Cmd_AddCommand ("+right",IN_RightDown, "turn right");
+	Cmd_AddCommand ("-right",IN_RightUp, "stop turning right");
+	Cmd_AddCommand ("+forward",IN_ForwardDown, "move forward");
+	Cmd_AddCommand ("-forward",IN_ForwardUp, "stop moving forward");
+	Cmd_AddCommand ("+back",IN_BackDown, "move backward");
+	Cmd_AddCommand ("-back",IN_BackUp, "stop moving backward");
+	Cmd_AddCommand ("+lookup", IN_LookupDown, "look upward");
+	Cmd_AddCommand ("-lookup", IN_LookupUp, "stop looking upward");
+	Cmd_AddCommand ("+lookdown", IN_LookdownDown, "look downward");
+	Cmd_AddCommand ("-lookdown", IN_LookdownUp, "stop looking downward");
+	Cmd_AddCommand ("+strafe", IN_StrafeDown, "activate strafing mode (move instead of turn)");
+	Cmd_AddCommand ("-strafe", IN_StrafeUp, "deactivate strafing mode");
+	Cmd_AddCommand ("+moveleft", IN_MoveleftDown, "strafe left");
+	Cmd_AddCommand ("-moveleft", IN_MoveleftUp, "stop strafing left");
+	Cmd_AddCommand ("+moveright", IN_MoverightDown, "strafe right");
+	Cmd_AddCommand ("-moveright", IN_MoverightUp, "stop strafing right");
+	Cmd_AddCommand ("+speed", IN_SpeedDown, "activate run mode (faster movement and turning)");
+	Cmd_AddCommand ("-speed", IN_SpeedUp, "deactivate run mode");
+	Cmd_AddCommand ("+attack", IN_AttackDown, "begin firing");
+	Cmd_AddCommand ("-attack", IN_AttackUp, "stop firing");
+	Cmd_AddCommand ("+jump", IN_JumpDown, "jump");
+	Cmd_AddCommand ("-jump", IN_JumpUp, "end jump (so you can jump again)");
+	Cmd_AddCommand ("impulse", IN_Impulse, "send an impulse number to server (select weapon, use item, etc)");
+	Cmd_AddCommand ("+klook", IN_KLookDown, "activate keyboard looking mode, do not recenter view");
+	Cmd_AddCommand ("-klook", IN_KLookUp, "deactivate keyboard looking mode");
+	Cmd_AddCommand ("+mlook", IN_MLookDown, "activate mouse looking mode, do not recenter view");
+	Cmd_AddCommand ("-mlook", IN_MLookUp, "deactivate mouse looking mode");
+
+	                              
+	Cmd_AddCommand ("+use", IN_UseDown, "use something (may be used by some mods)");
+	Cmd_AddCommand ("-use", IN_UseUp, "stop using something");
+
+	                                 
+	Cmd_AddCommand ("+button3", IN_Button3Down, "activate button3 (behavior depends on mod)");
+	Cmd_AddCommand ("-button3", IN_Button3Up, "deactivate button3");
+	Cmd_AddCommand ("+button4", IN_Button4Down, "activate button4 (behavior depends on mod)");
+	Cmd_AddCommand ("-button4", IN_Button4Up, "deactivate button4");
+	Cmd_AddCommand ("+button5", IN_Button5Down, "activate button5 (behavior depends on mod)");
+	Cmd_AddCommand ("-button5", IN_Button5Up, "deactivate button5");
+	Cmd_AddCommand ("+button6", IN_Button6Down, "activate button6 (behavior depends on mod)");
+	Cmd_AddCommand ("-button6", IN_Button6Up, "deactivate button6");
+	Cmd_AddCommand ("+button7", IN_Button7Down, "activate button7 (behavior depends on mod)");
+	Cmd_AddCommand ("-button7", IN_Button7Up, "deactivate button7");
+	Cmd_AddCommand ("+button8", IN_Button8Down, "activate button8 (behavior depends on mod)");
+	Cmd_AddCommand ("-button8", IN_Button8Up, "deactivate button8");
+	Cmd_AddCommand ("+button9", IN_Button9Down, "activate button9 (behavior depends on mod)");
+	Cmd_AddCommand ("-button9", IN_Button9Up, "deactivate button9");
+	Cmd_AddCommand ("+button10", IN_Button10Down, "activate button10 (behavior depends on mod)");
+	Cmd_AddCommand ("-button10", IN_Button10Up, "deactivate button10");
+	Cmd_AddCommand ("+button11", IN_Button11Down, "activate button11 (behavior depends on mod)");
+	Cmd_AddCommand ("-button11", IN_Button11Up, "deactivate button11");
+	Cmd_AddCommand ("+button12", IN_Button12Down, "activate button12 (behavior depends on mod)");
+	Cmd_AddCommand ("-button12", IN_Button12Up, "deactivate button12");
+	Cmd_AddCommand ("+button13", IN_Button13Down, "activate button13 (behavior depends on mod)");
+	Cmd_AddCommand ("-button13", IN_Button13Up, "deactivate button13");
+	Cmd_AddCommand ("+button14", IN_Button14Down, "activate button14 (behavior depends on mod)");
+	Cmd_AddCommand ("-button14", IN_Button14Up, "deactivate button14");
+	Cmd_AddCommand ("+button15", IN_Button15Down, "activate button15 (behavior depends on mod)");
+	Cmd_AddCommand ("-button15", IN_Button15Up, "deactivate button15");
+	Cmd_AddCommand ("+button16", IN_Button16Down, "activate button16 (behavior depends on mod)");
+	Cmd_AddCommand ("-button16", IN_Button16Up, "deactivate button16");
+
+	                                      
+	Cmd_AddCommand ("bestweapon", IN_BestWeapon, "send an impulse number to server to select the first usable weapon out of several (example: 8 7 6 5 4 3 2 1)");
+#if 0
+	Cmd_AddCommand ("cycleweapon", IN_CycleWeapon, "send an impulse number to server to select the next usable weapon out of several (example: 9 4 8) if you are holding one of these, and choose the first one if you are holding none of these");
+#endif
+	Cmd_AddCommand ("register_bestweapon", IN_BestWeapon_Register_f, "(for QC usage only) change weapon parameters to be used by bestweapon; stuffcmd this in ClientConnect");
+
+	Cvar_RegisterVariable(&cl_movecliptokeyboard);
+	Cvar_RegisterVariable(&cl_movement);
+	Cvar_RegisterVariable(&cl_movement_replay);
+	Cvar_RegisterVariable(&cl_movement_nettimeout);
+	Cvar_RegisterVariable(&cl_movement_minping);
+	Cvar_RegisterVariable(&cl_movement_track_canjump);
+	Cvar_RegisterVariable(&cl_movement_maxspeed);
+	Cvar_RegisterVariable(&cl_movement_maxairspeed);
+	Cvar_RegisterVariable(&cl_movement_stopspeed);
+	Cvar_RegisterVariable(&cl_movement_friction);
+	Cvar_RegisterVariable(&cl_movement_wallfriction);
+	Cvar_RegisterVariable(&cl_movement_waterfriction);
+	Cvar_RegisterVariable(&cl_movement_edgefriction);
+	Cvar_RegisterVariable(&cl_movement_stepheight);
+	Cvar_RegisterVariable(&cl_movement_accelerate);
+	Cvar_RegisterVariable(&cl_movement_airaccelerate);
+	Cvar_RegisterVariable(&cl_movement_wateraccelerate);
+	Cvar_RegisterVariable(&cl_movement_jumpvelocity);
+	Cvar_RegisterVariable(&cl_movement_airaccel_qw);
+	Cvar_RegisterVariable(&cl_movement_airaccel_sideways_friction);
+	Cvar_RegisterVariable(&cl_nopred);
+
+	Cvar_RegisterVariable(&in_pitch_min);
+	Cvar_RegisterVariable(&in_pitch_max);
+	Cvar_RegisterVariable(&m_filter);
+	Cvar_RegisterVariable(&m_accelerate);
+	Cvar_RegisterVariable(&m_accelerate_minspeed);
+	Cvar_RegisterVariable(&m_accelerate_maxspeed);
+	Cvar_RegisterVariable(&m_accelerate_filter);
+	Cvar_RegisterVariable(&m_accelerate_power);
+	Cvar_RegisterVariable(&m_accelerate_power_offset);
+	Cvar_RegisterVariable(&m_accelerate_power_senscap);
+	Cvar_RegisterVariable(&m_accelerate_power_strength);
+
+	Cvar_RegisterVariable(&cl_netfps);
+	Cvar_RegisterVariable(&cl_netrepeatinput);
+	Cvar_RegisterVariable(&cl_netimmediatebuttons);
+
+	Cvar_RegisterVariable(&cl_nodelta);
+
+	Cvar_RegisterVariable(&cl_csqc_generatemousemoveevents);
+}

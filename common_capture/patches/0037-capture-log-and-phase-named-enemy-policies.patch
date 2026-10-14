@@ -1,0 +1,69 @@
+From aa34b68ef0e5d8d4a71b9bf45e3738c82e5bd475 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Mon, 27 Jul 2026 03:21:47 +0800
+Subject: [PATCH] capture: log and phase named enemy policies
+
+---
+ source/qcsrc/server/capture.qc | 24 +++++++++++++++++++++++-
+ source/qcsrc/server/capture.qh |  3 +++
+ 2 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index 88e3741..d4027f2 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -374,6 +374,21 @@ bool Capture_TryReset()
+ 		"\"enemy_ground_distance\":%.6f,\"los_fraction\":%.9f}}",
+ 		enemy_ground_distance, anchor_los_fraction));
+ 	Capture_Log(reset_row);
++	if(autocvar_capture_enemy_present)
++	{
++		Capture_Log(sprintf(
++			"{\"kind\":\"enemy_policy\",\"episode_id\":\"%s\","
++			"\"policy\":\"%s\",\"policy_seed\":%d,\"motion_mode\":%d,"
++			"\"motion_start_tick\":%d,\"motion_distance\":%.6f,"
++			"\"reads_camera\":false,\"reads_crosshair\":false,"
++			"\"reads_live_player_state\":false,\"fires\":false,"
++			"\"jumps\":false}",
++			autocvar_capture_episode_id, autocvar_capture_enemy_policy,
++			autocvar_capture_enemy_policy_seed,
++			autocvar_capture_enemy_motion,
++			autocvar_capture_enemy_motion_start_tick,
++			autocvar_capture_enemy_motion_distance));
++	}
+ 	stuffcmd(capture_player,
+ 		sprintf("\ncapture_episode_reset \"%s\"\n", autocvar_capture_episode_id));
+ 	return true;
+@@ -387,7 +402,14 @@ void Capture_MoveEnemy()
+ 	vector commanded_velocity = '0 0 0';
+ 	vector radial = normalize(
+ 		autocvar_capture_player_origin - autocvar_capture_enemy_origin);
+-	float t = capture_server_tick / 64.0;
++	int policy_tick = capture_server_tick
++		- autocvar_capture_enemy_motion_start_tick;
++	float t = max(0, policy_tick) / 64.0;
++	if(policy_tick < 0)
++	{
++		capture_enemy.velocity = '0 0 0';
++		return;
++	}
+ 	switch(autocvar_capture_enemy_motion)
+ 	{
+ 		case 1:
+diff --git a/source/qcsrc/server/capture.qh b/source/qcsrc/server/capture.qh
+index ebcae5c..79f6895 100644
+--- a/source/qcsrc/server/capture.qh
++++ b/source/qcsrc/server/capture.qh
+@@ -14,6 +14,9 @@ float autocvar_capture_player_yaw;
+ float autocvar_capture_enemy_yaw;
+ int autocvar_capture_enemy_motion;
+ float autocvar_capture_enemy_motion_distance;
++int autocvar_capture_enemy_motion_start_tick;
++string autocvar_capture_enemy_policy;
++int autocvar_capture_enemy_policy_seed;
+ string autocvar_capture_enemy_model;
+ int autocvar_capture_enemy_skin;
+ int autocvar_capture_enemy_color;
+-- 
+2.43.0
+

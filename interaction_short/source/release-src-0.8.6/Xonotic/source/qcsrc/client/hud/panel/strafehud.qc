@@ -1,0 +1,1318 @@
+               
+
+#include "strafehud.qh"
+
+#include <client/draw.qh>
+#include <lib/csqcmodel/cl_player.qh>
+#include <common/physics/player.qh>
+#include <common/physics/movetypes/movetypes.qh>
+
+                
+#include <client/view.qh>                       
+
+                    
+#include <common/animdecide.qh>                       
+#include <common/ent_cs.qh>                           
+
+              
+#include <client/hud/panel/racetimer.qh>                                   
+
+              
+#include <lib/csqcmodel/common.qh>                         
+#include <common/resources/cl_resources.qh>                   
+
+                  
+
+void HUD_StrafeHUD_Export(int fh)
+{
+	                                                                             
+}
+
+float GeomLerp(float a, float _lerp, float b);                                                             
+
+void HUD_StrafeHUD()
+{
+	static float hud_lasttime = 0;
+	entity strafeplayer;
+	bool islocal;
+
+	                       
+	if(!autocvar__hud_configure)
+	{
+		if(!autocvar_hud_panel_strafehud ||
+		   (spectatee_status == -1 && (autocvar_hud_panel_strafehud == 1 || autocvar_hud_panel_strafehud == 3)) ||
+		   (autocvar_hud_panel_strafehud == 3 && !MUTATOR_CALLHOOK(HUD_StrafeHUD_showoptional))) { hud_lasttime = time; return; }
+	}
+
+	HUD_Panel_LoadCvars();
+
+	if(autocvar_hud_panel_strafehud_dynamichud)
+		HUD_Scale_Enable();
+	else
+		HUD_Scale_Disable();
+
+	HUD_Panel_DrawBg();
+
+	if(panel_bg_padding)
+	{
+		panel_pos  += '1 1 0' * panel_bg_padding;
+		panel_size -= '2 2 0' * panel_bg_padding;
+	}
+
+	                                                       
+	if(spectatee_status > 0 || isdemo())
+	{
+		islocal = false;
+		strafeplayer = CSQCModel_server2csqc(player_localentnum - 1);
+	}
+	else
+	{
+		islocal = true;
+		strafeplayer = csqcplayer;
+	}
+
+	                 
+	if(csqcplayer && strafeplayer)
+	{
+		float strafe_waterlevel;
+
+		                                                                                                                                          
+		{
+			                   
+			void old_contentstransition(int, int) = strafeplayer.contentstransition;
+			float old_watertype = strafeplayer.watertype;
+			float old_waterlevel = strafeplayer.waterlevel;
+
+			strafeplayer.contentstransition = func_null;                                                    
+			_Movetype_CheckWater(strafeplayer);
+			strafe_waterlevel = strafeplayer.waterlevel;                               
+
+			                     
+			strafeplayer.contentstransition = old_contentstransition;
+			strafeplayer.watertype = old_watertype;
+			strafeplayer.waterlevel = old_waterlevel;
+		}
+
+		int keys = STAT(PRESSED_KEYS);
+		                                                                                                                                           
+		bool jumpheld = false;
+		if(islocal)
+		{
+			if((PHYS_INPUT_BUTTON_JUMP(strafeplayer) || PHYS_INPUT_BUTTON_JETPACK(strafeplayer)) && !PHYS_CL_TRACK_CANJUMP(strafeplayer))
+				jumpheld = true;
+		}
+		else
+		{
+			if((keys & KEY_JUMP) && !PHYS_TRACK_CANJUMP(strafeplayer))
+				jumpheld = true;
+		}
+
+		             
+		static float onground_lasttime       = 0;
+		static bool  onslick_last            = false;
+		static float turn_lasttime           = 0;
+		static bool  turn                    = false;
+		static float turnangle;
+		static float dt_update               = 0;
+		static int   dt_time                 = 0;
+		static float dt_sum                  = 0;
+		static float dt                      = 0;
+
+		          
+		                                                                         
+		bool   real_onground                 = islocal ? IS_ONGROUND(strafeplayer) : !(strafeplayer.anim_implicit_state & ANIMIMPLICITSTATE_INAIR);
+		                                        
+		bool   real_onslick                  = false;
+		                                                                                             
+		bool   onground                      = real_onground && !jumpheld;
+		bool   onslick                       = real_onslick;
+		bool   onground_expired;
+		bool   strafekeys;
+		                                            
+		bool   swimming                      = strafe_waterlevel >= WATERLEVEL_SWIMMING;
+		                                                                                        
+		float  speed                         = !autocvar__hud_configure ? vlen(vec2(csqcplayer.velocity)) : 1337;
+		                                                                                  
+		float  maxspeed_mod                  = IS_DUCKED(csqcplayer) ? .5 : 1;
+		float  maxspeed_phys                 = onground ? PHYS_MAXSPEED(strafeplayer) : PHYS_MAXAIRSPEED(strafeplayer);
+		float  maxspeed                      = !autocvar__hud_configure ? maxspeed_phys * maxspeed_mod : 320;
+		float  movespeed;
+		float  bestspeed;
+		float  maxaccel_phys                 = onground ? PHYS_ACCELERATE(strafeplayer) : PHYS_AIRACCELERATE(strafeplayer);
+		float  maxaccel                      = !autocvar__hud_configure ? maxaccel_phys : 1;
+		                                                                                            
+		float  vel_angle                     = vectoangles(strafeplayer.velocity).y - (vectoangles(strafeplayer.velocity).y > 180 ? 360 : 0);
+		float  view_angle                    = PHYS_INPUT_ANGLES(strafeplayer).y;
+		float  angle;
+		vector movement                      = PHYS_INPUT_MOVEVALUES(strafeplayer);
+		bool   fwd;
+		int    keys_fwd;
+		float  wishangle;
+		int    direction;
+
+		      
+		int    mode;
+		float  speed_conversion_factor       = GetSpeedUnitFactor(autocvar_hud_speed_unit);
+		float  length_conversion_factor      = GetLengthUnitFactor(autocvar_hud_speed_unit);
+		                                                
+		int    length_decimals               = autocvar_hud_speed_unit >= 3 && autocvar_hud_speed_unit <= 5 ? 6 : 2;
+		float  antiflicker_angle             = bound(0, autocvar_hud_panel_strafehud_antiflicker_angle, 180);
+		float  minspeed;
+		float  shift_offset                  = 0;
+		bool   straight_overturn             = false;
+		bool   immobile                      = speed <= 0;
+		float  hudangle;
+		float  hidden_width;
+		float  neutral_offset;
+		float  neutral_width;
+		vector currentangle_color            = autocvar_hud_panel_strafehud_angle_neutral_color;
+		float  currentangle_offset;
+		vector currentangle_size;
+		float  bestangle;
+		float  prebestangle;
+		float  odd_bestangle;
+		float  bestangle_offset;
+		float  switch_bestangle_offset;
+		bool   odd_angles                    = false;
+		float  odd_bestangle_offset          = 0;
+		float  switch_odd_bestangle_offset   = 0;
+		float  bestangle_width;
+		float  accelzone_left_offset;
+		float  accelzone_right_offset;
+		float  accelzone_width;
+		float  preaccelzone_left_offset;
+		float  preaccelzone_right_offset;
+		float  preaccelzone_width;
+		float  overturn_offset;
+		float  overturn_width;
+		float  slickdetector_height;
+		vector direction_size_vertical;
+		vector direction_size_horizontal;
+		float  range_minangle;
+		float  text_offset_top               = 0;
+		float  text_offset_bottom            = 0;
+
+		                                                                      
+		float real_bestangle;
+		float real_prebestangle;
+
+		if(autocvar_hud_panel_strafehud_mode >= 0 && autocvar_hud_panel_strafehud_mode <= 1)
+			mode = autocvar_hud_panel_strafehud_mode;
+		else
+			mode = STRAFEHUD_MODE_VIEW_CENTERED;
+
+		                                                                                                                               
+		float arrow_size = max(panel_size.y * min(autocvar_hud_panel_strafehud_angle_arrow_size, 10), 0);
+
+		if(onground)
+		{
+			if(PHYS_FRICTION(strafeplayer) == 0)
+			{
+				onslick = true;
+			}
+			else                                                                                                       
+			{
+				trace_dphitq3surfaceflags = 0;
+				tracebox(strafeplayer.origin, strafeplayer.mins, strafeplayer.maxs, strafeplayer.origin - '0 0 1', MOVE_NOMONSTERS, strafeplayer);
+				onslick = trace_dphitq3surfaceflags & Q3SURFACEFLAG_SLICK;
+			}
+			real_onslick = onslick;
+
+			onground_lasttime = time;
+			onslick_last = onslick;
+		}
+		else if(jumpheld || swimming)
+		{
+			onground_lasttime = 0;
+		}
+
+		if(onground_lasttime == 0)
+			onground_expired = true;
+		else
+			onground_expired = (time - onground_lasttime) >= autocvar_hud_panel_strafehud_timeout_ground;                           
+
+		if(!onground && !onground_expired)                                                           
+		{
+			onground = true;
+			onslick = onslick_last;
+
+			if(!autocvar__hud_configure)
+			{
+				maxspeed = PHYS_MAXSPEED(strafeplayer) * maxspeed_mod;
+				maxaccel = PHYS_ACCELERATE(strafeplayer);
+			}
+		}
+
+		movespeed = vlen(vec2(movement));
+		if(movespeed == 0)
+			movespeed = maxspeed;
+		else
+			movespeed = min(movespeed, maxspeed);
+
+		if(!autocvar_hud_panel_strafehud_uncapped)
+			arrow_size = max(arrow_size, 1);
+
+		                      
+		if((csqcplayer_status == CSQCPLAYERSTATUS_PREDICTED) && (input_timelength > 0))
+		{
+			float dt_client = input_timelength;
+
+			if(dt_client > .05)                                                         
+				dt_client /= 2;                                                                                                            
+
+			                              
+			dt_sum += dt_client * dt_client;
+			dt_time += dt_client;
+
+			if(((time - dt_update) > autocvar_hud_panel_strafehud_fps_update) || (dt_update == 0))
+			{
+				dt = dt_sum / dt_time;
+				dt_update = time;
+				dt_time = dt_sum = 0;
+			}
+		}
+		else                                                                                                                                            
+		{
+			dt = ticrate;
+			dt_update = dt_time = dt_sum = 0;
+		}
+
+		                                                                      
+		if(islocal)                             
+		{
+			if(movement.x > 0)
+				keys_fwd = STRAFEHUD_KEYS_FORWARD;
+			else if(movement.x < 0)
+				keys_fwd = STRAFEHUD_KEYS_BACKWARD;
+			else
+				keys_fwd = STRAFEHUD_KEYS_NONE;
+		}
+		else                                                              
+		{
+			if((keys & KEY_FORWARD) && !(keys & KEY_BACKWARD))
+				keys_fwd = STRAFEHUD_KEYS_FORWARD;
+			else if(!(keys & KEY_FORWARD) && (keys & KEY_BACKWARD))
+				keys_fwd = STRAFEHUD_KEYS_BACKWARD;
+			else
+				keys_fwd = STRAFEHUD_KEYS_NONE;
+		}
+
+		                           
+		if(islocal)                             
+		{
+			if(movement.x == 0)
+			{
+				if(movement.y < 0)
+					wishangle = -90;
+				else if(movement.y > 0)
+					wishangle = 90;
+				else
+					wishangle = 0;
+			}
+			else
+			{
+				if(movement.y == 0)
+				{
+					wishangle = 0;
+				}
+				else
+				{
+					wishangle = RAD2DEG * atan2(movement.y, movement.x);
+					                                         
+					if(fabs(wishangle) > 90)
+					{
+						if(wishangle < 0)
+							wishangle += 180;
+						else
+							wishangle -= 180;
+
+						wishangle *= -1;
+					}
+				}
+			}
+		}
+		else                                                            
+		{
+			if(keys & KEY_FORWARD || keys & KEY_BACKWARD)
+				wishangle = 45;
+			else
+				wishangle = 90;
+			if(keys & KEY_LEFT)
+				wishangle *= -1;
+			else if(!(keys & KEY_RIGHT))
+				wishangle = 0;                 
+		}
+
+		strafekeys = fabs(wishangle) > 45;
+
+		                                                                
+		range_minangle = fabs(wishangle) % 90;                              
+		if(range_minangle > 45) range_minangle = 45 - fabs(wishangle) % 45;                             
+		range_minangle = 90 - range_minangle;                                             
+		range_minangle *= 2;                                                     
+
+		if(autocvar_hud_panel_strafehud_range == 0)
+		{
+			if(autocvar__hud_configure)
+				hudangle = 90;
+			else
+				hudangle = range_minangle;                                                               
+		}
+		else
+		{
+			hudangle = bound(0, fabs(autocvar_hud_panel_strafehud_range), 360);                                                                  
+		}
+
+		                            
+		if((!strafekeys && vlen(vec2(movement)) > 0) || onground || autocvar__hud_configure)
+		{
+			turn = false;
+		}
+		else                   
+		{
+			bool turn_expired = (time - turn_lasttime) >= autocvar_hud_panel_strafehud_timeout_turn;                                             
+
+			if(strafekeys)
+				turn = true;
+			else if(turn_expired)
+				turn = false;
+
+			if(turn)                
+			{
+				if(strafekeys)
+				{
+					turn_lasttime = time;
+					turnangle = wishangle;
+				}
+				else                                                    
+				{
+					wishangle = turnangle;
+				}
+
+				                                                          
+				float strafity = 1 - (90 - fabs(wishangle)) / 45;
+
+				if(PHYS_MAXAIRSTRAFESPEED(strafeplayer) != 0)
+					maxspeed = min(maxspeed, GeomLerp(PHYS_MAXAIRSPEED(strafeplayer), strafity, PHYS_MAXAIRSTRAFESPEED(strafeplayer)));
+
+				movespeed = min(movespeed, maxspeed);
+
+				if(PHYS_AIRSTRAFEACCELERATE(strafeplayer) != 0)
+					maxaccel = GeomLerp(PHYS_AIRACCELERATE(strafeplayer), strafity, PHYS_AIRSTRAFEACCELERATE(strafeplayer));
+			}
+		}
+
+		maxaccel *= dt * movespeed;
+		bestspeed = max(movespeed - maxaccel, 0);                                             
+
+		float frictionspeed;                            
+		float strafespeed;                        
+
+		if((speed > 0) && onground)
+		{
+			float strafefriction = onslick ? PHYS_FRICTION_SLICK(strafeplayer) : PHYS_FRICTION(strafeplayer);
+
+			frictionspeed = speed * dt * strafefriction * max(PHYS_STOPSPEED(strafeplayer) / speed, 1);
+			strafespeed = max(speed - frictionspeed, 0);
+		}
+		else
+		{
+			frictionspeed = 0;
+			strafespeed = speed;
+		}
+
+		minspeed = autocvar_hud_panel_strafehud_switch_minspeed;
+		if(minspeed < 0)
+			minspeed = bestspeed + frictionspeed;
+
+		                                                         
+		if(!autocvar__hud_configure)
+		{
+			if(speed > 0)
+			{
+				                                                                          
+				angle = vel_angle - view_angle;
+
+				                                                                                                            
+				if(angle > 180)
+					angle -= 360;
+				else if(angle < -180)
+					angle += 360;
+
+				                                                                 
+				                                                                                        
+				if(fabs(wishangle) != 90)
+				{
+					if(keys_fwd == STRAFEHUD_KEYS_FORWARD)
+						fwd = true;
+					else if(keys_fwd == STRAFEHUD_KEYS_BACKWARD)
+						fwd = false;
+					else
+						fwd = fabs(angle) <= 90;
+				}
+				                                                    
+				else
+				{
+					if(wishangle < 0)                                                                       
+						fwd = angle <= -wishangle;
+					else
+						fwd = angle >= -wishangle;
+				}
+
+				                                                         
+				if(!fwd)
+				{
+					if(angle < 0)
+						angle += 180;
+					else
+						angle -= 180;
+				}
+
+				                                                                                            
+				if(angle > (180 - antiflicker_angle) || angle < (-180 + antiflicker_angle))
+					straight_overturn = true;
+			}
+			else
+			{
+				angle = 0;
+				fwd = true;
+			}
+		}
+		else                                  
+		{
+			const float demo_maxangle = 55;                                           
+			const float demo_turnspeed = 40;                                       
+
+			static float demo_position = -37 / demo_maxangle;                                               
+
+			if(autocvar__hud_panel_strafehud_demo)
+			{
+				float demo_dt = time - hud_lasttime;
+				float demo_step = (demo_turnspeed / demo_maxangle) * demo_dt;
+				demo_position = ((demo_position + demo_step) % 4 + 4) % 4;
+			}
+
+			                         
+			if(demo_position > 3)
+				angle = -1 + (demo_position - 3);
+			else if(demo_position > 1)
+				angle = +1 - (demo_position - 1);
+			else
+				angle = demo_position;
+			angle *= demo_maxangle;
+
+			fwd = true;
+			wishangle = 45;
+			if(angle < 0)
+				wishangle *= -1;
+		}
+
+		                                                
+		if(!fwd)
+			wishangle *= -1;
+
+		                                      
+		if(autocvar_v_flipped)
+		{
+			angle *= -1;
+			wishangle *= -1;
+		}
+
+		                                                         
+		if(wishangle > 0)
+		{
+			direction = STRAFEHUD_DIRECTION_RIGHT;
+		}
+		else if(wishangle < 0)
+		{
+			direction = STRAFEHUD_DIRECTION_LEFT;
+		}
+		else
+		{
+			if(angle > antiflicker_angle && angle < (180 - antiflicker_angle))
+				direction = STRAFEHUD_DIRECTION_RIGHT;
+			else if(angle < -antiflicker_angle && angle > (-180 + antiflicker_angle))
+				direction = STRAFEHUD_DIRECTION_LEFT;
+			else
+				direction = STRAFEHUD_DIRECTION_NONE;
+		}
+
+		                          
+		                                                                                                                
+		real_bestangle = bestangle = (strafespeed > bestspeed ? acos(bestspeed / strafespeed) * RAD2DEG : 0);
+		real_prebestangle = prebestangle = (strafespeed > movespeed ? acos(movespeed / strafespeed) * RAD2DEG : 0);
+		if(direction == STRAFEHUD_DIRECTION_LEFT)                                                     
+		{
+			bestangle *= -1;
+			prebestangle *= -1;
+		}
+		odd_bestangle = -bestangle - wishangle;
+		bestangle -= wishangle;
+		prebestangle -= wishangle;
+
+		                                                                  
+		                                              
+		hidden_width = (360 - hudangle) / hudangle * panel_size.x;
+
+		                
+		currentangle_size.x = autocvar_hud_panel_strafehud_angle_width;
+		currentangle_size.y = autocvar_hud_panel_strafehud_angle_height;
+		currentangle_size.z = 0;
+		if(!autocvar_hud_panel_strafehud_uncapped)
+		{
+			currentangle_size.x = min(currentangle_size.x, 10);
+			currentangle_size.y = min(currentangle_size.y, 10);
+		}
+		currentangle_size.x *= panel_size.x;
+		currentangle_size.y *= panel_size.y;
+		if(!autocvar_hud_panel_strafehud_uncapped)
+		{
+			currentangle_size.x = max(currentangle_size.x, 1);
+			currentangle_size.y = max(currentangle_size.y, 1);
+		}
+		else
+		{
+			currentangle_size.y = max(currentangle_size.y, 0);
+		}
+		if(mode == STRAFEHUD_MODE_VIEW_CENTERED)
+			currentangle_offset = angle / hudangle * panel_size.x;
+		else
+
+			currentangle_offset = bound(-hudangle / 2, angle, hudangle / 2) / hudangle * panel_size.x + panel_size.x / 2;
+
+		                                 
+		bestangle_offset        =  bestangle / hudangle * panel_size.x + panel_size.x / 2;
+		switch_bestangle_offset = -bestangle / hudangle * panel_size.x + panel_size.x / 2;
+		bestangle_width = panel_size.x * autocvar_hud_panel_strafehud_switch_width;
+		if(!autocvar_hud_panel_strafehud_uncapped)
+			bestangle_width = max(bestangle_width, 1);
+
+		if((angle > -wishangle && direction == STRAFEHUD_DIRECTION_LEFT) || (angle < -wishangle && direction == STRAFEHUD_DIRECTION_RIGHT))
+		{
+			odd_angles = true;
+			odd_bestangle_offset = odd_bestangle / hudangle * panel_size.x + panel_size.x / 2;
+			switch_odd_bestangle_offset = (odd_bestangle + bestangle * 2) / hudangle * panel_size.x + panel_size.x / 2;
+		}
+		                      
+		direction_size_vertical.x = autocvar_hud_panel_strafehud_direction_width;
+		if(!autocvar_hud_panel_strafehud_uncapped)
+			direction_size_vertical.x = min(direction_size_vertical.x, 1);
+		direction_size_vertical.x *= panel_size.y;
+		if(!autocvar_hud_panel_strafehud_uncapped)
+			direction_size_vertical.x = max(direction_size_vertical.x, 1);
+		direction_size_vertical.y = panel_size.y + direction_size_vertical.x * 2;
+		direction_size_vertical.z = 0;
+		direction_size_horizontal.x = panel_size.x * min(autocvar_hud_panel_strafehud_direction_length, .5);
+		direction_size_horizontal.y = direction_size_vertical.x;
+		direction_size_horizontal.z = 0;
+
+		                                              
+		if(immobile)
+		{
+			                    
+			if(panel_size.x > 0 && panel_size.y > 0 && autocvar_hud_panel_strafehud_bar_neutral_alpha * panel_fg_alpha > 0)
+			{
+				switch(autocvar_hud_panel_strafehud_style)
+				{
+					default:
+					case STRAFEHUD_STYLE_DRAWFILL:
+						drawfill(
+							panel_pos, panel_size,
+							autocvar_hud_panel_strafehud_bar_neutral_color,
+							autocvar_hud_panel_strafehud_bar_neutral_alpha * panel_fg_alpha,
+							DRAWFLAG_NORMAL);
+						break;
+
+					case STRAFEHUD_STYLE_PROGRESSBAR:
+						HUD_Panel_DrawProgressBar(
+							panel_pos, panel_size, "progressbar", 1, 0, 0,
+							autocvar_hud_panel_strafehud_bar_neutral_color,
+							autocvar_hud_panel_strafehud_bar_neutral_alpha * panel_fg_alpha,
+							DRAWFLAG_NORMAL);
+				}
+			}
+		}
+		else
+		{
+			                                                
+			if(autocvar_hud_panel_strafehud_bar_preaccel)
+				preaccelzone_width = (fabs(bestangle - prebestangle)) / hudangle * panel_size.x;
+			else
+				preaccelzone_width = 0;
+			accelzone_width = (90 - fabs(bestangle + wishangle)) / hudangle * panel_size.x;
+			overturn_width = 180 / hudangle * panel_size.x;
+			neutral_width = 360 / hudangle * panel_size.x - accelzone_width * 2 - preaccelzone_width * 2 - overturn_width;
+
+			{
+				float current_offset = 0;
+				preaccelzone_right_offset = current_offset;
+				current_offset += preaccelzone_width;
+
+				accelzone_right_offset = current_offset;
+				current_offset += accelzone_width;
+
+				overturn_offset = current_offset;
+				current_offset += overturn_width;
+
+				accelzone_left_offset = current_offset;
+				current_offset += accelzone_width;
+
+				preaccelzone_left_offset = current_offset;
+				current_offset += preaccelzone_width;
+
+				                                                                          
+				neutral_offset = direction == STRAFEHUD_DIRECTION_LEFT ? current_offset : -neutral_width;
+			}
+
+			                                                     
+			if(mode == STRAFEHUD_MODE_VIEW_CENTERED)
+			{
+				shift_offset = -currentangle_offset;
+				bestangle_offset += shift_offset;
+				switch_bestangle_offset += shift_offset;
+				odd_bestangle_offset += shift_offset;
+				switch_odd_bestangle_offset += shift_offset;
+			}
+			if(direction == STRAFEHUD_DIRECTION_LEFT)
+				shift_offset += -360 / hudangle * panel_size.x;
+
+			                                                              
+			shift_offset += (panel_size.x + neutral_width) / 2 - wishangle / hudangle * panel_size.x;
+
+			                                        
+			neutral_offset += shift_offset;
+			accelzone_left_offset += shift_offset;
+			accelzone_right_offset += shift_offset;
+			preaccelzone_left_offset += shift_offset;
+			preaccelzone_right_offset += shift_offset;
+			overturn_offset += shift_offset;
+
+			                              
+			HUD_Panel_DrawStrafeHUD(
+				accelzone_left_offset, accelzone_width, hidden_width,
+				autocvar_hud_panel_strafehud_bar_accel_color,
+				autocvar_hud_panel_strafehud_bar_accel_alpha * panel_fg_alpha,
+				autocvar_hud_panel_strafehud_style, STRAFEHUD_GRADIENT_LEFT);
+
+			if(autocvar_hud_panel_strafehud_bar_preaccel)
+				HUD_Panel_DrawStrafeHUD(
+					preaccelzone_left_offset, preaccelzone_width, hidden_width,
+					autocvar_hud_panel_strafehud_bar_accel_color,
+					autocvar_hud_panel_strafehud_bar_accel_alpha * panel_fg_alpha,
+					autocvar_hud_panel_strafehud_style, STRAFEHUD_GRADIENT_RIGHT);
+
+			                               
+			HUD_Panel_DrawStrafeHUD(
+				accelzone_right_offset, accelzone_width, hidden_width,
+				autocvar_hud_panel_strafehud_bar_accel_color,
+				autocvar_hud_panel_strafehud_bar_accel_alpha * panel_fg_alpha,
+				autocvar_hud_panel_strafehud_style, STRAFEHUD_GRADIENT_RIGHT);
+
+			if(autocvar_hud_panel_strafehud_bar_preaccel)
+				HUD_Panel_DrawStrafeHUD(
+					preaccelzone_right_offset, preaccelzone_width, hidden_width,
+					autocvar_hud_panel_strafehud_bar_accel_color,
+					autocvar_hud_panel_strafehud_bar_accel_alpha * panel_fg_alpha,
+					autocvar_hud_panel_strafehud_style, STRAFEHUD_GRADIENT_LEFT);
+
+			                     
+			                                  
+			                                                                                               
+			                                                                 
+			HUD_Panel_DrawStrafeHUD(
+				overturn_offset, overturn_width, hidden_width,
+				autocvar_hud_panel_strafehud_bar_overturn_color,
+				autocvar_hud_panel_strafehud_bar_overturn_alpha * panel_fg_alpha,
+				autocvar_hud_panel_strafehud_style, STRAFEHUD_GRADIENT_BOTH);
+
+			                    
+			HUD_Panel_DrawStrafeHUD(
+				neutral_offset, neutral_width, hidden_width,
+				autocvar_hud_panel_strafehud_bar_neutral_color,
+				autocvar_hud_panel_strafehud_bar_neutral_alpha * panel_fg_alpha,
+				autocvar_hud_panel_strafehud_style, STRAFEHUD_GRADIENT_NONE);
+
+			                                              
+			if(autocvar_hud_panel_strafehud_switch && speed >= minspeed && bestangle_width > 0 && autocvar_hud_panel_strafehud_switch_alpha > 0)
+			{
+				                               
+				float offset = !odd_angles ? bestangle_offset : odd_bestangle_offset;
+				float switch_offset = !odd_angles ? switch_bestangle_offset : switch_odd_bestangle_offset;
+
+				                                            
+				if(direction == STRAFEHUD_DIRECTION_LEFT)
+				{
+					if(!odd_angles)
+						offset -= bestangle_width;
+					else
+						switch_offset -= bestangle_width;
+				}
+				else
+				{
+					if(!odd_angles)
+						switch_offset -= bestangle_width;
+					else
+						offset -= bestangle_width;
+				}
+
+				HUD_Panel_DrawStrafeHUD(
+					switch_offset, bestangle_width, hidden_width,
+					autocvar_hud_panel_strafehud_switch_color,
+					autocvar_hud_panel_strafehud_switch_alpha * panel_fg_alpha,
+					STRAFEHUD_STYLE_DRAWFILL, STRAFEHUD_GRADIENT_NONE);
+
+				if(direction == STRAFEHUD_DIRECTION_NONE)
+					HUD_Panel_DrawStrafeHUD(
+						offset, bestangle_width, hidden_width,
+						autocvar_hud_panel_strafehud_switch_color,
+						autocvar_hud_panel_strafehud_switch_alpha * panel_fg_alpha,
+						STRAFEHUD_STYLE_DRAWFILL, STRAFEHUD_GRADIENT_NONE);
+			}
+		}
+
+		                 
+		slickdetector_height = max(autocvar_hud_panel_strafehud_slickdetector_height, 0);
+		if(!autocvar_hud_panel_strafehud_uncapped)
+			slickdetector_height = min(slickdetector_height, 1);
+		slickdetector_height *= panel_size.y;
+		if(autocvar_hud_panel_strafehud_slickdetector &&
+		   autocvar_hud_panel_strafehud_slickdetector_range > 0 &&
+		   autocvar_hud_panel_strafehud_slickdetector_alpha > 0 &&
+		   slickdetector_height > 0 &&
+		   panel_size.x > 0)
+		{
+			float slicksteps = max(autocvar_hud_panel_strafehud_slickdetector_granularity, 0);
+			bool slickdetected = false;
+
+			if(!autocvar_hud_panel_strafehud_uncapped)
+				slicksteps = min(slicksteps, 4);
+			slicksteps = 90 / 2 ** slicksteps;
+
+			slickdetected = real_onslick;                                                     
+
+			                                 
+			trace_dphitq3surfaceflags = 0;
+			vector traceorigin = strafeplayer.origin + eZ * strafeplayer.mins.z;
+			for(float i = 0; i < 90 && !slickdetected; i += slicksteps)
+			{
+				vector slickoffset;
+				float slickrotate;
+				slickoffset.z = -cos(i * DEG2RAD) * autocvar_hud_panel_strafehud_slickdetector_range;
+				slickrotate = sin(i * DEG2RAD) * autocvar_hud_panel_strafehud_slickdetector_range;
+
+				for(float j = 0; j < 360 && !slickdetected; j += slicksteps)
+				{
+					slickoffset.x = sin(j * DEG2RAD) * slickrotate;
+					slickoffset.y = cos(j * DEG2RAD) * slickrotate;
+
+					traceline(traceorigin, traceorigin + slickoffset, MOVE_NOMONSTERS, strafeplayer);
+					if((PHYS_FRICTION(strafeplayer) == 0 && trace_fraction < 1) || trace_dphitq3surfaceflags & Q3SURFACEFLAG_SLICK)
+						slickdetected = true;
+					if(i == 0)
+						break;
+				}
+			}
+
+			                                     
+			if(slickdetected)
+			{
+				vector slickdetector_size = panel_size;
+				slickdetector_size.y = slickdetector_height;
+
+				                      
+				drawfill(
+					panel_pos - eY * slickdetector_size.y, slickdetector_size,
+					autocvar_hud_panel_strafehud_slickdetector_color,
+					autocvar_hud_panel_strafehud_slickdetector_alpha * panel_fg_alpha,
+					DRAWFLAG_NORMAL);
+
+				                         
+				drawfill(
+					panel_pos + eY * panel_size.y,
+					slickdetector_size, autocvar_hud_panel_strafehud_slickdetector_color,
+					autocvar_hud_panel_strafehud_slickdetector_alpha * panel_fg_alpha,
+					DRAWFLAG_NORMAL);
+			}
+
+			text_offset_top = text_offset_bottom = slickdetector_height;
+		}
+
+		if(autocvar_hud_panel_strafehud_direction &&
+		   direction != STRAFEHUD_DIRECTION_NONE &&
+		   direction_size_vertical.x > 0 &&
+		   autocvar_hud_panel_strafehud_direction_alpha * panel_fg_alpha > 0)
+		{
+			bool indicator_direction = direction == STRAFEHUD_DIRECTION_LEFT;
+			                                                                                                                           
+			                                                                                 
+			if(!fwd != odd_angles)
+				indicator_direction = !indicator_direction;
+
+			                                                            
+			                
+			if(direction_size_vertical.y > 0)
+				drawfill(
+					panel_pos - eY * direction_size_horizontal.y + eX * (indicator_direction ? -direction_size_vertical.x : panel_size.x),
+					direction_size_vertical, autocvar_hud_panel_strafehud_direction_color,
+					autocvar_hud_panel_strafehud_direction_alpha * panel_fg_alpha,
+					DRAWFLAG_NORMAL);
+
+			                      
+			drawfill(
+				panel_pos + eX * (indicator_direction ? 0 : panel_size.x - direction_size_horizontal.x) - eY * direction_size_horizontal.y,
+				direction_size_horizontal, autocvar_hud_panel_strafehud_direction_color,
+				autocvar_hud_panel_strafehud_direction_alpha * panel_fg_alpha,
+				DRAWFLAG_NORMAL);
+
+			                         
+			drawfill(
+				panel_pos + eX * (indicator_direction ? 0 : panel_size.x - direction_size_horizontal.x) + eY * panel_size.y,
+				direction_size_horizontal, autocvar_hud_panel_strafehud_direction_color,
+				autocvar_hud_panel_strafehud_direction_alpha * panel_fg_alpha,
+				DRAWFLAG_NORMAL);
+		}
+
+		                               
+		if(!immobile)
+		{
+			float moveangle = fabs(angle + wishangle);
+			float strafe_ratio = 0;
+
+			                        
+			if(moveangle >= 90)
+			{
+				currentangle_color = autocvar_hud_panel_strafehud_angle_overturn_color;
+				strafe_ratio = (moveangle - 90) / 90;
+				if(strafe_ratio > 1) strafe_ratio = 2 - strafe_ratio;
+				strafe_ratio *= -1;
+			}
+			                                 
+			else if(moveangle >= real_bestangle)
+			{
+				currentangle_color = autocvar_hud_panel_strafehud_angle_accel_color;
+				strafe_ratio = (90 - moveangle) / (90 - real_bestangle);
+			}
+			else if(moveangle >= real_prebestangle)
+			{
+				if(autocvar_hud_panel_strafehud_bar_preaccel)
+					currentangle_color = autocvar_hud_panel_strafehud_angle_accel_color;
+				strafe_ratio = (moveangle - real_prebestangle) / (real_bestangle - real_prebestangle);
+			}
+
+			if(autocvar_hud_panel_strafehud_style == STRAFEHUD_STYLE_GRADIENT)
+				currentangle_color = StrafeHUD_mixColors(autocvar_hud_panel_strafehud_angle_neutral_color, currentangle_color, fabs(strafe_ratio));
+		}
+
+		if(mode == STRAFEHUD_MODE_VIEW_CENTERED || straight_overturn)
+			currentangle_offset = panel_size.x / 2;
+
+		float angleheight_offset = currentangle_size.y;
+		float ghost_offset = 0;
+		if(autocvar_hud_panel_strafehud_bestangle && direction != STRAFEHUD_DIRECTION_NONE)
+			ghost_offset = bound(0, (odd_angles ? odd_bestangle_offset : bestangle_offset), panel_size.x);
+
+		switch(autocvar_hud_panel_strafehud_angle_style)
+		{
+			case STRAFEHUD_INDICATOR_SOLID:
+				if(currentangle_size.x > 0 && currentangle_size.y > 0)
+				{
+					if(autocvar_hud_panel_strafehud_bestangle && direction != STRAFEHUD_DIRECTION_NONE)
+						drawfill(
+							panel_pos - eY * ((currentangle_size.y - panel_size.y) / 2) + eX * (ghost_offset - currentangle_size.x / 2),
+							currentangle_size, autocvar_hud_panel_strafehud_bestangle_color,
+							autocvar_hud_panel_strafehud_bestangle_alpha * panel_fg_alpha,
+							DRAWFLAG_NORMAL);
+					drawfill(
+						panel_pos - eY * ((currentangle_size.y - panel_size.y) / 2) + eX * (currentangle_offset - currentangle_size.x / 2),
+						currentangle_size, currentangle_color,
+						autocvar_hud_panel_strafehud_angle_alpha * panel_fg_alpha,
+						DRAWFLAG_NORMAL);
+				}
+				break;
+			case STRAFEHUD_INDICATOR_DASHED:
+				if(currentangle_size.x > 0 && currentangle_size.y > 0)
+				{
+					vector line_size = currentangle_size;
+					line_size.y = currentangle_size.y / (bound(2, autocvar_hud_panel_strafehud_angle_dashes, currentangle_size.y) * 2 - 1);
+					for(float i = 0; i < currentangle_size.y; i += line_size.y * 2)
+					{
+						if(i + line_size.y * 2 >= currentangle_size.y)
+							line_size.y = currentangle_size.y - i;
+						if(autocvar_hud_panel_strafehud_bestangle && direction != STRAFEHUD_DIRECTION_NONE)
+							drawfill(
+								panel_pos - eY * ((currentangle_size.y - panel_size.y) / 2 - i) + eX * (ghost_offset - line_size.x / 2),
+								line_size, autocvar_hud_panel_strafehud_bestangle_color,
+								autocvar_hud_panel_strafehud_bestangle_alpha * panel_fg_alpha, DRAWFLAG_NORMAL);
+						drawfill(
+							panel_pos - eY * ((currentangle_size.y - panel_size.y) / 2 - i) + eX * (currentangle_offset - line_size.x / 2),
+							line_size, currentangle_color,
+							autocvar_hud_panel_strafehud_angle_alpha * panel_fg_alpha, DRAWFLAG_NORMAL);
+					}
+				}
+				break;
+			case STRAFEHUD_INDICATOR_NONE:
+			default:
+				                                                                       
+				angleheight_offset = panel_size.y;
+				currentangle_size = '0 0 0';
+		}
+
+		float angle_offset_top = 0, angle_offset_bottom = 0;
+
+		                                              
+		if((autocvar_hud_panel_strafehud_angle_alpha > 0) ||
+		   (autocvar_hud_panel_strafehud_bestangle && autocvar_hud_panel_strafehud_bestangle_alpha > 0))
+		{
+			                                                                            
+			angle_offset_top = angle_offset_bottom = (angleheight_offset - panel_size.y) / 2;
+		}
+
+		if(autocvar_hud_panel_strafehud_angle_arrow > 0)
+		{
+			if(arrow_size > 0)
+			{
+				if(autocvar_hud_panel_strafehud_angle_arrow == 1 || autocvar_hud_panel_strafehud_angle_arrow >= 3)
+				{
+					if(autocvar_hud_panel_strafehud_bestangle && direction != STRAFEHUD_DIRECTION_NONE)
+						StrafeHUD_drawStrafeArrow(
+							panel_pos + eY * ((panel_size.y - angleheight_offset) / 2) + eX * ghost_offset,
+							arrow_size, autocvar_hud_panel_strafehud_bestangle_color,
+							autocvar_hud_panel_strafehud_bestangle_alpha * panel_fg_alpha, true, currentangle_size.x);
+					StrafeHUD_drawStrafeArrow(
+						panel_pos + eY * ((panel_size.y - angleheight_offset) / 2) + eX * currentangle_offset,
+						arrow_size, currentangle_color,
+						autocvar_hud_panel_strafehud_angle_alpha * panel_fg_alpha, true, currentangle_size.x);
+
+					angle_offset_top += arrow_size;                                                                
+				}
+				if(autocvar_hud_panel_strafehud_angle_arrow >= 2)
+				{
+					if(autocvar_hud_panel_strafehud_bestangle && direction != STRAFEHUD_DIRECTION_NONE)
+						StrafeHUD_drawStrafeArrow(
+							panel_pos + eY * ((panel_size.y - angleheight_offset) / 2 + angleheight_offset) + eX * ghost_offset,
+							arrow_size, autocvar_hud_panel_strafehud_bestangle_color,
+							autocvar_hud_panel_strafehud_bestangle_alpha * panel_fg_alpha, false, currentangle_size.x);
+					StrafeHUD_drawStrafeArrow(
+						panel_pos + eY * ((panel_size.y - angleheight_offset) / 2 + angleheight_offset) + eX * currentangle_offset,
+						arrow_size, currentangle_color,
+						autocvar_hud_panel_strafehud_angle_alpha * panel_fg_alpha, false, currentangle_size.x);
+
+					angle_offset_bottom += arrow_size;                                                                      
+				}
+			}
+		}
+
+		                                                       
+		text_offset_top = max(angle_offset_top, text_offset_top);
+		text_offset_bottom = max(angle_offset_bottom, text_offset_bottom);
+
+		draw_beginBoldFont();
+
+		                                             
+		{
+			static float startspeed = 0, starttime = 0;                                              
+
+			                                                                                                                 
+			if((race_nextcheckpoint == 1) || (race_checkpoint == 254 && race_nextcheckpoint == 255))
+			{
+				if((race_checkpointtime > 0) && (starttime != race_checkpointtime))
+				{
+					starttime = race_checkpointtime;
+					startspeed = speed;
+				}
+			}
+
+			if(autocvar_hud_panel_strafehud_startspeed)
+			{
+				float startspeed_height = autocvar_hud_panel_strafehud_startspeed_size * panel_size.y;
+				string startspeed_text = ftos_decimals(startspeed * speed_conversion_factor, 2);
+				if(autocvar_hud_panel_strafehud_unit_show)
+					startspeed_text = strcat(startspeed_text, GetSpeedUnit(autocvar_hud_speed_unit));
+
+				bool was_drawn = StrafeHUD_drawTextIndicator(
+					startspeed_text, startspeed_height,
+					autocvar_hud_panel_strafehud_startspeed_color,
+					autocvar_hud_panel_strafehud_startspeed_fade,
+					starttime, text_offset_bottom, STRAFEHUD_TEXT_BOTTOM);
+
+				if(was_drawn)
+					text_offset_bottom += startspeed_height;
+			}
+		}
+
+		                                        
+		                                                                                                                                               
+		                                                                                                                               
+		{
+			static float height_min = 0, height_max = 0;                                         
+			static float jumpheight = 0, jumptime = 0;                                                
+
+			                                                              
+			if((strafeplayer.velocity.z <= 0) || real_onground || swimming || IS_DEAD(strafeplayer) || !IS_PLAYER(strafeplayer))
+			{
+				height_min = height_max = strafeplayer.origin.z;
+			}
+			else if(strafeplayer.origin.z > height_max)
+			{
+				height_max = strafeplayer.origin.z;
+				float jumpheight_new = height_max - height_min;
+
+				if((jumpheight_new * length_conversion_factor) > max(autocvar_hud_panel_strafehud_jumpheight_min, 0))
+				{
+					jumpheight = jumpheight_new;
+					jumptime = time;
+				}
+			}
+
+			if(autocvar_hud_panel_strafehud_jumpheight)
+			{
+				float jumpheight_height = autocvar_hud_panel_strafehud_jumpheight_size * panel_size.y;
+				string jumpheight_text = ftos_decimals(jumpheight * length_conversion_factor, length_decimals);
+				if(autocvar_hud_panel_strafehud_unit_show)
+					jumpheight_text = strcat(jumpheight_text, GetLengthUnit(autocvar_hud_speed_unit));
+
+				bool was_drawn = StrafeHUD_drawTextIndicator(
+					jumpheight_text, jumpheight_height,
+					autocvar_hud_panel_strafehud_jumpheight_color,
+					autocvar_hud_panel_strafehud_jumpheight_fade,
+					jumptime, text_offset_top, STRAFEHUD_TEXT_TOP);
+
+				if(was_drawn)
+					text_offset_top += jumpheight_height;
+			}
+		}
+
+		draw_endBoldFont();
+	}
+	hud_lasttime = time;
+}
+
+                                                                 
+void HUD_Panel_DrawStrafeHUD(float offset, float width, float hidden_width, vector color, float alpha, int type, int gradientType)
+{
+	float mirror_offset, mirror_width;
+	vector size = panel_size;
+	vector mirror_size = panel_size;
+	float overflow_width = 0, overflow_mirror_width = 0;
+	float original_width = width;                         
+
+	if(type == STRAFEHUD_STYLE_GRADIENT && gradientType == STRAFEHUD_GRADIENT_NONE)
+		type = STRAFEHUD_STYLE_DRAWFILL;
+
+	if(alpha <= 0 && type != STRAFEHUD_STYLE_GRADIENT || width <= 0)
+		return;
+
+	if(offset < 0)
+	{
+		mirror_width = min(fabs(offset), width);
+		mirror_offset = panel_size.x + hidden_width - fabs(offset);
+		width += offset;
+		offset = 0;
+	}
+	else
+	{
+		mirror_width = min(offset + width - panel_size.x - hidden_width, width);
+		mirror_offset = max(offset - panel_size.x - hidden_width, 0);
+	}
+
+	width = max(width, 0);
+	if((offset + width) > panel_size.x)
+	{
+		overflow_width = (offset + width) - panel_size.x;
+		width = panel_size.x - offset;
+	}
+	size.x = width;
+
+	if(mirror_offset < 0)
+	{
+		mirror_width += mirror_offset;
+		mirror_offset = 0;
+	}
+
+	mirror_width = max(mirror_width, 0);
+	if((mirror_offset + mirror_width) > panel_size.x)
+	{
+		overflow_mirror_width = (mirror_offset + mirror_width) - panel_size.x;
+		mirror_width = panel_size.x - mirror_offset;
+	}
+	mirror_size.x = mirror_width;
+
+	switch(type)
+	{
+		default:
+		case STRAFEHUD_STYLE_DRAWFILL:                         
+			if(mirror_size.x > 0 && mirror_size.y > 0)
+				drawfill(panel_pos + eX * mirror_offset, mirror_size, color, alpha, DRAWFLAG_NORMAL);
+			if(size.x > 0 && size.y > 0)
+				drawfill(panel_pos + eX * offset, size, color, alpha, DRAWFLAG_NORMAL);
+			break;
+
+		case STRAFEHUD_STYLE_PROGRESSBAR:                      
+			if(mirror_size.x > 0 && mirror_size.y > 0)
+				HUD_Panel_DrawProgressBar(
+					panel_pos + eX * mirror_offset,
+					mirror_size, "progressbar",
+					1, 0, 0, color, alpha, DRAWFLAG_NORMAL);
+			if(size.x > 0 && size.y > 0)
+				HUD_Panel_DrawProgressBar(
+					panel_pos + eX * offset,
+					size, "progressbar",
+					1, 0, 0, color, alpha, DRAWFLAG_NORMAL);
+			break;
+
+		case STRAFEHUD_STYLE_GRADIENT:                                                         
+			                                                                                 
+			int gradient_start;
+			float gradient_offset, gradient_mirror_offset;
+
+			if(offset == 0 && mirror_offset == 0)
+				gradient_start = width > mirror_width ? 2 : 1;
+			else if(offset == 0)
+				gradient_start = 2;
+			else if(mirror_offset == 0)
+				gradient_start = 1;
+			else
+				gradient_start = 0;
+
+			switch(gradient_start)
+			{
+				default:
+				case 0:                      
+					gradient_offset = gradient_mirror_offset = 0;
+					break;
+				case 1:                                                                     
+					gradient_offset = 0;
+					gradient_mirror_offset = original_width - (mirror_width + overflow_mirror_width);
+					break;
+				case 2:                                                                     
+					gradient_offset = original_width - (width + overflow_width);
+					gradient_mirror_offset = 0;
+			}
+
+			StrafeHUD_drawGradient(
+				color, autocvar_hud_panel_strafehud_bar_neutral_color,
+				mirror_size, original_width, mirror_offset,
+				alpha, gradient_mirror_offset, gradientType);
+
+			StrafeHUD_drawGradient(
+				color, autocvar_hud_panel_strafehud_bar_neutral_color,
+				size, original_width, offset,
+				alpha, gradient_offset, gradientType);
+	}
+}
+
+vector StrafeHUD_mixColors(vector color1, vector color2, float ratio)
+{
+	vector mixedColor;
+	if(ratio <= 0) return color1;
+	if(ratio >= 1) return color2;
+	mixedColor.x = color1.x + (color2.x - color1.x) * ratio;
+	mixedColor.y = color1.y + (color2.y - color1.y) * ratio;
+	mixedColor.z = color1.z + (color2.z - color1.z) * ratio;
+	return mixedColor;
+}
+
+void StrafeHUD_drawGradient(vector color1, vector color2, vector size, float original_width, float offset, float alpha, float gradientOffset, int gradientType)
+{
+	float color_ratio, alpha1, alpha2;
+	vector segment_size = size;
+	alpha1 = bound(0, alpha, 1);
+	alpha2 = bound(0, autocvar_hud_panel_strafehud_bar_neutral_alpha, 1);
+	if((alpha1 + alpha2) == 0) return;
+	color_ratio = alpha1 / (alpha1 + alpha2);
+	for(int i = 0; i < size.x; ++i)
+	{
+		float ratio, alpha_ratio, combine_ratio1, combine_ratio2;
+		segment_size.x = min(size.x - i, 1);                                                                                                  
+		ratio = (i + segment_size.x / 2 + gradientOffset) / original_width * (gradientType == STRAFEHUD_GRADIENT_BOTH ? 2 : 1);
+		if(ratio > 1) ratio = 2 - ratio;
+		if(gradientType != STRAFEHUD_GRADIENT_RIGHT) ratio = 1 - ratio;
+		alpha_ratio = alpha1 - (alpha1 - alpha2) * ratio;
+		combine_ratio1 = ratio * (1 - color_ratio);
+		combine_ratio2 = (1 - ratio) * color_ratio;
+		ratio = (combine_ratio1 + combine_ratio2) == 0 ? 1 : combine_ratio1 / (combine_ratio1 + combine_ratio2);
+
+		if(alpha_ratio > 0)
+			drawfill(
+				panel_pos + eX * (offset + i),
+				segment_size,
+				StrafeHUD_mixColors(color1, color2, ratio),
+				alpha_ratio,
+				DRAWFLAG_NORMAL);
+	}
+}
+
+                                                                                                                 
+void StrafeHUD_drawStrafeArrow(vector origin, float size, vector color, float alpha, bool flipped, float connection_width)
+{
+	origin = HUD_Shift(origin);
+	float width = HUD_ScaleX(size * 2 + connection_width);
+	float height = HUD_ScaleY(size);
+	if(flipped) origin -= size * eY;
+	R_BeginPolygon("", DRAWFLAG_NORMAL, true);
+	if(connection_width > 0)
+	{
+		R_PolygonVertex(origin + (connection_width / 2 * eX) + (flipped ? height * eY : '0 0 0'), '0 0 0', color, alpha);
+		R_PolygonVertex(origin - (connection_width / 2 * eX) + (flipped ? height * eY : '0 0 0'), '0 0 0', color, alpha);
+	}
+	else
+	{
+		R_PolygonVertex(origin + (flipped ? height * eY : '0 0 0'), '0 0 0', color, alpha);
+	}
+	R_PolygonVertex(origin + (flipped ? '0 0 0' : height * eY) - (width / 2) * eX, '0 0 0', color, alpha);
+	R_PolygonVertex(origin + (flipped ? '0 0 0' : height * eY) + (width / 2) * eX, '0 0 0', color, alpha);
+	R_EndPolygon();
+}
+
+                                                                                                       
+bool StrafeHUD_drawTextIndicator(string text, float height, vector color, float fadetime, float lasttime, float offset, int position)
+{
+	if((height <= 0) || (lasttime <= 0) || (fadetime <= 0) || ((time - lasttime) >= fadetime))
+		return false;
+
+	float alpha = cos(((time - lasttime) / fadetime) * 90 * DEG2RAD);                                               
+	vector size = panel_size;
+	size.y = height;
+
+	switch(position)
+	{
+		case STRAFEHUD_TEXT_TOP:
+			offset += size.y;
+			offset *= -1;
+			break;
+		case STRAFEHUD_TEXT_BOTTOM:
+			offset += panel_size.y;
+			break;
+	}
+
+	drawstring_aspect(panel_pos + eY * offset, text, size, color, alpha * panel_fg_alpha, DRAWFLAG_NORMAL);
+	return true;
+}
+
+                                                                                               
+float GetLengthUnitFactor(int length_unit)
+{
+	switch(length_unit)
+	{
+		default:
+		case 1: return 1.0;
+		case 2: return 0.0254;
+		case 3: return 0.0254 * 0.001;
+		case 4: return 0.0254 * 0.001 * 0.6213711922;
+		case 5: return 0.0254 * 0.001 * 0.5399568035;
+	}
+}
+
+string GetLengthUnit(int length_unit)
+{
+	switch(length_unit)
+	{
+		                                                        
+		default:
+		case 1: return strcat(" ", _("qu"));
+		case 2: return strcat(" ", _("m"));
+		case 3: return strcat(" ", _("km"));
+		case 4: return strcat(" ", _("mi"));
+		case 5: return strcat(" ", _("nmi"));
+	}
+}

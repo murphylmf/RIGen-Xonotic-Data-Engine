@@ -1,0 +1,78 @@
+#pragma once
+
+bool autocvar_sv_vote_call;
+bool autocvar_sv_vote_change;
+string autocvar_sv_vote_commands;
+bool autocvar_sv_vote_debug;
+bool autocvar_sv_vote_gamestart;
+int autocvar_sv_vote_limit;
+float autocvar_sv_vote_majority_factor;
+float autocvar_sv_vote_majority_factor_of_voted;
+bool autocvar_sv_vote_master;
+bool autocvar_sv_vote_master_callable;
+string autocvar_sv_vote_master_commands;
+string autocvar_sv_vote_master_password;
+int autocvar_sv_vote_master_playerlimit;
+bool autocvar_sv_vote_no_stops_vote;
+int autocvar_sv_vote_nospectators;
+                                        
+bool autocvar_sv_vote_override_mostrecent;
+bool autocvar_sv_vote_singlecount;
+float autocvar_sv_vote_stop;
+float autocvar_sv_vote_timeout;
+float autocvar_sv_vote_wait;
+
+                                                  
+const float VC_ASGNMNT_BOTH = 1;
+const float VC_ASGNMNT_CLIENTONLY = 2;
+const float VC_ASGNMNT_SERVERONLY = 3;
+
+                             
+const float VOTE_SELECT_ABSTAIN = -2;
+const float VOTE_SELECT_REJECT = -1;
+const float VOTE_SELECT_NULL = 0;
+const float VOTE_SELECT_ACCEPT = 1;
+
+                                         
+const float VOTE_NULL = 0;
+const float VOTE_NORMAL = 1;
+const float VOTE_MASTER = 2;
+
+                                       
+entity vote_caller;                                               
+string vote_caller_name;                              
+int vote_called;                                                         
+float vote_endtime;                                          
+int vote_accept_count;                                                                                      
+int vote_reject_count;                                    
+int vote_abstain_count;                                    
+int vote_needed_overall;                                                                                           
+.bool vote_master;                                                              
+.float vote_waittime;                                                                           
+.int vote_selection;                                                                                
+string vote_called_command;                          
+string vote_called_display;                                           
+string vote_parsed_command;                                             
+string vote_parsed_display;                                                   
+
+                                                                         
+void VoteThink();
+void VoteReset(bool verbose);
+void VoteCommand(int request, entity caller, int argc, string vote_command);
+
+                          
+const float RESTART_COUNTDOWN = 10;
+entity nagger;
+int readycount;                                                      
+.bool ready;                                                       
+.int team_saved;                                                           
+.void(entity this) reset;                                                  
+.void(entity this) reset2;                                                                                                            
+void reset_map(bool is_fake_round_start);
+void ReadyCount();
+void ReadyRestart_force(bool is_fake_round_start);
+void VoteCount(float first_count);
+void Nagger_Init();
+
+IntrusiveList g_saved_team;
+STATIC_INIT(g_saved_team) { g_saved_team = IL_NEW(); }

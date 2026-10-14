@@ -1,0 +1,11 @@
+#pragma once
+
+
+                                                             
+
+                   
+#define TELEPORT_OBSERVERS_ONLY BIT(0)                                                                        
+#define TELEPORT_KEEP_SPEED BIT(1)
+
+                    
+#define TARGET_TELEPORTER_KEEP_SPEED BIT(0)

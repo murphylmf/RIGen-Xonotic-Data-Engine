@@ -1,0 +1,3 @@
+                                
+#include <server/bot/default/havocbot/havocbot.qh>
+#include <server/bot/default/havocbot/roles.qh>

@@ -1,0 +1,49 @@
+From 58a2e35d4405624da3bf61dd207aea5e073aef61 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Sat, 25 Jul 2026 01:06:53 +0800
+Subject: [PATCH 30/36] Keep dynamic capture seed alive through reset
+
+---
+ source/qcsrc/server/capture.qc | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index edfc2cd..b407f73 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -207,7 +207,6 @@ void Capture_ConfigurePlayerWeapon(entity actor)
+ 
+ bool Capture_TryReset()
+ {
+-	string capture_episode_seed_text = cvar_string("capture_seed_text");
+ 	capture_player = NULL;
+ 	capture_enemy = NULL;
+ 	FOREACH_CLIENT(IS_REAL_CLIENT(it) && IS_PLAYER(it),
+@@ -249,7 +248,6 @@ bool Capture_TryReset()
+ 	// consumes a timing-dependent number of global random values before the
+ 	// atomic episode reset, so capture weapon spread uses this private stream
+ 	// seeded exactly at the reset boundary.
+-	capture_weapon_random_seed = crc16(false, capture_episode_seed_text);
+ 	Capture_ConfigurePlayerWeapon(capture_player);
+ 	setplayermodel(capture_enemy,
+ 		strcat("models/player/", autocvar_capture_enemy_model, ".iqm"));
+@@ -267,6 +265,11 @@ bool Capture_TryReset()
+ 		LOG_WARN("capture: could not open server telemetry ", autocvar_capture_server_log);
+ 		return false;
+ 	}
++	// cvar_string returns a temporary engine string. Zone it only after all
++	// failing reset operations so subsequent builtins cannot overwrite the
++	// episode seed before it is hashed and serialized.
++	string capture_episode_seed_text = strzone(cvar_string("capture_seed_text"));
++	capture_weapon_random_seed = crc16(false, capture_episode_seed_text);
+ 	capture_server_tick = 0;
+ 	capture_next_event_id = 1;
+ 	capture_server_started = true;
+@@ -322,6 +325,7 @@ bool Capture_TryReset()
+ 		"\"enemy_ground_distance\":%.6f,\"los_fraction\":%.9f}}",
+ 		enemy_ground_distance, anchor_los_fraction));
+ 	Capture_Log(reset_row);
++	strunzone(capture_episode_seed_text);
+ 	stuffcmd(capture_player,
+ 		sprintf("\ncapture_episode_reset \"%s\"\n", autocvar_capture_episode_id));
+ 	return true;

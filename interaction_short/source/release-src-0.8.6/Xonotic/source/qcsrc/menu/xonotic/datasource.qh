@@ -1,0 +1,34 @@
+#pragma once
+
+CLASS(DataSource, Object)
+    STATIC_ATTRIB(DataSource, true, entity, NEW(Object));
+    STATIC_ATTRIB(DataSource, false, entity, NULL);
+       
+                                                                                  
+                                                  
+                                                       
+       
+    METHOD(DataSource, getEntry, entity(entity this, int i, void(string name, string icon) returns)) { return DataSource_false; }
+                                                                   
+    METHOD(DataSource, indexOf, int(entity this, string find)) { return -1; }
+                                                                                     
+    METHOD(DataSource, reload, int(entity this, string filter)) { return 0; }
+                                        
+    METHOD(DataSource, destroy, void(entity this)) { }
+ENDCLASS(DataSource)
+
+
+CLASS(StringSource, DataSource)
+    ATTRIB(StringSource, StringSource_str, string);
+    ATTRIB(StringSource, StringSource_sep, string);
+    CONSTRUCTOR(StringSource, string str, string sep);
+    METHOD(StringSource, getEntry, entity(entity this, int i, void(string name, string icon) returns));
+    METHOD(StringSource, reload, int(entity this, string filter));
+ENDCLASS(StringSource)
+
+CLASS(CvarStringSource, StringSource)
+    ATTRIB(CvarStringSource, CvarStringSource_cvar, string);
+    CONSTRUCTOR(CvarStringSource, string cv, string sep);
+    METHOD(CvarStringSource, getEntry, entity(entity this, int i, void(string name, string icon) returns));
+    METHOD(CvarStringSource, reload, int(entity this, string filter));
+ENDCLASS(CvarStringSource)

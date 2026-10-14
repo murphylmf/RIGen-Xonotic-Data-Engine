@@ -1,0 +1,9 @@
+#pragma once
+
+CLASS(PlasmaAttack, PortoLaunch)
+                ATTRIB(PlasmaAttack, spawnflags, int, WEP_FLAG_HIDDEN | WEP_FLAG_SPECIALATTACK);
+                ATTRIB(PlasmaAttack, impulse, int, 5);
+                ATTRIB(PlasmaAttack, netname, string, "turret_plasma");
+                ATTRIB(PlasmaAttack, m_name, string, _("Plasma"));
+ENDCLASS(PlasmaAttack)
+REGISTER_WEAPON(PLASMA, NEW(PlasmaAttack));

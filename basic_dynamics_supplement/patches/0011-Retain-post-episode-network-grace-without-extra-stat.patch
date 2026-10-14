@@ -1,0 +1,47 @@
+From db673c93143c290615001a4d85c4cc2ff035bcc5 Mon Sep 17 00:00:00 2001
+From: RIGen local capture
+Date: Fri, 24 Jul 2026 18:52:09 +0800
+Subject: [PATCH 11/36] Retain post-episode network grace without extra state
+ rows
+
+---
+ source/qcsrc/server/capture.qc | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/source/qcsrc/server/capture.qc b/source/qcsrc/server/capture.qc
+index fa11fe9..a3ba389 100644
+--- a/source/qcsrc/server/capture.qc
++++ b/source/qcsrc/server/capture.qc
+@@ -382,7 +382,14 @@ void Capture_ServerFrame()
+ 	}
+ 	if(capture_server_tick_logged)
+ 	{
+-		if(capture_server_tick == CAPTURE_ACTION_COUNT - 1)
++		++capture_server_tick;
++		capture_server_tick_logged = false;
++		if(capture_server_tick >= CAPTURE_ACTION_COUNT)
++			return;
++	}
++	if(capture_server_tick >= CAPTURE_ACTION_COUNT)
++	{
++		if(capture_server_tick == CAPTURE_ACTION_COUNT + 4)
+ 		{
+ 			Capture_Log(sprintf(
+ 				"{\"kind\":\"output_end\",\"server_tick\":%d,\"server_time\":%.9f}",
+@@ -394,7 +401,7 @@ void Capture_ServerFrame()
+ 			return;
+ 		}
+ 		++capture_server_tick;
+-		capture_server_tick_logged = false;
++		return;
+ 	}
+ 	Capture_MoveEnemy();
+ 	// The stuffcmd is delivered after this server frame. Sending at tick 63
+@@ -412,6 +419,7 @@ void Capture_ServerFrameEnd(entity actor)
+ {
+ 	if(!autocvar_capture_server_enable || !capture_server_started
+ 		|| capture_server_done || capture_server_tick_logged
++		|| capture_server_tick >= capture_action_count
+ 		|| actor != capture_player)
+ 		return;
+ 	Capture_LogState();

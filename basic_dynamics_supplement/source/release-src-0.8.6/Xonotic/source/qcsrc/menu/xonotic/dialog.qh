@@ -1,0 +1,35 @@
+#pragma once
+
+#include "../item/dialog.qh"
+CLASS(XonoticDialog, Dialog)
+	                                 
+	  
+                                           
+                                                         
+                                                 
+                                                
+                                       
+                                          
+   
+	ATTRIB(XonoticDialog, marginTop, float, SKINMARGIN_TOP);                                   
+	ATTRIB(XonoticDialog, marginBottom, float, SKINMARGIN_BOTTOM);                             
+	ATTRIB(XonoticDialog, marginLeft, float, SKINMARGIN_LEFT);                                 
+	ATTRIB(XonoticDialog, marginRight, float, SKINMARGIN_RIGHT);                               
+	ATTRIB(XonoticDialog, columnSpacing, float, SKINMARGIN_COLUMNS);                           
+	ATTRIB(XonoticDialog, rowSpacing, float, SKINMARGIN_ROWS);                                 
+	ATTRIB(XonoticDialog, rowHeight, float, SKINFONTSIZE_NORMAL * SKINHEIGHT_NORMAL);          
+	ATTRIB(XonoticDialog, titleHeight, float, SKINFONTSIZE_TITLE * SKINHEIGHT_TITLE);          
+	ATTRIB(XonoticDialog, titleFontSize, float, SKINFONTSIZE_TITLE);                           
+
+	ATTRIB(XonoticDialog, backgroundImage, string, SKINGFX_DIALOGBORDER);
+	ATTRIB(XonoticDialog, borderLines, float, SKINHEIGHT_DIALOGBORDER);
+	ATTRIB(XonoticDialog, closeButtonImage, string, SKINGFX_CLOSEBUTTON);
+	ATTRIB(XonoticDialog, zoomedOutTitleBarPosition, float, SKINHEIGHT_ZOOMEDTITLE * 0.5 - 0.5);
+	ATTRIB(XonoticDialog, zoomedOutTitleBar, float, SKINHEIGHT_ZOOMEDTITLE != 0);
+
+	ATTRIB(XonoticDialog, alpha, float, SKINALPHA_TEXT);
+
+	METHOD(XonoticDialog, configureDialog, void(entity));
+ENDCLASS(XonoticDialog)
+
+entity currentDialog;
