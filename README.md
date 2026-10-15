@@ -158,35 +158,6 @@ The following entrypoints reproduce the paper route logic after the external run
 
 The exact paper release also depends on the paper's frozen route configuration and accepted-input snapshot. The code release supplies the construction logic; it does not include the captured media or private production state.
 
-## What belongs in a data release instead of this code repository
-
-Do not commit generated or machine-specific material to the code repository:
-
-- captured video, audio, frame tables, raw demos, and episode directories;
-- generated scenario, action, QA, provenance, or training manifests for a particular run;
-- build directories, compiled binaries, QuakeC outputs, local sysroots, downloaded archives, and package caches;
-- logs, profiler output, temporary files, checkpoints, virtual environments, and scheduler job output;
-- private hostnames, account names, mount paths, credentials, tokens, or machine-specific configuration;
-- large experiment results or a dataset release assembled from accepted episodes.
-
-Commit reusable source, route templates, schema definitions, small public examples, and changes needed to regenerate those outputs. Publish a generated dataset and its manifests as a separate data release, with the code commit and route version recorded in its provenance.
-
-## Quick sanity check
-
-From the repository root, these commands check the source tree without starting a capture:
-
-```bash
-python -m compileall common_capture basic_dynamics_supplement interaction_short interaction_long arena
-python - <<'PY'
-import json
-from pathlib import Path
-json.load(Path("release_manifest.json").open())
-print("release manifest is valid")
-PY
-```
-
-A full capture still requires the external Xonotic assets, local scenario inputs, a compatible renderer, and the machine's GPU runtime.
-
 ## Licensing
 
 This is a component-licensed code release. RIGen-authored orchestration code, configuration templates, patches, and documentation are released under the terms in `LICENSE.md`. Modified Xonotic, DarkPlaces, and gmqcc material remains under its applicable upstream GPL or project terms. Preserve `NOTICE` and the upstream license texts under `common_capture/licenses/` when redistributing.

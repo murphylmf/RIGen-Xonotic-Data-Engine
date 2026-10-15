@@ -18,12 +18,8 @@
       "bytes": 486
     },
     {
-      "path": "ORIGINAL_BACKUP_SHA256",
-      "bytes": 110
-    },
-    {
       "path": "README.md",
-      "bytes": 10924
+      "bytes": 9429
     },
     {
       "path": "arena/README.md",
